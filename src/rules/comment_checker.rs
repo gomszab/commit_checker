@@ -7,16 +7,16 @@ impl Handler for CommentChecker {
         let mut in_jsdoc = false;
         for (line_number, line) in context.file_contents.iter().enumerate() {
             let trimmed = line.trim();
-            if in_jsdoc {
-                continue;
-            }
-
             if trimmed.contains("/**") {
                 in_jsdoc = true;
             }
-            if trimmed.contains("*/") {
-                in_jsdoc = false
-            }
+
+            if in_jsdoc {
+                if trimmed.contains("*/") {
+                    in_jsdoc = false
+                }
+                continue;
+            } 
 
             // Skip empty or comment-only lines
             if trimmed.is_empty() || trimmed.starts_with("//") {

@@ -32,7 +32,7 @@ impl Handler for JsDocChecker {
                 }
                 if jsdoc.contains("@type") {
                     //todo get from config file
-                    let re = regex::Regex::new(r"^/\*\*@type\{[^}]+\}[a-zA-Z0-9]+\*/$").unwrap();
+                    let re = regex::Regex::new(r#"^/\*\*@type\{[^}]+\}.+\*/$"#).unwrap();
                     if !re.is_match(&jsdoc) {
                         return context.end_of_handle(Some(&format!("Nem minden @type jsdoc felel meg a `@type {{tipus}} leiras` formatumnak")));
                     }

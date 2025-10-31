@@ -8,6 +8,7 @@ impl Handler for JsDocCounter {
         let mut jsdoc_counter = 0;
 
         for line in &context.file_contents {
+            let line = line.trim();
             if is_definition_line(line) {
                 definition_counter += 1;
             }

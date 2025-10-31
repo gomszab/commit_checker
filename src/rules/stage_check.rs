@@ -11,9 +11,27 @@ impl Handler for StageHandler {
             .output();
         if let Ok(content) = output {
             let files = String::from_utf8_lossy(&content.stdout);
-            files
-                .lines()
-                .for_each(|filename| context.add_staged_files(filename));
+           
+           for filename in files.lines() {
+                context.add_staged_files(filename);
+                let diff_output =  Command::new("git")
+                .args(["diff", "--name-only", filename])
+                .output(); 
+                match diff_output {
+                    Ok(diff_content) => {
+                        if !diff_content.stdout.is_empty(){
+                           return context.end_of_handle(Some(
+                                &format!("nem futtattad a git add parancsot miutan modositottad a kovetkezo fajlt: {}", filename),
+                            ));
+                        }
+                    },
+                    Err(_) => {
+                        return context.end_of_handle(Some(
+                            &format!("nem sikerult a modositott fajlok lekerese"),
+                        ));
+                    }
+                }
+           }
             context.end_of_handle(None)
         } else {
             context.end_of_handle(Some(
