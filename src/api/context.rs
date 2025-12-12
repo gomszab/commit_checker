@@ -10,6 +10,7 @@ pub struct Context {
     current: usize,
     pub staged_files: Vec<String>,
     pub file_contents: Vec<String>,
+    pub errors: Vec<String>,
     pub spinner: Option<Spinner>,
 }
 
@@ -20,12 +21,19 @@ impl Context {
             current: 0,
             staged_files: Vec::new(),
             file_contents: Vec::new(),
+            errors: Vec::new(),
             spinner: None,
         }
     }
 
     pub fn register_handler(&mut self, handler: Rc<dyn Handler>) {
         self.handlers.push(handler);
+    }
+
+    pub fn run(mut self) -> Result<Vec<String>, String> {
+        self.next()?;
+
+        Ok(self.errors)
     }
 
     pub fn next(&mut self) -> Result<(), String> {
