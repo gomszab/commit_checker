@@ -23,23 +23,15 @@ fn main() {
     context.register_handler(Rc::new(VariableNameChecker));
     let result = context.run();
     match result {
+        Ok(errored) => {
+            if !errored {
+                let message = format!("{}", "✔ Minden teszt lefutott sikeresen (:");
+                println!("{}", message.green());
+            }
+        }
         Err(message) => {
             eprintln!("{}", message.red());
             exit(1);
         }
-        Ok(errors) => {
-            if errors.is_empty() {
-                let message = format!("{}", "✔ Minden teszt lefutott sikeresen (:");
-                println!("{}", message.green());
-            } else {
-                print_errors(errors);
-            }
-        }
     };
-}
-
-fn print_errors(errors: Vec<String>) {
-    for error in errors {
-        eprintln!("{}", error.red());
-    }
 }

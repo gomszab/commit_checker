@@ -1,11 +1,11 @@
 use std::process::Command;
 
-use crate::api::Handler;
+use crate::api::{Handler, HandlerResult};
 
 pub struct StageHandler;
 
 impl Handler for StageHandler {
-    fn handle(&self, context: &mut crate::api::Context) -> Result<(), String> {
+    fn handle(&self, context: &mut crate::api::Context) -> HandlerResult {
         let output = Command::new("git")
             .args(["diff", "--cached", "--name-only"])
             .output();
@@ -20,23 +20,22 @@ impl Handler for StageHandler {
                 match diff_output {
                     Ok(diff_content) => {
                         if !diff_content.stdout.is_empty() {
-                            return context.end_of_handle(Some(
-                                &format!("nem futtattad a git add parancsot miutan modositottad a kovetkezo fajlt: {}", filename),
+                            return HandlerResult::FatalError(format!(
+                                "nem futtattad a git add parancsot miutan modositottad a kovetkezo fajlt: {}",
+                                filename
                             ));
                         }
                     }
                     Err(_) => {
-                        return context.end_of_handle(Some(&format!(
+                        return HandlerResult::FatalError(format!(
                             "nem sikerult a modositott fajlok lekerese"
-                        )));
+                        ));
                     }
                 }
             }
-            context.end_of_handle(None)
+            HandlerResult::Ok
         } else {
-            context.end_of_handle(Some(
-                format!("nem sikerult a git staged fajlok lekerese").as_str(),
-            ))
+            HandlerResult::FatalError(format!("nem sikerult a git staged fajlok lekerese"))
         }
     }
     fn title(&self) -> String {

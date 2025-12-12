@@ -1,9 +1,10 @@
-use crate::api::Handler;
+use crate::api::{Handler, HandlerResult};
 
 pub struct CommentChecker;
 
 impl Handler for CommentChecker {
-    fn handle(&self, context: &mut crate::api::Context) -> Result<(), String> {
+    fn handle(&self, context: &mut crate::api::Context) -> HandlerResult {
+        let mut errors = Vec::new();
         let mut in_jsdoc = false;
         for (line_number, line) in context.file_contents.iter().enumerate() {
             let trimmed = line.trim();
@@ -16,7 +17,7 @@ impl Handler for CommentChecker {
                     in_jsdoc = false
                 }
                 continue;
-            } 
+            }
 
             // Skip empty or comment-only lines
             if trimmed.is_empty() || trimmed.starts_with("//") {
@@ -24,17 +25,19 @@ impl Handler for CommentChecker {
             }
 
             if trimmed.chars().any(|c| c.is_alphanumeric()) && !trimmed.contains("//") {
-                return context.end_of_handle(Some(
-                    format!(
-                        "Nincs komment kodsor: {} mert '{}' sorban nem irtal magyarazatot",
-                        line_number + 1,
-                        trimmed
-                    )
-                    .as_str(),
+                errors.push(format!(
+                    "Nincs komment kodsor: {} mert '{}' sorban nem irtal magyarazatot",
+                    line_number + 1,
+                    trimmed
                 ));
             }
         }
-        context.end_of_handle(None)
+
+        if errors.is_empty() {
+            HandlerResult::Ok
+        } else {
+            HandlerResult::SoftErrors(errors)
+        }
     }
     fn title(&self) -> String {
         format!("Sorvegi kommentek ellenorzese")

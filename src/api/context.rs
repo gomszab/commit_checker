@@ -1,28 +1,23 @@
 use std::rc::Rc;
 
 use colored::Colorize;
+
 use spinoff::{Color, Spinner, spinners};
 
-use crate::api::Handler;
+use crate::api::{Handler, HandlerResult};
 
 pub struct Context {
     handlers: Vec<Rc<dyn Handler>>,
-    current: usize,
     pub staged_files: Vec<String>,
     pub file_contents: Vec<String>,
-    pub errors: Vec<String>,
-    pub spinner: Option<Spinner>,
 }
 
 impl Context {
     pub fn new() -> Self {
         Context {
             handlers: Vec::new(),
-            current: 0,
             staged_files: Vec::new(),
             file_contents: Vec::new(),
-            errors: Vec::new(),
-            spinner: None,
         }
     }
 
@@ -30,42 +25,27 @@ impl Context {
         self.handlers.push(handler);
     }
 
-    pub fn run(mut self) -> Result<Vec<String>, String> {
-        self.next()?;
+    pub fn run(mut self) -> Result<bool, String> {
+        let mut errored = false;
+        for i in 0..self.handlers.len() {
+            let handler = self.handlers[i].clone();
+            let mut spinner =
+                Spinner::new(spinners::Circle, handler.title().to_string(), Color::Blue);
 
-        Ok(self.errors)
-    }
-
-    pub fn next(&mut self) -> Result<(), String> {
-        if self.current >= self.handlers.len() {
-            return Ok(());
-        }
-
-        let handler = self.handlers[self.current].clone();
-
-        self.spinner = Some(Spinner::new(
-            spinners::Circle,
-            handler.clone().title().to_string(),
-            Color::Blue,
-        ));
-        let result = handler.handle(self);
-        result
-    }
-
-    pub fn end_of_handle(&mut self, message: Option<&str>) -> Result<(), String> {
-        if let Some(spinner) = &mut self.spinner {
+            let result = handler.handle(&mut self);
             spinner.stop();
-            let handler = self.handlers[self.current].clone();
-            if message.is_none() {
-                println!("{}", handler.success_message().green());
-                self.current += 1;
-                self.next()
-            } else {
-                Err(format!("{}", message.unwrap()))
-            }
-        } else {
-            Err(format!("Nem vart hiba, goto gomszab"))
+
+            match result {
+                HandlerResult::Ok => println!("{}", handler.success_message().green()),
+                HandlerResult::SoftErrors(errors) => {
+                    errored = true;
+                    print_errors(errors);
+                }
+                HandlerResult::FatalError(error) => return Err(error),
+            };
         }
+
+        Ok(errored)
     }
 }
 
@@ -76,5 +56,11 @@ impl Context {
 
     pub fn add_file_contents(&mut self, file_content: &str) {
         self.file_contents.push(file_content.to_string());
+    }
+}
+
+fn print_errors(errors: Vec<String>) {
+    for error in errors {
+        eprintln!("{}", error.red());
     }
 }

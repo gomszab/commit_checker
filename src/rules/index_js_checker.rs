@@ -1,14 +1,17 @@
-use crate::api::Handler;
+use crate::api::{Handler, HandlerResult};
 
 pub struct IndexJsChecker;
 
 impl Handler for IndexJsChecker {
-    fn handle(&self, context: &mut crate::api::Context) -> Result<(), String> {
+    fn handle(&self, context: &mut crate::api::Context) -> HandlerResult {
         let contains_index = context.staged_files.iter().any(|f| f == "index.js");
         if !contains_index {
-            return context.end_of_handle(Some("Nincs hozzaadva az index.js a commithoz"));
+            return HandlerResult::FatalError(
+                "Nincs hozzaadva az index.js a commithoz".to_string(),
+            );
         }
-        context.end_of_handle(None)
+
+        HandlerResult::Ok
     }
 
     fn title(&self) -> String {

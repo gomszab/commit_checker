@@ -1,9 +1,10 @@
-use crate::api::Handler;
+use crate::api::{Handler, HandlerResult};
 
 pub struct JsDocChecker;
 
 impl Handler for JsDocChecker {
-    fn handle(&self, context: &mut crate::api::Context) -> Result<(), String> {
+    fn handle(&self, context: &mut crate::api::Context) -> HandlerResult {
+        let mut errors = Vec::new();
         let mut in_jsdoc = false;
         for (line_number, line) in context.file_contents.iter().enumerate() {
             let trimmed = line.trim();
@@ -21,7 +22,7 @@ impl Handler for JsDocChecker {
                 || trimmed.contains("{*}")
                 || trimmed.contains("{Array}")
             {
-                context.errors.push(format!(
+                errors.push(format!(
                     "sor: {}:  Nem megengedett tipus a jsdocban (any, Object, *)",
                     line_number + 1
                 ));
@@ -31,14 +32,19 @@ impl Handler for JsDocChecker {
                 //todo get from config file
                 let re = regex::Regex::new(r#"^*\*\s*@type\s*\{[^}]+\}.+$"#).unwrap();
                 if !re.is_match(trimmed) {
-                    context.errors.push(format!(
+                    errors.push(format!(
                         "sor: {}: A @type jsdoc nem felel meg a `@type {{tipus}} leiras` formatumnak",
                         line_number + 1
                     ));
                 }
             }
         }
-        context.end_of_handle(None)
+
+        if errors.is_empty() {
+            HandlerResult::Ok
+        } else {
+            HandlerResult::SoftErrors(errors)
+        }
     }
     fn success_message(&self) -> String {
         format!("Jsdoc latszolag rendben")
