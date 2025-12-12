@@ -6,7 +6,6 @@ pub struct FileContentRead;
 
 impl Handler for FileContentRead {
     fn handle(&self, context: &mut crate::api::Context) -> HandlerResult {
-        thread::sleep(Duration::from_secs(2));
         let file = context
             .staged_files
             .iter()

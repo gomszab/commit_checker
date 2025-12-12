@@ -25,10 +25,11 @@ fn main() {
     let result = context.run();
     match result {
         Ok(errored) => {
-            if !errored {
-                let message = format!("{}", "✔ Minden teszt lefutott sikeresen (:");
-                println!("{}", message.green());
+            if errored {
+                exit(1);
             }
+            let message = format!("{}", "✔ Minden teszt lefutott sikeresen (:");
+            println!("{}", message.green());
         }
         Err(message) => {
             eprintln!("{}", message.red());
