@@ -1,9 +1,10 @@
-use crate::api::Handler;
+use crate::api::{Handler, HandlerResult};
 
 pub struct JsDocCounter;
 
 impl Handler for JsDocCounter {
-    fn handle(&self, context: &mut crate::api::Context) -> Result<(), String> {
+    fn handle(&self, context: &mut crate::api::Context) -> HandlerResult {
+        let mut errors = Vec::new();
         let mut definition_counter = 0;
         let mut jsdoc_counter = 0;
 
@@ -17,10 +18,17 @@ impl Handler for JsDocCounter {
             }
         }
 
-        if definition_counter == jsdoc_counter {
-            context.end_of_handle(None)
+        if definition_counter != jsdoc_counter {
+            errors.push(format!(
+                "Nincs minden valtozo deklaracio es fuggvenydefinicio dokumentalva. definiciok szama: {}, jsdoc: {}",
+                definition_counter, jsdoc_counter
+            ));
+        }
+
+        if errors.is_empty() {
+            HandlerResult::Ok
         } else {
-            context.end_of_handle(Some(&format!("Nincs minden valtozo deklaracio es fuggvenydefinicio dokumentalva. definiciok szama: {}, jsdoc: {}", definition_counter, jsdoc_counter)))
+            HandlerResult::SoftErrors(errors)
         }
     }
 

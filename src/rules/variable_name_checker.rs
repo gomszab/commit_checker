@@ -1,11 +1,15 @@
 use regex::Regex;
 
-use crate::{api::Handler, rules::jsdoc_counter::is_definition_line};
+use crate::{
+    api::{Handler, HandlerResult},
+    rules::jsdoc_counter::is_definition_line,
+};
 
 pub struct VariableNameChecker;
 
 impl Handler for VariableNameChecker {
-    fn handle(&self, context: &mut crate::api::Context) -> Result<(), String> {
+    fn handle(&self, context: &mut crate::api::Context) -> HandlerResult {
+        let mut errors = Vec::new();
         for line in &context.file_contents {
             if is_definition_line(line) {
                 let re = Regex::new(
@@ -14,15 +18,26 @@ impl Handler for VariableNameChecker {
                 if let Some(caps) = re.captures(line) {
                     let variable_name = caps.get(1).or_else(|| caps.get(2)).unwrap().as_str();
                     if variable_name.len() < 5 {
-                        return context.end_of_handle(Some(&format!("A valtozoneveknek legalabb 5 karakter hosszunak kell lennie. Hibas valtozonev: {}", variable_name)));
+                        errors.push(format!(
+                            "A valtozoneveknek legalabb 5 karakter hosszunak kell lennie. Hibas valtozonev: {}",
+                            variable_name
+                        ));
                     }
                     if contains_number_or_hungarian_letter(variable_name) {
-                        return context.end_of_handle(Some(&format!("A valtozonev szamot vagy ekezetes karaktert tartalmaz, ami rontja az olvashatosagot. Hibas valtozonev: {}", variable_name)));
+                        errors.push(format!(
+                            "A valtozonev szamot vagy ekezetes karaktert tartalmaz, ami rontja az olvashatosagot. Hibas valtozonev: {}",
+                            variable_name
+                        ));
                     }
                 }
             }
         }
-        context.end_of_handle(None)
+
+        if errors.is_empty() {
+            HandlerResult::Ok
+        } else {
+            HandlerResult::SoftErrors(errors)
+        }
     }
 
     fn success_message(&self) -> String {

@@ -12,6 +12,7 @@ git commit -m "message"
 # Rules:
 - every line should have a comment //
 - every variable declaration should have jsdoc
+- var keyword can't be used
 - in case of @type the jsdoc should have type and description
 - the variable names should have at least 5 character
 

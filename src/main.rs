@@ -9,7 +9,7 @@ use colored::Colorize;
 use crate::api::Context;
 use crate::rules::{
     CommentChecker, FileContentRead, IndexJsChecker, JsDocChecker, JsDocCounter, StageHandler,
-    VariableNameChecker,
+    VarKeywordChecker, VariableNameChecker,
 };
 
 fn main() {
@@ -20,13 +20,20 @@ fn main() {
     context.register_handler(Rc::new(CommentChecker));
     context.register_handler(Rc::new(JsDocCounter));
     context.register_handler(Rc::new(JsDocChecker));
+    context.register_handler(Rc::new(VarKeywordChecker));
     context.register_handler(Rc::new(VariableNameChecker));
-    let result = context.next();
-    if let Err(message) = result {
-        eprintln!("{}", message.red());
-        exit(1);
-    } else {
-        let message = format!("{}", "✔ Minden teszt lefutott sikeresen (:");
-        println!("{}", message.green());
-    }
+    let result = context.run();
+    match result {
+        Ok(errored) => {
+            if errored {
+                exit(1);
+            }
+            let message = format!("{}", "✔ Minden teszt lefutott sikeresen (:");
+            println!("{}", message.green());
+        }
+        Err(message) => {
+            eprintln!("{}", message.red());
+            exit(1);
+        }
+    };
 }
