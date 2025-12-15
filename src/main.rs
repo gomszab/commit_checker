@@ -59,11 +59,12 @@ fn main() {
 
         match result {
             Ok(errored) => {
-                if errored {
+                if !errored {
+                    let message = format!("{file_name}: ✔ Minden teszt lefutott sikeresen (:");
+                    println!("{}", message.green());
+                } else {
                     file_errored = true;
                 }
-                let message = format!("{file_name}: ✔ Minden teszt lefutott sikeresen (:");
-                println!("{}", message.green());
             }
             Err(message) => {
                 eprintln!("{}", message.red());
