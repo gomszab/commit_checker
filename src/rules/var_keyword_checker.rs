@@ -1,23 +1,27 @@
-use crate::{
-    api::{Handler, HandlerResult},
-    rules::jsdoc_counter::is_definition_line,
-};
+use oxc::ast::ast::{Statement, VariableDeclarationKind};
+
+use crate::api::{Handler, HandlerResult};
 
 pub struct VarKeywordChecker;
 
 impl Handler for VarKeywordChecker {
-    fn handle(&self, context: &mut crate::api::Context) -> HandlerResult {
+    fn handle(&self, context: &crate::api::FileContext) -> HandlerResult {
         let mut errors = Vec::new();
-        for (line_number, line) in context.file_contents.iter().enumerate() {
-            if is_definition_line(line) && line.starts_with("var") {
-                errors.push(format!("sor: {}: ne használj var-t!!!!", line_number + 1));
+        for declaration in context.program.body.iter() {
+            if let Statement::VariableDeclaration(decl) = declaration
+                && let VariableDeclarationKind::Var = decl.kind
+            {
+                errors.push(format!(
+                    "sor: {}: ne használj var-t!!!!",
+                    context.get_line(decl.span.start)
+                ));
             }
         }
 
         if errors.is_empty() {
             HandlerResult::Ok
         } else {
-            HandlerResult::SoftErrors(errors)
+            HandlerResult::Error(errors)
         }
     }
 

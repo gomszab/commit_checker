@@ -1,17 +1,15 @@
 mod comment_checker;
-mod file_read;
-mod index_js_checker;
-mod jsdoc_checker;
-mod jsdoc_counter;
-mod stage_check;
+mod function_name_checker;
+mod jsdoc_type_checker;
+mod typedef_jsdoc_checker;
 mod var_keyword_checker;
+mod variable_jsdoc_checker;
 mod variable_name_checker;
 
 pub use comment_checker::CommentChecker;
-pub use file_read::FileContentRead;
-pub use index_js_checker::IndexJsChecker;
-pub use jsdoc_checker::JsDocChecker;
-pub use jsdoc_counter::JsDocCounter;
-pub use stage_check::StageHandler;
+pub use function_name_checker::FunctionNameChecker;
+pub use jsdoc_type_checker::JsDocTypeChecker;
+pub use typedef_jsdoc_checker::TypedefJsDocChecker;
 pub use var_keyword_checker::VarKeywordChecker;
+pub use variable_jsdoc_checker::VariableJsDocChecker;
 pub use variable_name_checker::VariableNameChecker;

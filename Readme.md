@@ -11,13 +11,16 @@ git commit -m "message"
 
 # Rules:
 - every line should have a comment //
-- every variable declaration should have jsdoc
+- every variable declaration should have a @type
 - var keyword can't be used
 - in case of @type the jsdoc should have type and description
 - the variable names should have at least 5 character
+- the types Object, Array or * can't be used
+- typedefs must have a type and a name
 
 # Future rules
 - every variable should be used
 - every defined function should be used
-- jsdoc check improvement: handle @typedef, @param, @returns
+- jsdoc check improvement: handle @param, @returns
 - class definition checker
+
