@@ -3,10 +3,10 @@ use crate::api::{Handler, HandlerResult};
 pub struct CommentChecker;
 
 impl Handler for CommentChecker {
-    fn handle(&self, context: &mut crate::api::Context) -> HandlerResult {
+    fn handle(&self, context: &crate::api::FileContext) -> HandlerResult {
         let mut errors = Vec::new();
         let mut in_jsdoc = false;
-        for (line_number, line) in context.file_contents.iter().enumerate() {
+        for (line_number, line) in context.lines.iter().enumerate() {
             let trimmed = line.trim();
             if trimmed.contains("/**") {
                 in_jsdoc = true;
@@ -26,9 +26,10 @@ impl Handler for CommentChecker {
 
             if trimmed.chars().any(|c| c.is_alphanumeric()) && !trimmed.contains("//") {
                 errors.push(format!(
-                    "Nincs komment kodsor: {} mert '{}' sorban nem irtal magyarazatot",
+                    "sor: {}: Nincs comment a sor végén\n{}\n{}",
                     line_number + 1,
-                    trimmed
+                    trimmed,
+                    "^".repeat(trimmed.len())
                 ));
             }
         }
@@ -36,7 +37,7 @@ impl Handler for CommentChecker {
         if errors.is_empty() {
             HandlerResult::Ok
         } else {
-            HandlerResult::SoftErrors(errors)
+            HandlerResult::Error(errors)
         }
     }
     fn title(&self) -> String {
