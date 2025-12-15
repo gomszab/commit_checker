@@ -5,38 +5,52 @@ pub struct TypedefJsDocChecker;
 impl Handler for TypedefJsDocChecker {
     fn handle(&self, context: &crate::api::FileContext) -> HandlerResult {
         let mut errors = Vec::new();
+        let semantic = context.semantic.get().unwrap();
 
-        for jsdoc in context.semantic.get().unwrap().jsdoc().iter_all() {
-            let start_line = context.get_line(jsdoc.span.start);
-            let end_line = context.get_line(jsdoc.span.end);
-            for (relative_line_number, line) in
-                (&context.lines[start_line..end_line]).iter().enumerate()
+        for jsdoc in semantic.jsdoc().iter_all() {
+            #[allow(for_loops_over_fallibles)]
+            for tag in jsdoc
+                .tags()
+                .iter()
+                .find(|tag| tag.kind.parsed() == "typedef")
             {
-                let trimmed = line.trim();
+                let (type_part, name_part) = tag.type_comment();
 
-                if trimmed.contains("{Object}")
-                    || trimmed.contains("{any}")
-                    || trimmed.contains("{*}")
-                    || trimmed.contains("{Array}")
+                if let None = type_part
+                    && name_part.parsed().len() == 0
                 {
                     errors.push(format!(
-                        "sor: {}:  Nem megengedett tipus a jsdocban (any, Object, *)",
-                        start_line + relative_line_number
+                        "sor: {}: A @typedef-nek nincs se típus, se név megadva\n{}\n{}",
+                        context.get_line(tag.span.start),
+                        context.lines[context.get_line(jsdoc.span.start) - 1
+                            ..=context.get_line(jsdoc.span.end) - 1]
+                            .to_vec()
+                            .join("\n"),
+                        "^".repeat(context.lines[context.get_line(jsdoc.span.end - 2)].len())
                     ));
-                }
+                    continue;
+                } else if name_part.parsed().len() == 0 {
+                    errors.push(format!(
+                        "sor: {}: A @typedef-nek nincs név megadva\n{}\n{}",
+                        context.get_line(tag.span.start),
+                        context.lines[context.get_line(jsdoc.span.start) - 1
+                            ..=context.get_line(jsdoc.span.end) - 1]
+                            .to_vec()
+                            .join("\n"),
+                        "^".repeat(context.lines[context.get_line(jsdoc.span.end - 2)].len())
+                    ));
 
-                if trimmed.contains("@typedef") {
-                    //todo get from config file
-                    let re = regex::Regex::new(
-                        r#"^(?:/\*)?\*\s*@typedef\s*\{\{[^}]+\}\}\s*[^\s\*/]+\s*(?:\s?\*/)?$"#,
-                    )
-                    .unwrap();
-                    if !re.is_match(trimmed) {
-                        errors.push(format!(
-                        "sor: {}: A @typedef jsdoc nem felel meg a `@typedef {{tipus}} Típusnév` formatumnak",
-                        start_line + relative_line_number
+                    continue;
+                } else if let None = type_part {
+                    errors.push(format!(
+                        "sor: {}: A @typedef-nek nincs típus megadva\n{}\n{}",
+                        context.get_line(tag.span.start),
+                        context.lines[context.get_line(jsdoc.span.start) - 1
+                            ..=context.get_line(jsdoc.span.end) - 1]
+                            .to_vec()
+                            .join("\n"),
+                        "^".repeat(context.lines[context.get_line(jsdoc.span.end - 2)].len())
                     ));
-                    }
                     continue;
                 }
             }
@@ -49,9 +63,9 @@ impl Handler for TypedefJsDocChecker {
         }
     }
     fn success_message(&self) -> String {
-        format!("Jsdoc latszolag rendben")
+        format!("Typedef-ek rendben")
     }
     fn title(&self) -> String {
-        format!("Jsdoc analizalasa folyamatban")
+        format!("Typedef-ek analizálása...")
     }
 }
