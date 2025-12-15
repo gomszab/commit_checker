@@ -25,6 +25,7 @@ fn main() {
     // Needed for oxc.
     let mut allocator = Allocator::new();
 
+    let mut file_errored = false;
     for file_name in files {
         let content = match std::fs::read_to_string(&file_name) {
             Ok(content) => content,
@@ -59,7 +60,7 @@ fn main() {
         match result {
             Ok(errored) => {
                 if errored {
-                    exit(1);
+                    file_errored = true;
                 }
                 let message = format!("{file_name}: ✔ Minden teszt lefutott sikeresen (:");
                 println!("{}", message.green());
@@ -69,6 +70,10 @@ fn main() {
                 exit(1);
             }
         }
+    }
+
+    if file_errored {
+        exit(1);
     }
 }
 
