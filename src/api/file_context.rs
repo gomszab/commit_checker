@@ -72,7 +72,7 @@ impl<'a> FileContext<'a> {
         handlers.push(handler);
     }
 
-    pub fn run(&self) -> Result<bool, String> {
+    pub fn run(&'a self) -> Result<bool, String> {
         let mut errored = false;
         for i in 0..self.handlers.len() {
             let handler = self.handlers[i].clone();

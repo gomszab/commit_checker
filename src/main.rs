@@ -9,8 +9,8 @@ use oxc::allocator::Allocator;
 
 use crate::api::FileContext;
 use crate::rules::{
-    CommentChecker, FunctionNameChecker, JsDocChecker, VarKeywordChecker, VariableJsDocChecker,
-    VariableNameChecker,
+    CommentChecker, FunctionNameChecker, TypedefJsDocChecker, VarKeywordChecker,
+    VariableJsDocChecker, VariableNameChecker,
 };
 
 fn main() {
@@ -45,12 +45,12 @@ fn main() {
             }
         };
 
-        // context.register_handler(Rc::new(CommentChecker));
+        context.register_handler(Rc::new(CommentChecker));
         context.register_handler(Rc::new(VariableJsDocChecker));
-        // context.register_handler(Rc::new(JsDocChecker));
-        // context.register_handler(Rc::new(VarKeywordChecker));
-        // context.register_handler(Rc::new(VariableNameChecker));
-        // context.register_handler(Rc::new(FunctionNameChecker));
+        context.register_handler(Rc::new(TypedefJsDocChecker));
+        context.register_handler(Rc::new(VarKeywordChecker));
+        context.register_handler(Rc::new(VariableNameChecker));
+        context.register_handler(Rc::new(FunctionNameChecker));
 
         let result = context.run();
         allocator.reset();

@@ -1,8 +1,8 @@
 use crate::api::{Handler, HandlerResult};
 
-pub struct JsDocChecker;
+pub struct TypedefJsDocChecker;
 
-impl Handler for JsDocChecker {
+impl Handler for TypedefJsDocChecker {
     fn handle(&self, context: &crate::api::FileContext) -> HandlerResult {
         let mut errors = Vec::new();
 
@@ -34,21 +34,6 @@ impl Handler for JsDocChecker {
                     if !re.is_match(trimmed) {
                         errors.push(format!(
                         "sor: {}: A @typedef jsdoc nem felel meg a `@typedef {{tipus}} Típusnév` formatumnak",
-                        start_line + relative_line_number
-                    ));
-                    }
-                    continue;
-                }
-
-                if trimmed.contains("@type") {
-                    //todo get from config file
-                    let re = regex::Regex::new(
-                        r#"^(?:/\*)?\*\s*@type\s*\{[^}]+\}\s*[^\s\*/]+.*(?:\s?\*/)?$"#,
-                    )
-                    .unwrap();
-                    if !re.is_match(trimmed) {
-                        errors.push(format!(
-                        "sor: {}: A @type jsdoc nem felel meg a `@type {{tipus}} leiras` formatumnak",
                         start_line + relative_line_number
                     ));
                     }
