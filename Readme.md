@@ -17,10 +17,10 @@ git commit -m "message"
 - the variable names should have at least 5 character
 - the types Object, Array or * can't be used
 - typedefs must have a type and a name
-
-# Future rules
 - every variable should be used
 - every defined function should be used
+
+# Future rules
 - jsdoc check improvement: handle @param, @returns
 - class definition checker
 
