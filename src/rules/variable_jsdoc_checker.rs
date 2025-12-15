@@ -116,7 +116,7 @@ impl Handler for VariableJsDocChecker {
     }
 }
 
-/// Returns all variable declarations along with their
+/// Returns all variable declarations along with their jsdocs.
 fn get_all_var_decl_jsdocs<'a>(
     nodes: &'a AstNodes,
     jsdoc_finder: &'a JSDocFinder<'a>,
