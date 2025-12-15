@@ -1,34 +1,52 @@
+use oxc::ast::{AstKind, ast::BindingPatternKind};
+use oxc_semantic::JSDoc;
+
 use crate::api::{Handler, HandlerResult};
 
-pub struct JsDocCounter;
+pub struct VariableJsDocChecker;
 
-impl Handler for JsDocCounter {
-    fn handle(&self, context: &mut crate::api::Context) -> HandlerResult {
+impl Handler for VariableJsDocChecker {
+    fn handle(&self, context: &crate::api::FileContext) -> HandlerResult {
         let mut errors = Vec::new();
-        let mut definition_counter = 0;
-        let mut jsdoc_counter = 0;
+        let nodes = context.semantic.get().unwrap().nodes();
 
-        for line in &context.file_contents {
-            let line = line.trim();
-            if is_definition_line(line) {
-                definition_counter += 1;
-            }
-            if line.contains("/**") {
-                jsdoc_counter += 1;
-            }
-        }
+        for definition in nodes.iter() {
+            if let AstKind::VariableDeclarator(var) = definition.kind() {
+                println!(
+                    "{}",
+                    &context.program.source_text[var.span.start as usize..var.span.end as usize]
+                );
+                if let BindingPatternKind::BindingIdentifier(identifier) = &var.id.kind {
+                    let name = identifier.name;
+                    let start = var.span.start;
 
-        if definition_counter != jsdoc_counter {
-            errors.push(format!(
-                "Nincs minden valtozo deklaracio es fuggvenydefinicio dokumentalva. definiciok szama: {}, jsdoc: {}",
-                definition_counter, jsdoc_counter
-            ));
+                    let jsdoc = context.semantic.get().unwrap().jsdoc();
+                    // .get_one_by_node(&nodes, definition);
+                    // if let Some(jsdoc) = jsdoc
+                    //     && includes_correct_type_tag(&jsdoc)
+                    // {
+                    //     println!("szia");
+                    //     continue;
+                    // } else {
+                    //     errors.push(format!(
+                    //         "sor: {}: Nincs jsdoc dokumentáció\n{}\n{}",
+                    //         context.get_line(start),
+                    //         context.lines[context.get_line(start) - 1],
+                    //         format!(
+                    //             "{}{}",
+                    //             " ".repeat(context.get_column(start) - 1),
+                    //             "^".repeat(name.len())
+                    //         )
+                    //     ));
+                    // };
+                }
+            }
         }
 
         if errors.is_empty() {
             HandlerResult::Ok
         } else {
-            HandlerResult::SoftErrors(errors)
+            HandlerResult::Error(errors)
         }
     }
 
@@ -40,12 +58,16 @@ impl Handler for JsDocCounter {
     }
 }
 
-pub fn is_definition_line(line: &str) -> bool {
-    let definition_keywords = vec!["const", "let", "var", "function"];
-    for keyword in definition_keywords {
-        if line.starts_with(keyword) {
+fn includes_correct_type_tag(jsdoc: &JSDoc) -> bool {
+    for tag in jsdoc.tags().iter() {
+        let (type_part, comment_part) = tag.type_comment();
+        if let Some(ty) = type_part
+            && ty.parsed().len() > 0
+            && comment_part.parsed().len() > 0
+        {
             return true;
         }
     }
-    return false;
+
+    false
 }

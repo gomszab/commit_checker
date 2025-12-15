@@ -3,39 +3,56 @@ use crate::api::{Handler, HandlerResult};
 pub struct JsDocChecker;
 
 impl Handler for JsDocChecker {
-    fn handle(&self, context: &mut crate::api::Context) -> HandlerResult {
+    fn handle(&self, context: &crate::api::FileContext) -> HandlerResult {
         let mut errors = Vec::new();
-        let mut in_jsdoc = false;
-        for (line_number, line) in context.file_contents.iter().enumerate() {
-            let trimmed = line.trim();
-            if !in_jsdoc && trimmed.starts_with("/**") {
-                in_jsdoc = true;
-                continue;
-            }
 
-            if trimmed.contains("*/") {
-                in_jsdoc = false;
-            }
-
-            if trimmed.contains("{Object}")
-                || trimmed.contains("{any}")
-                || trimmed.contains("{*}")
-                || trimmed.contains("{Array}")
+        for jsdoc in context.semantic.get().unwrap().jsdoc().iter_all() {
+            let start_line = context.get_line(jsdoc.span.start);
+            let end_line = context.get_line(jsdoc.span.end);
+            for (relative_line_number, line) in
+                (&context.lines[start_line..end_line]).iter().enumerate()
             {
-                errors.push(format!(
-                    "sor: {}:  Nem megengedett tipus a jsdocban (any, Object, *)",
-                    line_number + 1
-                ));
-            }
+                let trimmed = line.trim();
 
-            if trimmed.contains("@type") {
-                //todo get from config file
-                let re = regex::Regex::new(r#"^*\*\s*@type\s*\{[^}]+\}.+$"#).unwrap();
-                if !re.is_match(trimmed) {
+                if trimmed.contains("{Object}")
+                    || trimmed.contains("{any}")
+                    || trimmed.contains("{*}")
+                    || trimmed.contains("{Array}")
+                {
                     errors.push(format!(
-                        "sor: {}: A @type jsdoc nem felel meg a `@type {{tipus}} leiras` formatumnak",
-                        line_number + 1
+                        "sor: {}:  Nem megengedett tipus a jsdocban (any, Object, *)",
+                        start_line + relative_line_number
                     ));
+                }
+
+                if trimmed.contains("@typedef") {
+                    //todo get from config file
+                    let re = regex::Regex::new(
+                        r#"^(?:/\*)?\*\s*@typedef\s*\{\{[^}]+\}\}\s*[^\s\*/]+\s*(?:\s?\*/)?$"#,
+                    )
+                    .unwrap();
+                    if !re.is_match(trimmed) {
+                        errors.push(format!(
+                        "sor: {}: A @typedef jsdoc nem felel meg a `@typedef {{tipus}} Típusnév` formatumnak",
+                        start_line + relative_line_number
+                    ));
+                    }
+                    continue;
+                }
+
+                if trimmed.contains("@type") {
+                    //todo get from config file
+                    let re = regex::Regex::new(
+                        r#"^(?:/\*)?\*\s*@type\s*\{[^}]+\}\s*[^\s\*/]+.*(?:\s?\*/)?$"#,
+                    )
+                    .unwrap();
+                    if !re.is_match(trimmed) {
+                        errors.push(format!(
+                        "sor: {}: A @type jsdoc nem felel meg a `@type {{tipus}} leiras` formatumnak",
+                        start_line + relative_line_number
+                    ));
+                    }
+                    continue;
                 }
             }
         }
@@ -43,7 +60,7 @@ impl Handler for JsDocChecker {
         if errors.is_empty() {
             HandlerResult::Ok
         } else {
-            HandlerResult::SoftErrors(errors)
+            HandlerResult::Error(errors)
         }
     }
     fn success_message(&self) -> String {

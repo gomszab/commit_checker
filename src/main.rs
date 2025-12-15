@@ -1,39 +1,109 @@
 mod api;
 mod rules;
 
-use std::process::exit;
+use std::process::{Command, exit};
 use std::rc::Rc;
 
 use colored::Colorize;
+use oxc::allocator::Allocator;
 
-use crate::api::Context;
+use crate::api::FileContext;
 use crate::rules::{
-    CommentChecker, FileContentRead, IndexJsChecker, JsDocChecker, JsDocCounter, StageHandler,
-    VarKeywordChecker, VariableNameChecker,
+    CommentChecker, FunctionNameChecker, JsDocChecker, VarKeywordChecker, VariableJsDocChecker,
+    VariableNameChecker,
 };
 
 fn main() {
-    let mut context = Context::new();
-    context.register_handler(Rc::new(StageHandler));
-    context.register_handler(Rc::new(IndexJsChecker));
-    context.register_handler(Rc::new(FileContentRead));
-    context.register_handler(Rc::new(CommentChecker));
-    context.register_handler(Rc::new(JsDocCounter));
-    context.register_handler(Rc::new(JsDocChecker));
-    context.register_handler(Rc::new(VarKeywordChecker));
-    context.register_handler(Rc::new(VariableNameChecker));
-    let result = context.run();
-    match result {
-        Ok(errored) => {
-            if errored {
-                exit(1);
-            }
-            let message = format!("{}", "✔ Minden teszt lefutott sikeresen (:");
-            println!("{}", message.green());
-        }
+    let files = match get_staged_files() {
+        Ok(files) => files,
         Err(message) => {
             eprintln!("{}", message.red());
             exit(1);
         }
     };
+
+    // Needed for oxc.
+    let mut allocator = Allocator::new();
+
+    for file_name in files {
+        let content = match std::fs::read_to_string(&file_name) {
+            Ok(content) => content,
+            Err(_) => {
+                let message = format!(
+                    "nem sikerült a {file_name} fájl olvasása\nelképzelhető hogy stagelve van egy fájl, amit kitöröltél; nézd meg a git status-t, és ha zölddel ott van egy fájl, ami törölve van, futtasd a git rm --cached {file_name} parancsot)"
+                );
+                eprintln!("{}", message.red());
+                exit(1);
+            }
+        };
+
+        let mut context = match FileContext::new(file_name.clone(), &content, &allocator) {
+            Ok(context) => context,
+            Err(message) => {
+                eprintln!("{}", message.red());
+                exit(1);
+            }
+        };
+
+        // context.register_handler(Rc::new(CommentChecker));
+        context.register_handler(Rc::new(VariableJsDocChecker));
+        // context.register_handler(Rc::new(JsDocChecker));
+        // context.register_handler(Rc::new(VarKeywordChecker));
+        // context.register_handler(Rc::new(VariableNameChecker));
+        // context.register_handler(Rc::new(FunctionNameChecker));
+
+        let result = context.run();
+        allocator.reset();
+
+        match result {
+            Ok(errored) => {
+                if errored {
+                    exit(1);
+                }
+                let message = format!("{file_name}: ✔ Minden teszt lefutott sikeresen (:");
+                println!("{}", message.green());
+            }
+            Err(message) => {
+                eprintln!("{}", message.red());
+                exit(1);
+            }
+        }
+    }
+}
+
+fn get_staged_files() -> Result<Vec<String>, String> {
+    let mut staged_files = Vec::new();
+    let output = Command::new("git")
+        .args(["diff", "--cached", "--name-only"])
+        .output();
+    if let Ok(content) = output {
+        let files = String::from_utf8_lossy(&content.stdout);
+
+        for filename in files.lines() {
+            staged_files.push(filename.to_string());
+            let diff_output = Command::new("git")
+                .args(["diff", "--name-only", filename])
+                .output();
+            match diff_output {
+                Ok(diff_content) => {
+                    if !diff_content.stdout.is_empty() {
+                        return Err(format!(
+                            "nem futtattad a git add parancsot miutan modositottad a kovetkezo fajlt: {filename}",
+                        ));
+                    }
+                }
+                Err(_) => {
+                    return Err("nem sikerult a modositott fajlok lekerese".to_string());
+                }
+            }
+        }
+    } else {
+        return Err("nem sikerult a git staged fajlok lekerese".to_string());
+    }
+
+    if staged_files.iter().any(|f| f.ends_with(".js")) {
+        Ok(staged_files)
+    } else {
+        Err("Nincs .js fájl hozzáadva a commithoz".to_string())
+    }
 }
