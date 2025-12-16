@@ -17,7 +17,7 @@ impl Handler for JsDocTypeChecker {
                 };
 
                 let ty = type_part.parsed();
-                let Some(found_forbidden) = FORBIDDEN_TYPES.iter().find(|s| **s == ty) else {
+                let Some(found_forbidden) = FORBIDDEN_TYPES.iter().find(|s| ty.contains(*s)) else {
                     continue;
                 };
 
