@@ -14,8 +14,6 @@ impl Handler for VariableJsDocChecker {
         let semantic = context.semantic.get().unwrap();
         let nodes = semantic.nodes();
 
-        // Needed, because the first declaration's jsdoc is attached to the VariableDeclaration,
-        // not the VariableDeclarator, so it would erroneously say that it does not have a jsdoc.
         for (decl, jsdoc) in get_all_var_decl_jsdocs(nodes, semantic.jsdoc()) {
             let decl_start = decl.span.start;
             let Some(jsdoc) = jsdoc else {
@@ -116,7 +114,8 @@ impl Handler for VariableJsDocChecker {
     }
 }
 
-/// Returns all variable declarations along with their jsdocs.
+/// Returns all variable declarations along with their jsdocs, except those initialized in for
+/// loops.
 fn get_all_var_decl_jsdocs<'a>(
     nodes: &'a AstNodes,
     jsdoc_finder: &'a JSDocFinder<'a>,
@@ -126,6 +125,13 @@ fn get_all_var_decl_jsdocs<'a>(
         // Needed, because the first VariableDeclarator has its jsdoc attached to its
         // VariableDeclaration, not the VariableDeclarator.
         if let AstKind::VariableDeclaration(decl) = node.kind() {
+            // We do not need jsdocs for for loop variables.
+            if matches!(
+                nodes.parent_kind(node.id()),
+                AstKind::ForStatement(_) | AstKind::ForOfStatement(_) | AstKind::ForInStatement(_)
+            ) {
+                continue;
+            }
             declarations.push((
                 &decl.declarations[0],
                 jsdoc_finder.get_one_by_node(nodes, node),
@@ -135,6 +141,14 @@ fn get_all_var_decl_jsdocs<'a>(
         // ^^ Filter out declarations
         // that we already processed.
         {
+            // We do not need jsdocs for for loop variables. The for loop will be a parent of the
+            // parent of this node.
+            if matches!(
+                nodes.parent_kind(nodes.parent_id(node.id())),
+                AstKind::ForStatement(_) | AstKind::ForOfStatement(_) | AstKind::ForInStatement(_)
+            ) {
+                continue;
+            }
             declarations.push((&decl, jsdoc_finder.get_one_by_node(nodes, node)));
         }
     }

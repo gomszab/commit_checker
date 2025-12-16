@@ -1,4 +1,5 @@
 mod comment_checker;
+mod function_jsdoc_checker;
 mod function_name_checker;
 mod jsdoc_type_checker;
 mod typedef_jsdoc_checker;
@@ -7,6 +8,7 @@ mod variable_jsdoc_checker;
 mod variable_name_checker;
 
 pub use comment_checker::CommentChecker;
+pub use function_jsdoc_checker::FunctionJsDocChecker;
 pub use function_name_checker::FunctionNameChecker;
 pub use jsdoc_type_checker::JsDocTypeChecker;
 pub use typedef_jsdoc_checker::TypedefJsDocChecker;
