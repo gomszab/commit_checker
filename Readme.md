@@ -20,7 +20,8 @@ git commit -m "message"
 - functions must have jsdocs attached to them with the correct "@parameter"s and a @return
 
 # Future rules
-- every variable should be used
-- every defined function should be used
 - class definition checker
+- every defined function should be used
+
+
 

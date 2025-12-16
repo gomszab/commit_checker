@@ -20,7 +20,7 @@ impl Handler for FunctionNameChecker {
 
                 if name.len() < 5 {
                     errors.push(format!(
-                            "sor: {}: A függvényneveknek legalább 5 karakter hosszúnak kell lenniük.\n{}\n{}",
+                            "sor: {}: A függvényneveknek legalább 5 karakter hosszúnak kell lenniük\n{}\n{}",
                             context.get_line(start),
                             context.lines[context.get_line(start) - 1],
                             format!("{}{}", " ".repeat(context.get_column(start) - 1), "^".repeat(name.len()))
@@ -29,7 +29,7 @@ impl Handler for FunctionNameChecker {
 
                 if contains_number_or_hungarian_letter(name.as_str()) {
                     errors.push(format!(
-                            "sor: {}: A függvénynév számot vagy ékezetes karaktert tartalmaz, ami rontja az olvashatóságot.\n{}\n{}",
+                            "sor: {}: A függvénynév számot vagy ékezetes karaktert tartalmaz, ami rontja az olvashatóságot\n{}\n{}",
                             context.get_line(decl.span.start),
                             context.lines[context.get_line(start) - 1],
                             format!("{}{}", " ".repeat(context.get_column(start) - 1), "^".repeat(name.len()))
