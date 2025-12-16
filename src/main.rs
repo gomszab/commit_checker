@@ -28,6 +28,11 @@ fn main() {
 
     let mut file_errored = false;
     for file_name in files {
+        // We do not check files other than .js files.
+        if !file_name.ends_with(".js") {
+            continue;
+        }
+
         let content = match std::fs::read_to_string(&file_name) {
             Ok(content) => content,
             Err(_) => {
@@ -38,9 +43,7 @@ fn main() {
                 exit(1);
             }
         };
-        if file_name.contains(".html"){
-            continue;
-        }
+
         let mut context = match FileContext::new(file_name.clone(), &content, &allocator) {
             Ok(context) => context,
             Err(message) => {
