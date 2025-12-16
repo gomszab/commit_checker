@@ -38,7 +38,9 @@ fn main() {
                 exit(1);
             }
         };
-
+        if file_name.contains(".html"){
+            continue;
+        }
         let mut context = match FileContext::new(file_name.clone(), &content, &allocator) {
             Ok(context) => context,
             Err(message) => {
