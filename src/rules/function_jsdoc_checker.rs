@@ -1,4 +1,7 @@
-use oxc::ast::{AstKind, ast::Function};
+use oxc::ast::{
+    AstKind,
+    ast::{Function, FunctionType},
+};
 use oxc_semantic::{AstNodes, JSDoc, JSDocFinder, JSDocTag};
 
 use crate::api::{Handler, HandlerResult};
@@ -69,48 +72,9 @@ impl Handler for FunctionJsDocChecker {
                 .iter_bindings()
                 .filter_map(|ident| ident.get_identifier_name());
             for tag in param_tags {
-                let (type_part, name_part) = tag.type_comment();
+                let (type_part, name_part, comment_part) = tag.type_name_comment();
 
-                if let None = type_part
-                    && name_part.parsed().len() == 0
-                {
-                    errors.push(format!(
-                        "sor: {}: A @param-nak nincs se típus, se név megadva\n{}\n{}",
-                        context.get_line(tag.span.start),
-                        context.lines[context.get_line(jsdoc.span.start) - 1
-                            ..=context.get_line(jsdoc.span.end) - 1]
-                            .to_vec()
-                            .join("\n"),
-                        "^".repeat(context.lines[context.get_line(jsdoc.span.end - 2)].len())
-                    ));
-                    continue;
-                }
-
-                if name_part.parsed().len() == 0 {
-                    errors.push(format!(
-                        "sor: {}: A @param-nak nincs név megadva\n{}\n{}",
-                        context.get_line(tag.span.start),
-                        context.lines[context.get_line(jsdoc.span.start) - 1
-                            ..=context.get_line(jsdoc.span.end) - 1]
-                            .to_vec()
-                            .join("\n"),
-                        "^".repeat(context.lines[context.get_line(jsdoc.span.end - 2)].len())
-                    ));
-                }
-
-                if !params.any(|param| param == name_part.parsed()) {
-                    errors.push(format!(
-                        "sor: {}: A JSDoc olyan paramétert tartalmaz, ami nincs a függvény szignatúrájában\n{}\n{}",
-                        context.get_line(tag.span.start),
-                        context.lines[context.get_line(jsdoc.span.start) - 1
-                            ..=context.get_line(jsdoc.span.end) - 1]
-                            .to_vec()
-                            .join("\n"),
-                        "^".repeat(context.lines[context.get_line(jsdoc.span.end - 2)].len())
-                    ));
-                }
-
-                let Some(type_part) = type_part else {
+                if let None = type_part {
                     errors.push(format!(
                         "sor: {}: A @param-nak nincs típus megadva\n{}\n{}",
                         context.get_line(tag.span.start),
@@ -123,9 +87,37 @@ impl Handler for FunctionJsDocChecker {
                     continue;
                 };
 
-                if type_part.parsed().len() == 0 {
+                if name_part.is_none()
+                    || (name_part.is_some() && name_part.unwrap().parsed() == "*")
+                {
                     errors.push(format!(
-                        "sor: {}: A @param-nak üres típus van megadva\n{}\n{}",
+                        "sor: {}: A @param-nak nincs név megadva\n{}\n{}",
+                        context.get_line(tag.span.start),
+                        context.lines[context.get_line(jsdoc.span.start) - 1
+                            ..=context.get_line(jsdoc.span.end) - 1]
+                            .to_vec()
+                            .join("\n"),
+                        "^".repeat(context.lines[context.get_line(jsdoc.span.end - 2)].len())
+                    ));
+                } else {
+                    // If there is no name, then we skip checking if it is in the parameter list.
+                    // We can unwrap because we already checked if it is none.
+                    if !params.any(|param| param == name_part.unwrap().parsed()) {
+                        errors.push(format!(
+                        "sor: {}: A JSDoc olyan paramétert tartalmaz, ami nincs a függvény szignatúrájában\n{}\n{}",
+                        context.get_line(tag.span.start),
+                        context.lines[context.get_line(jsdoc.span.start) - 1
+                            ..=context.get_line(jsdoc.span.end) - 1]
+                            .to_vec()
+                            .join("\n"),
+                        "^".repeat(context.lines[context.get_line(jsdoc.span.end - 2)].len())
+                    ));
+                    }
+                }
+
+                if comment_part.parsed().len() == 0 {
+                    errors.push(format!(
+                        "sor: {}: A @param-nak nincs leírás megadva\n{}\n{}",
                         context.get_line(tag.span.start),
                         context.lines[context.get_line(jsdoc.span.start) - 1
                             ..=context.get_line(jsdoc.span.end) - 1]
@@ -154,12 +146,10 @@ impl Handler for FunctionJsDocChecker {
                 continue;
             };
 
-            let (type_part, desc_part) = returns_tag.type_comment();
-            if let None = type_part
-                && desc_part.parsed().len() == 0
-            {
+            let type_part = returns_tag.r#type();
+            if let None = type_part {
                 errors.push(format!(
-                    "sor: {}: A @param-nak nincs se típus, se név megadva\n{}\n{}",
+                    "sor: {}: A @returns-nek nincs típus megadva\n{}\n{}",
                     context.get_line(returns_tag.span.start),
                     context.lines[context.get_line(jsdoc.span.start) - 1
                         ..=context.get_line(jsdoc.span.end) - 1]
@@ -167,30 +157,6 @@ impl Handler for FunctionJsDocChecker {
                         .join("\n"),
                     "^".repeat(context.lines[context.get_line(jsdoc.span.end - 2)].len())
                 ));
-                continue;
-            } else if desc_part.parsed().len() == 0 {
-                errors.push(format!(
-                    "sor: {}: A @param-nak nincs név megadva\n{}\n{}",
-                    context.get_line(returns_tag.span.start),
-                    context.lines[context.get_line(jsdoc.span.start) - 1
-                        ..=context.get_line(jsdoc.span.end) - 1]
-                        .to_vec()
-                        .join("\n"),
-                    "^".repeat(context.lines[context.get_line(jsdoc.span.end - 2)].len())
-                ));
-
-                continue;
-            } else if let None = type_part {
-                errors.push(format!(
-                    "sor: {}: A @param-nek nincs típus megadva\n{}\n{}",
-                    context.get_line(returns_tag.span.start),
-                    context.lines[context.get_line(jsdoc.span.start) - 1
-                        ..=context.get_line(jsdoc.span.end) - 1]
-                        .to_vec()
-                        .join("\n"),
-                    "^".repeat(context.lines[context.get_line(jsdoc.span.end - 2)].len())
-                ));
-                continue;
             }
         }
 
@@ -216,7 +182,9 @@ fn get_all_func_decl_jsdocs<'a>(
 ) -> Vec<(&'a Function<'a>, Option<JSDoc<'a>>)> {
     let mut declarations = Vec::new();
     for node in nodes {
-        if let AstKind::Function(decl) = node.kind() {
+        if let AstKind::Function(decl) = node.kind()
+            && let FunctionType::FunctionDeclaration = decl.r#type
+        {
             declarations.push((decl, jsdoc_finder.get_one_by_node(nodes, node)));
         }
     }
