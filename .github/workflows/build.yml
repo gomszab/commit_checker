@@ -1,0 +1,110 @@
+name: 'publish'
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: 'Release tag name (e.g., v1.0.0)'
+        required: true
+        default: 'v$(date +%Y%m%d%H%M%S)'
+        type: string
+# This workflow will trigger on each push to the `release` branch to create or update a GitHub release, build your app, and upload the artifacts to the release.
+
+jobs:
+  build:
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: 'macos-latest' # for Arm based macs (M1 and above).
+            name: 'aarch64'
+            args: '--target aarch64-apple-darwin'
+          - platform: 'macos-latest' # for Intel based macs.
+            name: 'x86_64'
+            args: '--target x86_64-apple-darwin'
+          - platform: 'ubuntu-22.04' # for Tauri v1 you could replace this with ubuntu-20.04.
+            name: 'linux'
+            args: ''
+          - platform: 'windows-latest'
+            name: 'win'
+            args: ''
+
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v4
+
+
+      - name: install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          # Those targets are only used on macos runners so it's in an `if` to slightly speed up windows and linux builds.
+          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+
+      - name: Build
+        id: build
+        shell: bash
+        run: |
+          binary_extension=""
+          if [[ "${RUNNER_OS}" == "Windows" ]]; then
+            binary_extension=".exe"
+            binary_path="commit_checker_win${binary_extension}"
+          elif [[ "${RUNNER_OS}" == "macOS" ]]; then
+            if [[ "${{matrix.name}}" == "x86_64" ]]; then
+              binary_path="commit_checker-x86_64"
+            else
+              binary_path="commit_checker-aarch64"
+            fi
+          elif [[ "${RUNNER_OS}" == "Linux" ]]; then
+            binary_path="commit_checker_linux"
+          else
+            echo "error: unknown OS: ${RUNNER_OS}"
+            exit 1
+          fi
+          echo "::set-output name=binary_path::${binary_path}"
+          cargo build --all --release
+          cp "target/release/commit_checker${binary_extension}" "${binary_path}"
+          strip "${binary_path}"
+      
+
+      - name: Publish Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.name }}
+          path: ${{ steps.build.outputs.binary_path }}
+
+     
+  release:
+    needs: build
+    permissions:
+        contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          # download all binaries uploaded by matrix jobs
+          path: ./binaries
+
+      - name: Create tag from released commit
+        id: create_tag
+        shell: bash
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          TAG="${{ github.event.inputs.tag_name}}"
+          echo "TAG=$TAG" >> $GITHUB_ENV
+          git tag -a "$TAG" -m "Release tag created by GitHub Action"
+          git push origin "$TAG"
+          echo "::set-output name=tag::${TAG}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Release Tags
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{steps.create_tag.outputs.tag}}
+          files: ./binaries/**/*
+          name: release from ${{steps.create_tag.outputs.tag}}
