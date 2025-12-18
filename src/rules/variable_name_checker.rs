@@ -1,4 +1,7 @@
-use oxc::ast::ast::{BindingPatternKind, Statement};
+use oxc::ast::{
+    AstKind,
+    ast::{BindingPatternKind, Statement},
+};
 
 use crate::api::{Handler, HandlerResult};
 
@@ -7,12 +10,14 @@ pub struct VariableNameChecker;
 impl Handler for VariableNameChecker {
     fn handle(&self, context: &crate::api::FileContext) -> HandlerResult {
         let mut errors = Vec::new();
-        for declaration in context.program.body.iter() {
-            if let Statement::VariableDeclaration(decl) = declaration {
+        let semantic = context.semantic.get().unwrap();
+        for node in semantic.nodes() {
+            if let AstKind::VariableDeclaration(decl) = node.kind() {
                 // There can be multiple declarations in a single line.
                 for var in &decl.declarations {
                     if let BindingPatternKind::BindingIdentifier(identifier) = &var.id.kind {
                         let name = identifier.name;
+                        println!("{}", name);
                         let start = var.span.start;
 
                         if name.len() < 5 {
