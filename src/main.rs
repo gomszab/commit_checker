@@ -118,9 +118,5 @@ fn get_staged_files() -> Result<Vec<String>, String> {
         return Err("nem sikerult a git staged fajlok lekerese".to_string());
     }
 
-    if staged_files.iter().any(|f| f.ends_with(".js")) {
-        Ok(staged_files)
-    } else {
-        Err("Nincs .js fájl hozzáadva a commithoz".to_string())
-    }
+    Ok(staged_files)
 }
