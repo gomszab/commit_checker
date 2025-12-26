@@ -1,7 +1,4 @@
-use oxc::ast::{
-    AstKind,
-    ast::{BindingPatternKind, Statement},
-};
+use oxc::ast::{AstKind, ast::BindingPatternKind};
 
 use crate::api::{Handler, HandlerResult};
 
@@ -17,7 +14,6 @@ impl Handler for VariableNameChecker {
                 for var in &decl.declarations {
                     if let BindingPatternKind::BindingIdentifier(identifier) = &var.id.kind {
                         let name = identifier.name;
-                        println!("{}", name);
                         let start = var.span.start;
 
                         if name.len() < 5 {
