@@ -5,7 +5,7 @@ use std::process::{Command, exit};
 use std::rc::Rc;
 
 use colored::Colorize;
-use oxc::allocator::Allocator;
+use oxc::allocator::{Allocator, HashMap};
 
 use crate::api::FileContext;
 use crate::api::error_handler::ErrorHandler;
@@ -142,4 +142,3 @@ fn get_staged_files() -> Result<Vec<String>, String> {
 
     Ok(staged_files)
 }
-
