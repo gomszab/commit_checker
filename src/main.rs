@@ -5,7 +5,7 @@ use std::process::{Command, exit};
 use std::rc::Rc;
 
 use colored::Colorize;
-use oxc::allocator::{Allocator, HashMap};
+use oxc::allocator::Allocator;
 
 use crate::api::FileContext;
 use crate::api::error_handler::ErrorHandler;
