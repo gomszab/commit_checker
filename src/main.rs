@@ -1,18 +1,17 @@
 mod api;
 mod rules;
 
-use std::collections::HashMap as HashMapRs;
 use std::process::{Command, exit};
 use std::rc::Rc;
 
 use colored::Colorize;
-use oxc::allocator::{Allocator, HashMap};
+use oxc::allocator::{Allocator};
 
 use crate::api::error_handler::{ErrorHandler};
 use crate::api::FileContext;
 use crate::rules::{
     CommentChecker, FunctionJsDocChecker, FunctionNameChecker, JsDocTypeChecker,
-    TypedefJsDocChecker, UnusedFunctionChecker, UnusedVariableChecker, VarKeywordChecker,
+    TypedefJsDocChecker, UnusedVariableChecker, VarKeywordChecker,
     VariableJsDocChecker, VariableNameChecker,
 };
 
@@ -28,7 +27,7 @@ fn main() {
     // Needed for oxc.
     let mut allocator = Allocator::new();
     let mut file_errored_flag = false;
-    let mut files_errored = HashMapRs::new();
+    let mut files_errored = Vec::new();
 
     // Changed it to borrow, so we won't move the files, we need it to access it later...
     for file_name in files {
@@ -55,7 +54,7 @@ fn main() {
                 exit(1);
             }
         };
-        // test
+
         context.register_handler(Rc::new(CommentChecker));
         context.register_handler(Rc::new(VariableJsDocChecker));
         context.register_handler(Rc::new(TypedefJsDocChecker));
@@ -76,10 +75,10 @@ fn main() {
                 if !errored {
                     let message = format!("{file_name}: ✔ Minden teszt lefutott sikeresen (:");
                     println!("{}", message.green());
-                    files_errored.insert(file_name, false);
+                    files_errored.push((file_name, errored));
                 } else {
                     file_errored_flag = true;
-                    files_errored.insert(file_name, true);
+                    files_errored.push((file_name, errored));
                 }
             }
             Err(message) => {
