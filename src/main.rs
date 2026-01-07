@@ -55,7 +55,7 @@ fn main() {
                 exit(1);
             }
         };
-
+        // test
         context.register_handler(Rc::new(CommentChecker));
         context.register_handler(Rc::new(VariableJsDocChecker));
         context.register_handler(Rc::new(TypedefJsDocChecker));
