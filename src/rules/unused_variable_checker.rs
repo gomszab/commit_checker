@@ -1,5 +1,3 @@
-use oxc_semantic::SymbolFlags;
-
 use crate::api::{Handler, HandlerResult};
 
 pub struct UnusedVariableChecker;

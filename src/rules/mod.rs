@@ -1,7 +1,12 @@
+mod class_checker;
+mod class_name_checker;
 mod comment_checker;
 mod function_jsdoc_checker;
 mod function_name_checker;
 mod jsdoc_type_checker;
+mod property_jsdoc_checker;
+mod property_name_checker;
+mod type_jsdoc_checker;
 mod typedef_jsdoc_checker;
 mod unused_function_checker;
 mod unused_variable_checker;
@@ -9,10 +14,15 @@ mod var_keyword_checker;
 mod variable_jsdoc_checker;
 mod variable_name_checker;
 
+pub use class_checker::ClassChecker;
+pub use class_name_checker::ClassNameChecker;
 pub use comment_checker::CommentChecker;
 pub use function_jsdoc_checker::FunctionJsDocChecker;
 pub use function_name_checker::FunctionNameChecker;
 pub use jsdoc_type_checker::JsDocTypeChecker;
+pub use property_jsdoc_checker::PropertyJsDocChecker;
+pub use property_name_checker::PropertyNameChecker;
+pub use type_jsdoc_checker::TypeJsDocChecker;
 pub use typedef_jsdoc_checker::TypedefJsDocChecker;
 pub use unused_function_checker::UnusedFunctionChecker;
 pub use unused_variable_checker::UnusedVariableChecker;
