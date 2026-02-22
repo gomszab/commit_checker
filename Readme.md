@@ -11,16 +11,16 @@ git commit -m "message"
 
 # Rules:
 - every line should have a comment //
-- every variable declaration should have a @type
+- every variable and property declaration should have a @type
 - var keyword can't be used
 - in case of @type the jsdoc should have type and description
-- the variable names should have at least 5 character
+- the variable, property, function and class names should have at least 5 characters
 - the types Object, Array or * can't be used
 - typedefs must have a type and a name
-- functions must have jsdocs attached to them with the correct "@parameter"s and a @return
+- functions and methods must have jsdocs attached to them with the correct "@parameter"s and a @return
+- classes must contain a constructor
 
 # Future rules
-- class definition checker
 - every defined function should be used
 
 
