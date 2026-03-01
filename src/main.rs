@@ -5,12 +5,13 @@ use std::process::{Command, exit};
 use std::rc::Rc;
 
 use colored::Colorize;
-use oxc::allocator::Allocator;
+use oxc::allocator::{Allocator};
 
+use crate::api::error_handler::{ErrorHandler};
 use crate::api::FileContext;
 use crate::rules::{
     CommentChecker, FunctionJsDocChecker, FunctionNameChecker, JsDocTypeChecker,
-    TypedefJsDocChecker, UnusedFunctionChecker, UnusedVariableChecker, VarKeywordChecker,
+    TypedefJsDocChecker, UnusedVariableChecker, VarKeywordChecker,
     VariableJsDocChecker, VariableNameChecker,
 };
 
@@ -18,15 +19,17 @@ fn main() {
     let files = match get_staged_files() {
         Ok(files) => files,
         Err(message) => {
-            eprintln!("{}", message.red());
+            ErrorHandler::print_error(message);
             exit(1);
         }
     };
 
     // Needed for oxc.
     let mut allocator = Allocator::new();
+    let mut file_errored_flag = false;
+    let mut files_errored = Vec::new();
 
-    let mut file_errored = false;
+    // Changed it to borrow, so we won't move the files, we need it to access it later...
     for file_name in files {
         // We do not check files other than .js files.
         if !file_name.ends_with(".js") {
@@ -39,7 +42,7 @@ fn main() {
                 let message = format!(
                     "nem sikerült a {file_name} fájl olvasása\nelképzelhető hogy stagelve van egy fájl, amit kitöröltél; nézd meg a git status-t, és ha zölddel ott van egy fájl, ami törölve van, futtasd a git rm --cached {file_name} parancsot)"
                 );
-                eprintln!("{}", message.red());
+                ErrorHandler::print_error(message);
                 exit(1);
             }
         };
@@ -47,7 +50,7 @@ fn main() {
         let mut context = match FileContext::new(file_name.clone(), &content, &allocator) {
             Ok(context) => context,
             Err(message) => {
-                eprintln!("{}", message.red());
+                ErrorHandler::print_error(message);
                 exit(1);
             }
         };
@@ -72,18 +75,31 @@ fn main() {
                 if !errored {
                     let message = format!("{file_name}: ✔ Minden teszt lefutott sikeresen (:");
                     println!("{}", message.green());
+                    files_errored.push((file_name, errored));
                 } else {
-                    file_errored = true;
+                    file_errored_flag = true;
+                    files_errored.push((file_name, errored));
                 }
             }
             Err(message) => {
-                eprintln!("{}", message.red());
+                ErrorHandler::print_error(message);
                 exit(1);
             }
         }
     }
 
-    if file_errored {
+    println!();
+    for (file_name, flag) in files_errored {
+        if !flag {
+            let message = format!("{} ✔ Sikeres", file_name);
+            println!("{}", message.green());
+            continue
+        }
+        let message = format!("{} Sikertelen", file_name);
+        ErrorHandler::print_error(message);
+    }
+
+    if file_errored_flag {
         exit(1);
     }
 }

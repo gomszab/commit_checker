@@ -9,6 +9,7 @@ use oxc_semantic::{Semantic, SemanticBuilder};
 use spinoff::{Color, Spinner, spinners};
 
 use crate::api::{Handler, HandlerResult};
+use crate::api::error_handler::{ErrorHandler};
 
 pub struct FileContext<'a> {
     pub file_name: String,
@@ -90,7 +91,7 @@ impl<'a> FileContext<'a> {
                 }
                 HandlerResult::Error(errors) => {
                     errored = true;
-                    print_errors(errors);
+                    ErrorHandler::print_errors(errors);
                 }
             };
         }
@@ -104,11 +105,5 @@ impl<'a> FileContext<'a> {
 
     pub fn get_column(&self, offset: u32) -> usize {
         self.line_positions.from_offset(offset as usize).1 as usize + 1
-    }
-}
-
-fn print_errors(errors: Vec<String>) {
-    for error in errors {
-        eprintln!("{}", error.red());
     }
 }
