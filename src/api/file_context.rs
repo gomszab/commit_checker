@@ -28,7 +28,7 @@ impl<'a> FileContext<'a> {
         file_contents: &'a str,
         allocator: &'a Allocator,
     ) -> Result<Pin<Box<Self>>, String> {
-        let parsed = Parser::new(allocator, file_contents, SourceType::cjs()).parse();
+        let parsed = Parser::new(allocator, file_contents, SourceType::mjs()).parse();
 
         if !parsed.errors.is_empty() {
             return Err(format!("Hiba van a {file_name} fájlban!"));

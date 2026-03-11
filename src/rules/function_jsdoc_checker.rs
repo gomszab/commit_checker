@@ -14,10 +14,8 @@ impl Handler for FunctionJsDocChecker {
         let semantic = context.semantic.get().unwrap();
         let nodes = semantic.nodes();
 
-        // Needed, because the first declaration's jsdoc is attached to the VariableDeclaration,
-        // not the VariableDeclarator, so it would erroneously say that it does not have a jsdoc.
-        for (decl, jsdoc) in get_all_func_decl_jsdocs(nodes, semantic.jsdoc()) {
-            let decl_start = decl.span.start;
+        for (start, decl, jsdoc) in get_all_func_decl_jsdocs(nodes, semantic.jsdoc()) {
+            let decl_start = start;
             let Some(body) = &decl.body else {
                 panic!("Typescriptet nem támogatunk");
             };
@@ -175,17 +173,29 @@ impl Handler for FunctionJsDocChecker {
     }
 }
 
-/// Returns all function declarations along with their jsdocs.
+/// Returns all function declarations along with their jsdocs and their span starts.
+/// We return the start of the span too, because method definitions are different and the
+/// function's span only covers the "()".
 fn get_all_func_decl_jsdocs<'a>(
     nodes: &'a AstNodes,
     jsdoc_finder: &'a JSDocFinder<'a>,
-) -> Vec<(&'a Function<'a>, Option<JSDoc<'a>>)> {
+) -> Vec<(u32, &'a Function<'a>, Option<JSDoc<'a>>)> {
     let mut declarations = Vec::new();
     for node in nodes {
         if let AstKind::Function(decl) = node.kind()
             && let FunctionType::FunctionDeclaration = decl.r#type
         {
-            declarations.push((decl, jsdoc_finder.get_one_by_node(nodes, node)));
+            declarations.push((
+                decl.span.start,
+                decl,
+                jsdoc_finder.get_one_by_node(nodes, node),
+            ));
+        } else if let AstKind::MethodDefinition(def) = node.kind() {
+            declarations.push((
+                def.span.start,
+                &def.value,
+                jsdoc_finder.get_one_by_node(nodes, node),
+            ));
         }
     }
 

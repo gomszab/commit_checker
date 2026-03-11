@@ -31,7 +31,7 @@ impl Handler for VariableJsDocChecker {
             };
 
             let type_tag = jsdoc.tags().iter().find(|tag| tag.kind.parsed() == "type");
-            let Some(tag) = type_tag else {
+            if type_tag.is_none() {
                 errors.push(format!(
                     "sor: {}: A változó JSDoc-jában nincsen @type\n{}\n{}",
                     context.get_line(decl_start),
@@ -47,56 +47,6 @@ impl Handler for VariableJsDocChecker {
                 ));
                 continue;
             };
-
-            let type_comment = tag.type_comment();
-            if let None = type_comment.0
-                && type_comment.1.parsed().len() == 0
-            {
-                errors.push(format!(
-                    "sor: {}: A @type JSDoc-nak nincs se típus, se leírás megadva\n{}\n{}",
-                    context.get_line(tag.span.start),
-                    context.lines
-                        [context.get_line(jsdoc.span.start) - 1..=context.get_line(decl_start) - 1]
-                        .to_vec()
-                        .join("\n"),
-                    format!(
-                        "{}{}",
-                        " ".repeat(context.get_column(decl_start) - 1),
-                        "^".repeat((decl.span.end - decl_start) as usize)
-                    )
-                ));
-                continue;
-            } else if type_comment.1.parsed().len() == 0 {
-                errors.push(format!(
-                    "sor: {}: A @type JSDoc-nak nincs leírás megadva\n{}\n{}",
-                    context.get_line(tag.span.start),
-                    context.lines
-                        [context.get_line(jsdoc.span.start) - 1..=context.get_line(decl_start) - 1]
-                        .to_vec()
-                        .join("\n"),
-                    format!(
-                        "{}{}",
-                        " ".repeat(context.get_column(decl_start) - 1),
-                        "^".repeat((decl.span.end - decl_start) as usize)
-                    )
-                ));
-                continue;
-            } else if let None = type_comment.0 {
-                errors.push(format!(
-                    "sor: {}: A @type JSDoc-nak nincs típus megadva\n{}\n{}",
-                    context.get_line(tag.span.start),
-                    context.lines
-                        [context.get_line(jsdoc.span.start) - 1..=context.get_line(decl_start) - 1]
-                        .to_vec()
-                        .join("\n"),
-                    format!(
-                        "{}{}",
-                        " ".repeat(context.get_column(decl_start) - 1),
-                        "^".repeat((decl.span.end - decl_start) as usize)
-                    )
-                ));
-                continue;
-            }
         }
 
         if errors.is_empty() {

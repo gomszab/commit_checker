@@ -5,14 +5,15 @@ use std::process::{Command, exit};
 use std::rc::Rc;
 
 use colored::Colorize;
-use oxc::allocator::{Allocator};
+use oxc::allocator::Allocator;
 
-use crate::api::error_handler::{ErrorHandler};
 use crate::api::FileContext;
+use crate::api::error_handler::ErrorHandler;
 use crate::rules::{
-    CommentChecker, FunctionJsDocChecker, FunctionNameChecker, JsDocTypeChecker,
-    TypedefJsDocChecker, UnusedVariableChecker, VarKeywordChecker,
-    VariableJsDocChecker, VariableNameChecker,
+    ClassChecker, ClassNameChecker, CommentChecker, FunctionJsDocChecker, FunctionNameChecker,
+    JsDocTypeChecker, PropertyJsDocChecker, PropertyNameChecker, TypeJsDocChecker,
+    TypedefJsDocChecker, UnusedVariableChecker, VarKeywordChecker, VariableJsDocChecker,
+    VariableNameChecker,
 };
 
 fn main() {
@@ -58,6 +59,7 @@ fn main() {
         context.register_handler(Rc::new(CommentChecker));
         context.register_handler(Rc::new(VariableJsDocChecker));
         context.register_handler(Rc::new(TypedefJsDocChecker));
+        context.register_handler(Rc::new(TypeJsDocChecker));
         context.register_handler(Rc::new(JsDocTypeChecker));
         context.register_handler(Rc::new(VarKeywordChecker));
         context.register_handler(Rc::new(VariableNameChecker));
@@ -66,6 +68,10 @@ fn main() {
         context.register_handler(Rc::new(UnusedVariableChecker));
         // TODO Handle multiple files in case of unused functionchecker
         // context.register_handler(Rc::new(UnusedFunctionChecker));
+        context.register_handler(Rc::new(ClassNameChecker));
+        context.register_handler(Rc::new(ClassChecker));
+        context.register_handler(Rc::new(PropertyJsDocChecker));
+        context.register_handler(Rc::new(PropertyNameChecker));
 
         let result = context.run();
         allocator.reset();
@@ -93,7 +99,7 @@ fn main() {
         if !flag {
             let message = format!("{} ✔ Sikeres", file_name);
             println!("{}", message.green());
-            continue
+            continue;
         }
         let message = format!("{} Sikertelen", file_name);
         ErrorHandler::print_error(message);
