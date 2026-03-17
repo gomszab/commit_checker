@@ -1,0 +1,103 @@
+{
+  "_version": 2,
+  "C01": {
+    "hu": "sor: %{line} | Az osztálynak nincs neve! %{class}",
+    "en": "line: %{line} | The class's name is missing! %{class}"
+  },
+  "C02": {
+    "hu": "sor: %{line} | A class neveknek legalább 5 karakter hosszúnak kell lenniük! %{class}",
+    "en": "line: %{line} | Classes' name must be at least 5 characters long! %{class}"
+  },
+  "C03": {
+    "hu": "sor: %{line} | A class név számot vagy ékezetes karaktert tartalmaz, ami rontja az olvashatóságot! %{class}",
+    "en": "line: %{line} | The class name is containing a numeric or accented characters, which are worsens the readability! %{class}"
+  },
+  "C04": {
+    "hu": "sor: %{line} | Az osztálynak nincs konstruktora! %{class}",
+    "en": "line: %{line} | The class's constructor is not defined! %{class}"
+  },
+  "C05": {
+    "hu": "sor: %{line} | Az osztály leszármazik egy másik osztályból, de nem hívod meg a super()-t a konstruktorban! %{class}",
+    "en": "line: %{line} | The class is inherited from another class, but super() is never called in the constructor! %{class}"
+  },
+  "COM01": {
+    "hu": "sor: %{line} | Nincs komment a sor végén! %{comment}",
+    "en": "line: %{line} | Missing comment at the end of the line! %{comment}"
+  },
+  "FD01": {
+    "hu": "sor: %{line} | A függvénynek nincs JSDoc-ja! %{function}",
+    "en": "line: %{line} | The function is missing a JSDoc! %{function}"
+  },
+  "FD02": {
+    "hu": "sor: %{line} | A függvénynek nincs leírása a JSDoc-ban! %{jsdoc}",
+    "en": "line: %{line} | The function is missing a description in it's JSDoc! %{jsdoc}"
+  },
+  "FD03": {
+    "hu": "sor: %{line} | A függvény paramétereinek száma nem egyezik meg a JSDoc-ban lévő paraméterek számával! %{function}",
+    "en": "line: %{line} | The number of parameters for the function and JSDoc is differing! %{function}"
+  },
+  "FD04": {
+    "hu": "sor: %{line} | A @param-nak nincs típus megadva! %{jsdoc}",
+    "en": "line: %{line} | The number of parameters for the function and JSDoc is differing! %{jsdoc}"
+  },
+  "FD05": {
+    "hu": "sor: %{line} | A @param-nak nincs típus megadva! %{jsdoc}",
+    "en": "line: %{line} | The @param is missing its type! %{jsdoc}"
+  },
+  "FD06": {
+    "hu": "sor: %{line} | A @param-nak nincs név megadva! %{jsdoc}",
+    "en": "line: %{line} | The @param is missing its name! %{jsdoc}"
+  },
+  "FD07": {
+    "hu": "sor: %{line} | A JSDoc olyan paramétert tartalmaz, ami nincs a függvény szignatúrájában! %{jsdoc}",
+    "en": "line: %{line} | The JSDoc is containing a parameter that is not part of the function signature! %{jsdoc}"
+  },
+  "FD08": {
+    "hu": "sor: %{line} | A @param-nak nincs leírás megadva! %{jsdoc}",
+    "en": "line: %{line} | The @param is missing its description! %{jsdoc}"
+  },
+  "FD09": {
+    "hu": "sor: %{line} | A függvény JSDoc-jában nincsen @returns! %{function}",
+    "en": "line: %{line} | The function's JSDoc is missing @retruns! %{function}"
+  },
+  "FD10": {
+    "hu": "sor: %{line} | A @returns-nek nincs típus megadva! %{jsdoc}",
+    "en": "line: %{line} | The @returns is missing its type! %{jsdoc}"
+  },
+  "F01": {
+    "hu": "sor: %{line} | A függvényneveknek legalább 5 karakter hosszúnak kell lenniük! %{function}",
+    "en": "line: %{line} | Functions' name must be at least 5 characters long! %{function}"
+  },
+  "F02": {
+    "hu": "sor: %{line} | A függvénynév számot vagy ékezetes karaktert tartalmaz, ami rontja az olvashatóságot! %{function}",
+    "en": "line: %{line} | The function name is containing a numeric or accented characters, which are worsens the readability! %{function}"
+  },
+  "F03": {
+    "hu": "sor: %{line} | Felhasználatlan függvény! %{function}",
+    "en": "line: %{line} | Unused function! %{function}"
+  },
+  "D01": {
+    "hu": "sor: %{line} | A(z) %{forbidden_type} használata típusként nem megengedett! %{jsdoc}",
+    "en": "line: %{line} | %{forbidden_type} cannot be used as type! %{jsdoc}"
+  },
+  "D02": {
+    "hu": "sor: %{line} | A(z) %{forbidden_type} használata típusként nem megengedett! %{jsdoc}",
+    "en": "line: %{line} | %{forbidden_type} cannot be used as type! %{jsdoc}"
+  },
+  "P01": {
+    "hu": "sor: %{line} | A property neveknek legalább 5 karakter hosszúnak kell lenniük! %{property}",
+    "en": "line: %{line} | Properties' name must be at least 5 characters long! %{property}"
+  },
+  "P02": {
+    "hu": "sor: %{line} | A property név számot vagy ékezetes karaktert tartalmaz, ami rontja az olvashatóságot! %{property}",
+    "en": "line: %{line} | The property name is containing a numeric or accented characters, which are worsens the readability! %{property}"
+  },
+  "PD01": {
+    "hu": "sor: %{line} | A property-nek nincs JSDoc-ja! %{property}",
+    "en": "line: %{line} | The property is missing its JSDoc! %{property}"
+  },
+  "PD02": {
+    "hu": "sor: %{line} | A property JSDoc-jában nincsen @type! %{jsdoc}",
+    "en": "line: %{line} | The property is missing its JSDoc! %{jsdoc}"
+  }
+}
