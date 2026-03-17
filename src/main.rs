@@ -1,11 +1,12 @@
 mod api;
 mod rules;
-
+use spinoff::{Color, Spinner, spinners};
 use std::process::{Command, exit};
 use std::rc::Rc;
 
 use colored::Colorize;
 use oxc::allocator::Allocator;
+use sys_language::detect_system_language;
 
 use crate::api::FileContext;
 use crate::api::error_handler::ErrorHandler;
@@ -16,7 +17,17 @@ use crate::rules::{
     VariableNameChecker,
 };
 
+// Setting up i18n!
+// This is has to be in main, although it's never used here
+rust_i18n::i18n!("locale", fallback = "en");
+
 fn main() {
+    // Reading and setting language
+    let lang = detect_system_language();
+    println!("{}", lang);
+    rust_i18n::set_locale(lang.as_str());
+
+    // Getting staged files
     let files = match get_staged_files() {
         Ok(files) => files,
         Err(message) => {
@@ -25,12 +36,14 @@ fn main() {
         }
     };
 
+    // ErrorHandler
+    let mut error_handler = ErrorHandler::new();
+
     // Needed for oxc.
     let mut allocator = Allocator::new();
-    let mut file_errored_flag = false;
-    let mut files_errored = Vec::new();
 
-    // Changed it to borrow, so we won't move the files, we need it to access it later...
+    let message = format!("Running tests...\n");
+    let mut spinner = Spinner::new(spinners::Circle, message, Color::Blue);
     for file_name in files {
         // We do not check files other than .js files.
         if !file_name.ends_with(".js") {
@@ -62,6 +75,7 @@ fn main() {
         context.register_handler(Rc::new(TypeJsDocChecker));
         context.register_handler(Rc::new(JsDocTypeChecker));
         context.register_handler(Rc::new(VarKeywordChecker));
+
         context.register_handler(Rc::new(VariableNameChecker));
         context.register_handler(Rc::new(FunctionNameChecker));
         context.register_handler(Rc::new(FunctionJsDocChecker));
@@ -76,36 +90,15 @@ fn main() {
         let result = context.run();
         allocator.reset();
 
-        match result {
-            Ok(errored) => {
-                if !errored {
-                    let message = format!("{file_name}: ✔ Minden teszt lefutott sikeresen (:");
-                    println!("{}", message.green());
-                    files_errored.push((file_name, errored));
-                } else {
-                    file_errored_flag = true;
-                    files_errored.push((file_name, errored));
-                }
-            }
-            Err(message) => {
-                ErrorHandler::print_error(message);
-                exit(1);
-            }
-        }
+        error_handler.add_result(result);
     }
+    spinner.stop();
 
+    error_handler.show_feedback();
     println!();
-    for (file_name, flag) in files_errored {
-        if !flag {
-            let message = format!("{} ✔ Sikeres", file_name);
-            println!("{}", message.green());
-            continue;
-        }
-        let message = format!("{} Sikertelen", file_name);
-        ErrorHandler::print_error(message);
-    }
+    error_handler.summa();
 
-    if file_errored_flag {
+    if error_handler.is_errored() {
         exit(1);
     }
 }

@@ -1,0 +1,43 @@
+use crate::api::FileContext;
+use colored::Colorize;
+
+pub struct ErrorHandler {
+    errored_files: Vec<FileFeedback>,
+    ok_files: Vec<FileFeedback>,
+}
+impl ErrorHandler {
+    pub fn new() -> Self {
+        let err_handler = ErrorHandler {
+            errored_files: Vec::new(),
+            ok_files: Vec::new(),
+        };
+        err_handler
+    }
+
+    pub fn show_errors(&self) {}
+
+    pub fn summa(&self) {}
+
+    fn gather_handler_results(&self) {}
+
+    pub fn print_errors(errors: Vec<String>) {
+        for error in errors {
+            eprintln!("{}", error.red());
+        }
+    }
+
+    pub fn print_error(message: String) {
+        eprintln!("{}", message.red());
+    }
+}
+
+pub struct FileFeedback {
+    file_name: String,
+    errored_tasks: Vec<TaskFeedback>,
+}
+
+pub struct TaskFeedback {
+    task_name: String,
+    error_messages: Vec<String>,
+}
+

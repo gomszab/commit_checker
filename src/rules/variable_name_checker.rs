@@ -1,4 +1,5 @@
 use oxc::ast::{AstKind, ast::BindingPatternKind};
+use rust_i18n::t;
 
 use crate::api::{Handler, HandlerResult};
 
@@ -17,12 +18,14 @@ impl Handler for VariableNameChecker {
                         let start = var.span.start;
 
                         if name.len() < 5 {
-                            errors.push(format!(
-                            "sor: {}: A változóneveknek legalább 5 karakter hosszúnak kell lenniük\n{}\n{}",
-                            context.get_line(start),
-                            context.lines[context.get_line(start) - 1],
-                            format!("{}{}", " ".repeat(context.get_column(start) - 1), "^".repeat(name.len()))
-                        ));
+                            errors.push(
+                                t!(
+                                    "V03",
+                                    line = context.get_line(start),
+                                    variable = context.lines[context.get_line(start) - 1]
+                                )
+                                .to_string(),
+                            );
                         }
 
                         if contains_number_or_hungarian_letter(name.as_str()) {

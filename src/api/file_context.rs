@@ -6,10 +6,8 @@ use line_numbers::LinePositions;
 use oxc::{allocator::Allocator, ast::ast::Program, parser::Parser, span::SourceType};
 use oxc_semantic::{Semantic, SemanticBuilder};
 
-use spinoff::{Color, Spinner, spinners};
-
+use crate::api::error_handler::{ErrorHandler, FileFeedback, TaskFeedback};
 use crate::api::{Handler, HandlerResult};
-use crate::api::error_handler::{ErrorHandler};
 
 pub struct FileContext<'a> {
     pub file_name: String,
@@ -73,30 +71,27 @@ impl<'a> FileContext<'a> {
         handlers.push(handler);
     }
 
-    pub fn run(&'a self) -> Result<bool, String> {
-        let mut errored = false;
+    pub fn run(&'a self) -> Result<FileFeedback, String> {
+        let mut file_feedback = FileFeedback::new(self.file_name.clone());
+
         for i in 0..self.handlers.len() {
             let handler = self.handlers[i].clone();
-            let message = format!("{}: {}", self.file_name, handler.title());
-            let mut spinner = Spinner::new(spinners::Circle, message, Color::Blue);
+            let mut task_feedback = TaskFeedback::new(handler.title());
 
             // SAFETY: Handlers only get an immutable reference to self, so they can't invalidate
             // any pointers.
             let result = handler.handle(self);
-            spinner.stop();
-
             match result {
-                HandlerResult::Ok => {
-                    println!("{}: {}", self.file_name, handler.success_message().green())
-                }
+                HandlerResult::Ok => task_feedback.ok_messages.push(handler.success_message()),
                 HandlerResult::Error(errors) => {
-                    errored = true;
-                    ErrorHandler::print_errors(errors);
+                    task_feedback.error_messages = errors;
                 }
             };
+
+            file_feedback.tasks.push(task_feedback);
         }
 
-        Ok(errored)
+        Ok(file_feedback)
     }
 
     pub fn get_line(&self, offset: u32) -> usize {

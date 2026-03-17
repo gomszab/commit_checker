@@ -1,44 +1,129 @@
 use colored::Colorize;
-use crate::api::FileContext;
+use rust_i18n::t;
 
-pub struct ErrorHandler<'a>{
-    file_contexts: Vec<&'a mut FileContext<'a>>,
-    errored_files: Vec<(&'a str, Vec<String>)>,
-    ok_files: Vec<&'a str>
+pub struct ErrorHandler {
+    pub errored_files: Vec<FileFeedback>,
+    pub ok_files: Vec<FileFeedback>,
 }
-impl<'a> ErrorHandler<'a> {
-    pub fn new() -> Self{
-        let err_handler = ErrorHandler{
-            file_contexts: Vec::new(),
+
+impl ErrorHandler {
+    pub fn new() -> Self {
+        let err_handler = ErrorHandler {
             errored_files: Vec::new(),
-            ok_files: Vec::new()
+            ok_files: Vec::new(),
         };
         err_handler
     }
 
-    pub fn subscribe(&mut self, file_context: &'a mut FileContext<'a>){
-        self.file_contexts.push(file_context);
-    }
-
-    pub fn show_errors(&self){
-
-    }
-
-    pub fn summa(&self){
-
-    }
-
-    fn gather_handler_results(&self){
-
-    }
-
-    pub fn print_errors(errors: Vec<String>) {
+    pub fn print_errors(errors: &Vec<String>) {
         for error in errors {
             eprintln!("{}", error.red());
         }
     }
 
-    pub fn print_error(message: String){
+    pub fn print_oks(oks: &Vec<String>) {
+        for ok in oks {
+            println!("{}", ok.green());
+        }
+    }
+
+    pub fn print_error(message: String) {
         eprintln!("{}", message.red());
+    }
+
+    pub fn print_ok(message: String) {
+        println!("{}", message.green());
+    }
+}
+
+impl ErrorHandler {
+    pub fn add_result(&mut self, result: Result<FileFeedback, String>) {
+        match result {
+            Ok(file_feedback) => {
+                let is_errored = file_feedback
+                    .tasks
+                    .iter()
+                    .any(|task| task.error_messages.len() != 0);
+                if is_errored {
+                    self.errored_files.push(file_feedback);
+                } else {
+                    self.ok_files.push(file_feedback);
+                }
+            }
+            Err(_err) => {
+                ErrorHandler::print_error("Failed to handle files".to_string());
+            }
+        }
+    }
+
+    pub fn show_feedback(&self) {
+        // Print Errored files
+        for file in &self.errored_files {
+            println!("{}:", file.file_name);
+            for task in &file.tasks {
+                println!("{}", task.task_name);
+                if self.is_errored() {
+                    ErrorHandler::print_errors(&task.error_messages); // print errored tasks
+                } else {
+                    ErrorHandler::print_oks(&task.ok_messages); // print ok tasks
+                }
+            }
+            println!();
+        }
+
+        // Print OK files
+        for file in &self.ok_files {
+            println!("{}: ✔ Minden teszt lefutott sikeresen (:", file.file_name);
+            for task in &file.tasks {
+                println!("{}", task.task_name);
+                ErrorHandler::print_oks(&task.ok_messages);
+            }
+            println!();
+        }
+    }
+
+    pub fn summa(&self) {
+        for file in &self.errored_files {
+            let message = format!("❌ {} Sikertelen", file.file_name);
+            ErrorHandler::print_error(message);
+        }
+        for file in &self.ok_files {
+            let message = format!("✔ {} Sikeres", file.file_name);
+            ErrorHandler::print_ok(message);
+        }
+    }
+
+    pub fn is_errored(&self) -> bool {
+        self.errored_files.len() != 0
+    }
+}
+
+pub struct FileFeedback {
+    pub file_name: String,
+    pub tasks: Vec<TaskFeedback>,
+}
+
+impl FileFeedback {
+    pub fn new(file_name: String) -> FileFeedback {
+        FileFeedback {
+            file_name,
+            tasks: Vec::new(),
+        }
+    }
+}
+
+pub struct TaskFeedback {
+    pub task_name: String,
+    pub error_messages: Vec<String>,
+    pub ok_messages: Vec<String>,
+}
+
+impl TaskFeedback {
+    pub fn new(task_name: String) -> TaskFeedback {
+        TaskFeedback {
+            task_name,
+            error_messages: Vec::new(),
+            ok_messages: Vec::new(),
+        }
     }
 }
