@@ -22,7 +22,12 @@ impl Handler for VariableNameChecker {
                                 t!(
                                     "V03",
                                     line = context.get_line(start),
-                                    variable = context.lines[context.get_line(start) - 1]
+                                    variable = context.lines[context.get_line(start) - 1],
+                                    highlight = format!(
+                                        "{}{}",
+                                        " ".repeat(context.get_column(start) - 1),
+                                        "^".repeat(name.len())
+                                    )
                                 )
                                 .to_string(),
                             );

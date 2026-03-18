@@ -34,7 +34,12 @@ impl Handler for ClassChecker {
                     t!(
                         "C04",
                         line = context.get_line(class.span.start),
-                        class = context.lines[context.get_line(class.span.start) - 1]
+                        class = context.lines[context.get_line(class.span.start) - 1],
+                        highlight = format_args!(
+                            "{}{}",
+                            " ".repeat(context.get_column(id.span.start) - 1),
+                            "^".repeat((class.body.span.start - 1 - id.span.start) as usize)
+                        )
                     )
                     .to_string(),
                 );
@@ -57,7 +62,12 @@ impl Handler for ClassChecker {
                         t!(
                             "C05",
                             line = context.get_line(class.span.start),
-                            class = context.lines[context.get_line(class.span.start) - 1]
+                            class = context.lines[context.get_line(class.span.start) - 1],
+                            highlight = format_args!(
+                                "{}{}",
+                                " ".repeat(context.get_column(id.span.start) - 1),
+                                "^".repeat((super_id.span.end - id.span.start) as usize)
+                            )
                         )
                         .to_string(),
                     );

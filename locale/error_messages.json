@@ -5,143 +5,143 @@
     "en": "line: %{line} | The class is missing its name!"
   },
   "C02": {
-    "hu": "sor: %{line} | A class neveknek legalább 5 karakter hosszúnak kell lenniük!\n%{class}",
-    "en": "line: %{line} | The names of the classes must be at least 5 characters long!\n%{class}"
+    "hu": "sor: %{line} | A class neveknek legalább 5 karakter hosszúnak kell lenniük!\n%{class}\n%{highlight}",
+    "en": "line: %{line} | The names of the classes must be at least 5 characters long!\n%{class}\n%{highlight}"
   },
   "C03": {
-    "hu": "sor: %{line} | A class név számot vagy ékezetes karaktert tartalmaz, ami rontja az olvashatóságot!\n%{class}",
-    "en": "line: %{line} | The name of the class is containing a numeric or accented characters, which are worsens the readability!\n%{class}"
+    "hu": "sor: %{line} | A class név számot vagy ékezetes karaktert tartalmaz, ami rontja az olvashatóságot!\n%{class}\n%{highlight}",
+    "en": "line: %{line} | The name of the class is containing a numeric or accented characters, which are worsens the readability!\n%{class}\n%{highlight}"
   },
   "C04": {
-    "hu": "sor: %{line} | Az osztálynak nincs konstruktora!\n%{class}",
-    "en": "line: %{line} | The class constructor is not defined!\n%{class}"
+    "hu": "sor: %{line} | Az osztálynak nincs konstruktora!\n%{class}\n%{highlight}",
+    "en": "line: %{line} | The class constructor is not defined!\n%{class}\n%{highlight}"
   },
   "C05": {
-    "hu": "sor: %{line} | Az osztály leszármazik egy másik osztályból, de nem hívod meg a super()-t a konstruktorban!\n%{class}",
-    "en": "line: %{line} | The class is inherited from another class, but super() is never called in the constructor!\n%{class}"
+    "hu": "sor: %{line} | Az osztály leszármazik egy másik osztályból, de nem hívod meg a super()-t a konstruktorban!\n%{class}\n%{highlight}",
+    "en": "line: %{line} | The class is inherited from another class, but super() is never called in the constructor!\n%{class}\n%{highlight}"
   },
   "COM01": {
-    "hu": "sor: %{line} | Nincs komment a sor végén!\n%{comment}",
-    "en": "line: %{line} | Missing comment at the end of the line!\n%{comment}"
+    "hu": "sor: %{line} | Nincs komment a sor végén!\n%{comment}\n%{highlight}",
+    "en": "line: %{line} | Missing comment at the end of the line!\n%{comment}\n%{highlight}"
   },
   "FD01": {
-    "hu": "sor: %{line} | A függvénynek nincs JSDoc-ja!\n%{function}",
-    "en": "line: %{line} | The function is missing a JSDoc!\n%{function}"
+    "hu": "sor: %{line} | A függvénynek nincs JSDoc-ja!\n%{function}\n%{highlight}",
+    "en": "line: %{line} | The function is missing a JSDoc!\n%{function}\n%{highlight}"
   },
   "FD02": {
-    "hu": "sor: %{line} | A függvénynek nincs leírása a JSDoc-ban!\n%{jsdoc}",
-    "en": "line: %{line} | The function is missing a description in it's JSDoc!\n%{jsdoc}"
+    "hu": "sor: %{line} | A függvénynek nincs leírása a JSDoc-ban!\n%{jsdoc}\n%{highlight}",
+    "en": "line: %{line} | The function is missing a description in it's JSDoc!\n%{jsdoc}\n%{highlight}"
   },
   "FD03": {
-    "hu": "sor: %{line} | A függvény paramétereinek száma nem egyezik meg a JSDoc-ban lévő paraméterek számával!\n%{function}",
-    "en": "line: %{line} | The number of parameters for the function and JSDoc is differing!\n%{function}"
+    "hu": "sor: %{line} | A függvény paramétereinek száma nem egyezik meg a JSDoc-ban lévő paraméterek számával!\n%{function}\n%{highlight}",
+    "en": "line: %{line} | The number of parameters for the function and JSDoc is differing!\n%{function}\n%{highlight}"
   },
   "FD04": {
-    "hu": "sor: %{line} | A @param-nak nincs típus megadva!\n%{jsdoc}",
-    "en": "line: %{line} | The @param is missing its type!\n%{jsdoc}"
+    "hu": "sor: %{line} | A @param-nak nincs típus megadva!\n%{jsdoc}\n%{highlight}",
+    "en": "line: %{line} | The @param is missing its type!\n%{jsdoc}\n%{highlight}"
   },
   "FD05": {
-    "hu": "sor: %{line} | A @param-nak nincs név megadva!\n%{jsdoc}",
-    "en": "line: %{line} | The @param is missing its name!\n%{jsdoc}"
+    "hu": "sor: %{line} | A @param-nak nincs név megadva!\n%{jsdoc}\n%{highlight}",
+    "en": "line: %{line} | The @param is missing its name!\n%{jsdoc}\n%{highlight}"
   },
   "FD06": {
-    "hu": "sor: %{line} | A JSDoc olyan paramétert tartalmaz, ami nincs a függvény szignatúrájában!\n%{jsdoc}",
-    "en": "line: %{line} | The JSDoc is containing a parameter that is not part of the function signature!\n%{jsdoc}"
+    "hu": "sor: %{line} | A JSDoc olyan paramétert tartalmaz, ami nincs a függvény szignatúrájában!\n%{jsdoc}\n%{highlight}",
+    "en": "line: %{line} | The JSDoc is containing a parameter that is not part of the function signature!\n%{jsdoc}\n%{highlight}"
   },
   "FD07": {
-    "hu": "sor: %{line} | A @param-nak nincs leírás megadva!\n%{jsdoc}",
-    "en": "line: %{line} | The @param is missing its description!\n%{jsdoc}"
+    "hu": "sor: %{line} | A @param-nak nincs leírás megadva!\n%{jsdoc}\n%{highlight}",
+    "en": "line: %{line} | The @param is missing its description!\n%{jsdoc}\n%{highlight}"
   },
   "FD08": {
-    "hu": "sor: %{line} | A függvény JSDoc-jában nincsen @returns!\n%{function}",
-    "en": "line: %{line} | The JSDoc of the function is missing its @retruns!\n%{function}"
+    "hu": "sor: %{line} | A függvény JSDoc-jában nincsen @returns!\n%{function}\n%{highlight}",
+    "en": "line: %{line} | The JSDoc of the function is missing its @retruns!\n%{function}\n%{highlight}"
   },
   "FD09": {
-    "hu": "sor: %{line} | A @returns-nek nincs típus megadva!\n%{jsdoc}",
-    "en": "line: %{line} | The @returns is missing its type!\n%{jsdoc}"
+    "hu": "sor: %{line} | A @returns-nek nincs típus megadva!\n%{jsdoc}\n%{highlight}",
+    "en": "line: %{line} | The @returns is missing its type!\n%{jsdoc}\n%{highlight}"
   },
   "F01": {
-    "hu": "sor: %{line} | A függvényneveknek legalább 5 karakter hosszúnak kell lenniük!\n%{function}",
-    "en": "line: %{line} | The names of the functions must be at least 5 characters long!\n%{function}"
+    "hu": "sor: %{line} | A függvényneveknek legalább 5 karakter hosszúnak kell lenniük!\n%{function}\n%{highlight}",
+    "en": "line: %{line} | The names of the functions must be at least 5 characters long!\n%{function}\n%{highlight}"
   },
   "F02": {
-    "hu": "sor: %{line} | A függvénynév számot vagy ékezetes karaktert tartalmaz, ami rontja az olvashatóságot!\n%{function}",
-    "en": "line: %{line} | The name of the function is containing a numeric or accented characters, which are worsens the readability!\n%{function}"
+    "hu": "sor: %{line} | A függvénynév számot vagy ékezetes karaktert tartalmaz, ami rontja az olvashatóságot!\n%{function}\n%{highlight}",
+    "en": "line: %{line} | The name of the function is containing a numeric or accented characters, which are worsens the readability!\n%{function}\n%{highlight}"
   },
   "F03": {
-    "hu": "sor: %{line} | Felhasználatlan függvény!\n%{function}",
-    "en": "line: %{line} | Unused function!\n%{function}"
+    "hu": "sor: %{line} | Felhasználatlan függvény!\n%{function}\n%{highlight}",
+    "en": "line: %{line} | Unused function!\n%{function}\n%{highlight}"
   },
   "D01": {
-    "hu": "sor: %{line} | A(z) %{forbidden_type} használata típusként nem megengedett!\n%{jsdoc}",
-    "en": "line: %{line} | %{forbidden_type} cannot be used as type!\n%{jsdoc}"
+    "hu": "sor: %{line} | A(z) %{forbidden_type} használata típusként nem megengedett!\n%{jsdoc}\n%{highlight}",
+    "en": "line: %{line} | %{forbidden_type} cannot be used as type!\n%{jsdoc}\n%{highlight}"
   },
   "D02": {
-    "hu": "sor: %{line} | A(z) %{forbidden_type} használata típusként nem megengedett!\n%{jsdoc}",
-    "en": "line: %{line} | %{forbidden_type} cannot be used as type!\n%{jsdoc}"
+    "hu": "sor: %{line} | A(z) %{forbidden_type} használata típusként nem megengedett!\n%{jsdoc}\n%{highlight}",
+    "en": "line: %{line} | %{forbidden_type} cannot be used as type!\n%{jsdoc}\n%{highlight}"
   },
   "P01": {
-    "hu": "sor: %{line} | A property neveknek legalább 5 karakter hosszúnak kell lenniük!\n%{property}",
-    "en": "line: %{line} | The names of the properties must be at least 5 characters long!\n%{property}"
+    "hu": "sor: %{line} | A property neveknek legalább 5 karakter hosszúnak kell lenniük!\n%{property}\n%{highlight}",
+    "en": "line: %{line} | The names of the properties must be at least 5 characters long!\n%{property}\n%{highlight}"
   },
   "P02": {
-    "hu": "sor: %{line} | A property név számot vagy ékezetes karaktert tartalmaz, ami rontja az olvashatóságot!\n%{property}",
-    "en": "line: %{line} | The name of the property is containing a numeric or accented characters, which are worsens the readability!\n%{property}"
+    "hu": "sor: %{line} | A property név számot vagy ékezetes karaktert tartalmaz, ami rontja az olvashatóságot!\n%{property}\n%{highlight}",
+    "en": "line: %{line} | The name of the property is containing a numeric or accented characters, which are worsens the readability!\n%{property}\n%{highlight}"
   },
   "PD01": {
-    "hu": "sor: %{line} | A property-nek nincs JSDoc-ja!\n%{property}",
-    "en": "line: %{line} | The property is missing its JSDoc!\n%{property}"
+    "hu": "sor: %{line} | A property-nek nincs JSDoc-ja!\n%{property}\n%{highlight}",
+    "en": "line: %{line} | The property is missing its JSDoc!\n%{property}\n%{highlight}"
   },
   "PD02": {
-    "hu": "sor: %{line} | A property JSDoc-jában nincsen @type!\n%{jsdoc}",
-    "en": "line: %{line} | The JSDoc of the property is missing its @type!\n%{jsdoc}"
+    "hu": "sor: %{line} | A property JSDoc-jában nincsen @type!\n%{jsdoc}\n%{highlight}",
+    "en": "line: %{line} | The JSDoc of the property is missing its @type!\n%{jsdoc}\n%{highlight}"
   },
   "TD01": {
-    "hu": "sor: %{line} | A @type JSDoc-nak nincs se típus, se leírás megadva!\n%{jsdoc}",
-    "en": "line: %{line} | The @type is missing its type and description!\n%{jsdoc}"
+    "hu": "sor: %{line} | A @type JSDoc-nak nincs se típus, se leírás megadva!\n%{jsdoc}\n%{highlight}",
+    "en": "line: %{line} | The @type is missing its type and description!\n%{jsdoc}\n%{highlight}"
   },
   "TD02": {
-    "hu": "sor: %{line} | A @type JSDoc-nak nincs típus megadva!\n%{jsdoc}",
-    "en": "line: %{line} | The @type is missing its type!\n%{jsdoc}"
+    "hu": "sor: %{line} | A @type JSDoc-nak nincs típus megadva!\n%{jsdoc}\n%{highlight}",
+    "en": "line: %{line} | The @type is missing its type!\n%{jsdoc}\n%{highlight}"
   },
   "TD03": {
-    "hu": "sor: %{line} | A @type JSDoc-nak nincs leírás megadva!\n%{jsdoc}",
-    "en": "line: %{line} | The @type is missing its description!\n%{jsdoc}"
+    "hu": "sor: %{line} | A @type JSDoc-nak nincs leírás megadva!\n%{jsdoc}\n%{highlight}",
+    "en": "line: %{line} | The @type is missing its description!\n%{jsdoc}\n%{highlight}"
   },
   "TD04": {
-    "hu": "sor: %{line} | A @typedef-nek nincs se típus, se név megadva!\n%{jsdoc}",
-    "en": "line: %{line} | The @typedef is missing its name and type!\n%{jsdoc}"
+    "hu": "sor: %{line} | A @typedef-nek nincs se típus, se név megadva!\n%{jsdoc}\n%{highlight}",
+    "en": "line: %{line} | The @typedef is missing its name and type!\n%{jsdoc}\n%{highlight}"
   },
   "TD05": {
-    "hu": "sor: %{line} | A @typedef-nek nincs név megadva!\n%{jsdoc}",
-    "en": "line: %{line} | The @typedef is missing its name!\n%{jsdoc}"
+    "hu": "sor: %{line} | A @typedef-nek nincs név megadva!\n%{jsdoc}\n%{highlight}",
+    "en": "line: %{line} | The @typedef is missing its name!\n%{jsdoc}\n%{highlight}"
   },
   "TD06": {
-    "hu": "sor: %{line} | A @typedef-nek nincs típus megadva!\n%{jsdoc}",
-    "en": "line: %{line} | The @typedef is missing its type!\n%{jsdoc}"
+    "hu": "sor: %{line} | A @typedef-nek nincs típus megadva!\n%{jsdoc}\n%{highlight}",
+    "en": "line: %{line} | The @typedef is missing its type!\n%{jsdoc}\n%{highlight}"
   },
   "V01": {
-    "hu": "sor: %{line} | Felhasználatlan változó!\n%{variable}",
-    "en": "line: %{line} | Unused variable!\n%{variable}"
+    "hu": "sor: %{line} | Felhasználatlan változó!\n%{variable}\n%{highlight}",
+    "en": "line: %{line} | Unused variable!\n%{variable}\n%{highlight}"
   },
   "V02": {
     "hu": "sor: %{line} | Ne használj var-t deklarációhoz!",
     "en": "line: %{line} | Do not use var for declaration!"
   },
   "V03": {
-    "hu": "sor: %{line} | A változóneveknek legalább 5 karakter hosszúnak kell lenniük!\n%{variable}",
-    "en": "line: %{line} | The names of the variables must be at least 5 characters long!\n%{variable}"
+    "hu": "sor: %{line} | A változóneveknek legalább 5 karakter hosszúnak kell lenniük!\n%{variable}\n%{highlight}",
+    "en": "line: %{line} | The names of the variables must be at least 5 characters long!\n%{variable}\n%{highlight}"
   },
   "V04": {
-    "hu": "sor: %{line} | A változónév számot vagy ékezetes karaktert tartalmaz, ami rontja az olvashatóságot!\n%{variable}",
-    "en": "line: %{line} | The name of the variable is containing a numeric or accented characters, which are worsens the readability!\n%{variable}"
+    "hu": "sor: %{line} | A változónév számot vagy ékezetes karaktert tartalmaz, ami rontja az olvashatóságot!\n%{variable}\n%{highlight}",
+    "en": "line: %{line} | The name of the variable is containing a numeric or accented characters, which are worsens the readability!\n%{variable}\n%{highlight}"
   },
   "VD01": {
-    "hu": "sor: %{line} | A változónak nincs JSDoc-ja!\n%{variable}",
-    "en": "line: %{line} | The variable is missing its JSDoc!\n%{variable}"
+    "hu": "sor: %{line} | A változónak nincs JSDoc-ja!\n%{variable}\n%{highlight}",
+    "en": "line: %{line} | The variable is missing its JSDoc!\n%{variable}\n%{highlight}"
   },
   "VD02": {
-    "hu": "sor: %{line} | A változó JSDoc-jában nincsen @type!\n%{jsdoc}",
-    "en": "line: %{line} | The JSDoc of the variable is missing its @type!\n%{jsdoc}"
+    "hu": "sor: %{line} | A változó JSDoc-jában nincsen @type!\n%{jsdoc}\n%{highlight}",
+    "en": "line: %{line} | The JSDoc of the variable is missing its @type!\n%{jsdoc}\n%{highlight}"
   }
 }
