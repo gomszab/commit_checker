@@ -40,10 +40,7 @@ impl ErrorHandler {
     pub fn add_result(&mut self, result: Result<FileFeedback, String>) {
         match result {
             Ok(file_feedback) => {
-                let is_errored = file_feedback
-                    .tasks
-                    .iter()
-                    .any(|task| task.error_messages.len() != 0);
+                let is_errored = file_feedback.tasks.iter().any(|task| task.errored);
                 if is_errored {
                     self.errored_files.push(file_feedback);
                 } else {
@@ -62,10 +59,10 @@ impl ErrorHandler {
             println!("{}:", file.file_name);
             for task in &file.tasks {
                 println!("{}", task.task_name);
-                if self.is_errored() {
-                    ErrorHandler::print_errors(&task.error_messages); // print errored tasks
+                if task.errored {
+                    ErrorHandler::print_errors(&task.messages); // print errored tasks
                 } else {
-                    ErrorHandler::print_oks(&task.ok_messages); // print ok tasks
+                    ErrorHandler::print_oks(&task.messages); // print ok tasks
                 }
             }
             println!();
@@ -76,7 +73,7 @@ impl ErrorHandler {
             println!("{}: ✔ Minden teszt lefutott sikeresen (:", file.file_name);
             for task in &file.tasks {
                 println!("{}", task.task_name);
-                ErrorHandler::print_oks(&task.ok_messages);
+                ErrorHandler::print_oks(&task.messages);
             }
             println!();
         }
@@ -114,16 +111,16 @@ impl FileFeedback {
 
 pub struct TaskFeedback {
     pub task_name: String,
-    pub error_messages: Vec<String>,
-    pub ok_messages: Vec<String>,
+    pub messages: Vec<String>,
+    pub errored: bool,
 }
 
 impl TaskFeedback {
     pub fn new(task_name: String) -> TaskFeedback {
         TaskFeedback {
             task_name,
-            error_messages: Vec::new(),
-            ok_messages: Vec::new(),
+            messages: Vec::new(),
+            errored: false,
         }
     }
 }

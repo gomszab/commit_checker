@@ -2,6 +2,7 @@ use oxc::ast::{
     AstKind,
     ast::{ClassElement, Expression, MethodDefinitionKind, Statement},
 };
+use rust_i18n::t;
 
 use crate::api::{Handler, HandlerResult};
 
@@ -17,10 +18,7 @@ impl Handler for ClassChecker {
             };
 
             let Some(id) = &class.id else {
-                errors.push(format!(
-                    "sor: {}: Az osztálynak nincs neve",
-                    context.get_line(class.span.start)
-                ));
+                errors.push(t!("C01", line = context.get_line(class.span.start)).to_string());
                 continue;
             };
 
@@ -32,16 +30,14 @@ impl Handler for ClassChecker {
             });
 
             let Some(ClassElement::MethodDefinition(constructor)) = constructor else {
-                errors.push(format!(
-                    "sor: {}: Az osztálynak nincs konstruktora\n{}\n{}",
-                    context.get_line(class.span.start),
-                    context.lines[context.get_line(class.span.start) - 1],
-                    format_args!(
-                        "{}{}",
-                        " ".repeat(context.get_column(id.span.start) - 1),
-                        "^".repeat((class.body.span.start - 1 - id.span.start) as usize)
+                errors.push(
+                    t!(
+                        "C04",
+                        line = context.get_line(class.span.start),
+                        class = context.lines[context.get_line(class.span.start) - 1]
                     )
-                ));
+                    .to_string(),
+                );
                 continue;
             };
 
@@ -49,6 +45,7 @@ impl Handler for ClassChecker {
                 && let Expression::Identifier(super_id) = super_class
             {
                 // I honestly can't be bothered to handle a constructor missing a body.
+                // TODO: handle missing constructor body
                 let body = constructor
                     .value
                     .body
@@ -56,16 +53,14 @@ impl Handler for ClassChecker {
                     .expect("A konstruktornak nincs body-ja");
 
                 if !super_exists(&body.statements) {
-                    errors.push(format!(
-                        "sor: {}: Az osztály leszármazik egy másik osztályból, de nem hívod meg a super()-t a konstruktorban\n{}\n{}",
-                        context.get_line(class.span.start),
-                        context.lines[context.get_line(class.span.start) - 1],
-                        format_args!(
-                            "{}{}",
-                            " ".repeat(context.get_column(id.span.start) - 1),
-                            "^".repeat((super_id.span.end - id.span.start) as usize)
+                    errors.push(
+                        t!(
+                            "C05",
+                            line = context.get_line(class.span.start),
+                            class = context.lines[context.get_line(class.span.start) - 1]
                         )
-                    ));
+                        .to_string(),
+                    );
                 }
             }
         }

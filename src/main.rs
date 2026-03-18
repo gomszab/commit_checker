@@ -24,7 +24,6 @@ rust_i18n::i18n!("locale", fallback = "en");
 fn main() {
     // Reading and setting language
     let lang = detect_system_language();
-    println!("{}", lang);
     rust_i18n::set_locale(lang.as_str());
 
     // Getting staged files
@@ -42,14 +41,13 @@ fn main() {
     // Needed for oxc.
     let mut allocator = Allocator::new();
 
-    let message = format!("Running tests...\n");
-    let mut spinner = Spinner::new(spinners::Circle, message, Color::Blue);
+    let spin_message = format!("Running tests...\n");
+    let mut spinner = Spinner::new(spinners::Circle, spin_message, Color::Blue);
     for file_name in files {
         // We do not check files other than .js files.
         if !file_name.ends_with(".js") {
             continue;
         }
-
         let content = match std::fs::read_to_string(&file_name) {
             Ok(content) => content,
             Err(_) => {
@@ -60,7 +58,6 @@ fn main() {
                 exit(1);
             }
         };
-
         let mut context = match FileContext::new(file_name.clone(), &content, &allocator) {
             Ok(context) => context,
             Err(message) => {

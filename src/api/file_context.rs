@@ -82,9 +82,10 @@ impl<'a> FileContext<'a> {
             // any pointers.
             let result = handler.handle(self);
             match result {
-                HandlerResult::Ok => task_feedback.ok_messages.push(handler.success_message()),
-                HandlerResult::Error(errors) => {
-                    task_feedback.error_messages = errors;
+                HandlerResult::Ok => task_feedback.messages.push(handler.success_message()),
+                HandlerResult::Error(mut errors) => {
+                    task_feedback.messages.append(&mut errors);
+                    task_feedback.errored = true;
                 }
             };
 

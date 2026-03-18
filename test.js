@@ -1,5 +1,5 @@
 /**
- *@type {number} dexcription
+ *@type {number} asasda
  */
-let testData = 12; // create
-console.log(testData); // print
+let message = 3; // asd
+console.log(message); // asd

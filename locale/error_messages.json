@@ -1,8 +1,8 @@
 {
   "_version": 2,
   "C01": {
-    "hu": "sor: %{line} | Az osztálynak nincs neve!\n%{class}",
-    "en": "line: %{line} | The class is missing its name!\n%{class}"
+    "hu": "sor: %{line} | Az osztálynak nincs neve!",
+    "en": "line: %{line} | The class is missing its name!"
   },
   "C02": {
     "hu": "sor: %{line} | A class neveknek legalább 5 karakter hosszúnak kell lenniük!\n%{class}",
