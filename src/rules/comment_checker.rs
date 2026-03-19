@@ -1,4 +1,5 @@
 use crate::api::{Handler, HandlerResult};
+use rust_i18n::t;
 
 pub struct CommentChecker;
 
@@ -25,12 +26,12 @@ impl Handler for CommentChecker {
             }
 
             if trimmed.chars().any(|c| c.is_alphanumeric()) && !trimmed.contains("//") {
-                errors.push(format!(
-                    "sor: {}: Nincs comment a sor végén\n{}\n{}",
-                    line_number + 1,
-                    trimmed,
+                errors.push(t!(
+                    "COM01", line =
+                    line_number + 1, comment =
+                    trimmed,highlight =
                     "^".repeat(trimmed.len())
-                ));
+                ).to_string());
             }
         }
 

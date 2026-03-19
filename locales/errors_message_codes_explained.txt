@@ -1,0 +1,24 @@
+JS - errors:
+    D - related to JS documentation
+    F - related to functions
+    C - related to classes
+    P - related to properties
+    V - related to variables and variable declarations
+    COM - related to comments
+(example: FD01 - it's related both to JSDoc and functions)
+syntax:
+    t!("CODE", line = int)
+    or if there is a variable that need to be highlighted
+    t!("CODE", line = int, class/function/variable/... = string, highlight = string)
+    or you can add your custom placeholder
+    t!("CODE", line = int, custom = string/int/...)
+
+// Not implemented yet *
+Git related errors: GIT
+
+For validation:
+OK - Successful
+ERR - Errored
+
+Software related errors: SW
+// * Not implemented yet

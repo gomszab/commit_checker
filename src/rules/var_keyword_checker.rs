@@ -1,4 +1,5 @@
 use oxc::ast::ast::{Statement, VariableDeclarationKind};
+use rust_i18n::t;
 
 use crate::api::{Handler, HandlerResult};
 
@@ -11,10 +12,10 @@ impl Handler for VarKeywordChecker {
             if let Statement::VariableDeclaration(decl) = declaration
                 && let VariableDeclarationKind::Var = decl.kind
             {
-                errors.push(format!(
-                    "sor: {}: ne használj var-t!!!!",
+                errors.push(t!(
+                    "V02", line =
                     context.get_line(decl.span.start)
-                ));
+                ).to_string());
             }
         }
 

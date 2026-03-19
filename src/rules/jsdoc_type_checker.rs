@@ -1,4 +1,5 @@
 use crate::api::{Handler, HandlerResult};
+use rust_i18n::t;
 
 pub struct JsDocTypeChecker;
 
@@ -21,15 +22,16 @@ impl Handler for JsDocTypeChecker {
                     continue;
                 };
 
-                errors.push(format!(
-                    "sor: {}: A(z) {found_forbidden} használata típusként nem megengedett\n{}\n{}",
-                    context.get_line(tag.span.start),
+                errors.push(t!(
+                    "D01", line =
+                    context.get_line(tag.span.start), forbidden_type =
+                    found_forbidden, jsdoc =
                     context.lines[context.get_line(jsdoc.span.start) - 1
                         ..=context.get_line(jsdoc.span.end) - 1]
                         .to_vec()
-                        .join("\n"),
+                        .join("\n"), highlight =
                     "^".repeat(context.lines[context.get_line(jsdoc.span.end - 2)].len())
-                ));
+                ).to_string());
             }
         }
 

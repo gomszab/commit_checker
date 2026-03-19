@@ -1,4 +1,5 @@
 use crate::api::{Handler, HandlerResult};
+use rust_i18n::t;
 
 pub struct TypedefJsDocChecker;
 
@@ -19,38 +20,38 @@ impl Handler for TypedefJsDocChecker {
                 if let None = type_part
                     && name_part.parsed().len() == 0
                 {
-                    errors.push(format!(
-                        "sor: {}: A @typedef-nek nincs se típus, se név megadva\n{}\n{}",
-                        context.get_line(tag.span.start),
+                    errors.push(t!(
+                        "TD04", line =
+                        context.get_line(tag.span.start), jsdoc =
                         context.lines[context.get_line(jsdoc.span.start) - 1
                             ..=context.get_line(jsdoc.span.end) - 1]
                             .to_vec()
-                            .join("\n"),
+                            .join("\n"), highlight =
                         "^".repeat(context.lines[context.get_line(jsdoc.span.end - 2)].len())
-                    ));
+                    ).to_string());
                     continue;
                 } else if name_part.parsed().len() == 0 {
-                    errors.push(format!(
-                        "sor: {}: A @typedef-nek nincs név megadva\n{}\n{}",
-                        context.get_line(tag.span.start),
+                    errors.push(t!(
+                        "TD05", line =
+                        context.get_line(tag.span.start), jsdoc =
                         context.lines[context.get_line(jsdoc.span.start) - 1
                             ..=context.get_line(jsdoc.span.end) - 1]
                             .to_vec()
-                            .join("\n"),
+                            .join("\n"), highlight =
                         "^".repeat(context.lines[context.get_line(jsdoc.span.end - 2)].len())
-                    ));
+                    ).to_string());
 
                     continue;
                 } else if let None = type_part {
-                    errors.push(format!(
-                        "sor: {}: A @typedef-nek nincs típus megadva\n{}\n{}",
-                        context.get_line(tag.span.start),
+                    errors.push(t!(
+                        "TD06", line =
+                        context.get_line(tag.span.start), jsdoc =
                         context.lines[context.get_line(jsdoc.span.start) - 1
                             ..=context.get_line(jsdoc.span.end) - 1]
                             .to_vec()
-                            .join("\n"),
+                            .join("\n"), highlight =
                         "^".repeat(context.lines[context.get_line(jsdoc.span.end - 2)].len())
-                    ));
+                    ).to_string());
                     continue;
                 }
             }

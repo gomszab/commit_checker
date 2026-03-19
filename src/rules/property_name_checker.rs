@@ -1,4 +1,5 @@
 use oxc::ast::{AstKind, ast::PropertyKey};
+use rust_i18n::t;
 
 use crate::{
     api::{Handler, HandlerResult},
@@ -28,25 +29,25 @@ impl Handler for PropertyNameChecker {
             };
 
             if name.len() < 5 {
-                errors.push(format!(
-                    "sor: {}: A property neveknek legalább 5 karakter hosszúnak kell lenniük\n{}\n{}",
-                    context.get_line(start),
-                    context.lines[context.get_line(start) - 1],
+                errors.push(t!(
+                    "P01", line =
+                    context.get_line(start), property =
+                    context.lines[context.get_line(start) - 1], highlight =
                     format!(
                         "{}{}",
                         " ".repeat(context.get_column(start) - 1),
                         "^".repeat(name.len())
                     )
-                ));
+                ).to_string());
             }
 
             if contains_number_or_hungarian_letter(name) {
-                errors.push(format!(
-                            "sor: {}: A property név számot vagy ékezetes karaktert tartalmaz, ami rontja az olvashatóságot\n{}\n{}",
-                            context.get_line(start),
-                            context.lines[context.get_line(start) - 1],
+                errors.push(t!(
+                            "P02", line =
+                            context.get_line(start), property =
+                            context.lines[context.get_line(start) - 1], highlight =
                             format!("{}{}", " ".repeat(context.get_column(start) - 1), "^".repeat(name.len()))
-                        ));
+                        ).to_string());
             }
         }
 

@@ -6,7 +6,6 @@ use line_numbers::LinePositions;
 use oxc::{allocator::Allocator, ast::ast::Program, parser::Parser, span::SourceType};
 use oxc_semantic::{Semantic, SemanticBuilder};
 
-use crate::api::error_handler::{ErrorHandler, FileFeedback, TaskFeedback};
 use crate::api::{Handler, HandlerResult};
 
 pub struct FileContext<'a> {
@@ -76,7 +75,7 @@ impl<'a> FileContext<'a> {
 
         for i in 0..self.handlers.len() {
             let handler = self.handlers[i].clone();
-            let mut task_feedback = TaskFeedback::new(handler.title());
+            let mut task_feedback = TestFeedback::new(handler.title());
 
             // SAFETY: Handlers only get an immutable reference to self, so they can't invalidate
             // any pointers.
@@ -101,5 +100,36 @@ impl<'a> FileContext<'a> {
 
     pub fn get_column(&self, offset: u32) -> usize {
         self.line_positions.from_offset(offset as usize).1 as usize + 1
+    }
+}
+
+// For storing feedbacks from FileContext
+pub struct FileFeedback {
+    pub file_name: String,
+    pub tasks: Vec<TestFeedback>,
+}
+
+impl FileFeedback {
+    pub fn new(file_name: String) -> FileFeedback {
+        FileFeedback {
+            file_name,
+            tasks: Vec::new(),
+        }
+    }
+}
+
+pub struct TestFeedback {
+    pub task_name: String,
+    pub messages: Vec<String>,
+    pub errored: bool,
+}
+
+impl TestFeedback {
+    pub fn new(task_name: String) -> TestFeedback {
+        TestFeedback {
+            task_name,
+            messages: Vec::new(),
+            errored: false,
+        }
     }
 }

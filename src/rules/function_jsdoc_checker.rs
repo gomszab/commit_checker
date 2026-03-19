@@ -3,6 +3,7 @@ use oxc::ast::{
     ast::{Function, FunctionType},
 };
 use oxc_semantic::{AstNodes, JSDoc, JSDocFinder, JSDocTag};
+use rust_i18n::t;
 
 use crate::api::{Handler, HandlerResult};
 
@@ -21,30 +22,30 @@ impl Handler for FunctionJsDocChecker {
             };
 
             let Some(jsdoc) = jsdoc else {
-                errors.push(format!(
-                    "sor: {}: A függvénynek nincs JSDoc-ja\n{}\n{}",
-                    context.get_line(decl_start),
-                    context.lines[context.get_line(decl_start) - 1],
+                errors.push(t!(
+                    "FD01", line =
+                    context.get_line(decl_start), function =
+                    context.lines[context.get_line(decl_start) - 1], highlight =
                     format!(
                         "{}{}",
                         " ".repeat(context.get_column(decl_start) - 1),
                         "^".repeat((body.span.start - 1 - decl_start) as usize)
                     )
-                ));
+                ).to_string());
                 continue;
             };
 
             if jsdoc.comment().parsed().len() == 0 {
-                errors.push(format!(
-                    "sor: {}: A függvénynek nincs leírása a JSDoc-ban\n{}\n{}",
-                    context.get_line(decl_start),
-                    context.lines[context.get_line(decl_start) - 1],
+                errors.push(t!(
+                    "FD02", line =
+                    context.get_line(decl_start), function =
+                    context.lines[context.get_line(decl_start) - 1], highlight =
                     format!(
                         "{}{}",
                         " ".repeat(context.get_column(decl_start) - 1),
                         "^".repeat((body.span.start - 1 - decl_start) as usize)
                     )
-                ));
+                ).to_string());
             }
 
             let param_tags = jsdoc
@@ -53,16 +54,16 @@ impl Handler for FunctionJsDocChecker {
                 .filter(|tag| tag.kind.parsed() == "param")
                 .collect::<Vec<&JSDocTag>>();
             if param_tags.len() != decl.params.parameters_count() {
-                errors.push(format!(
-                    "sor: {}: A függvény paramétereinek száma nem egyezik meg a JSDoc-ban lévő paraméterek számával\n{}\n{}",
-                    context.get_line(decl_start),
-                    context.lines[context.get_line(decl_start) - 1],
+                errors.push(t!(
+                    "FD03", line =
+                    context.get_line(decl_start), function =
+                    context.lines[context.get_line(decl_start) - 1], highlight =
                     format!(
                         "{}{}",
                         " ".repeat(context.get_column(decl_start) - 1),
                         "^".repeat((body.span.start - 1 - decl_start) as usize)
                     )
-                ));
+                ).to_string());
             }
 
             let mut params = decl
@@ -73,56 +74,56 @@ impl Handler for FunctionJsDocChecker {
                 let (type_part, name_part, comment_part) = tag.type_name_comment();
 
                 if let None = type_part {
-                    errors.push(format!(
-                        "sor: {}: A @param-nak nincs típus megadva\n{}\n{}",
-                        context.get_line(tag.span.start),
+                    errors.push(t!(
+                        "FD04", line =
+                        context.get_line(tag.span.start), jsdoc =
                         context.lines[context.get_line(jsdoc.span.start) - 1
                             ..=context.get_line(jsdoc.span.end) - 1]
                             .to_vec()
-                            .join("\n"),
+                            .join("\n"), highlight =
                         "^".repeat(context.lines[context.get_line(jsdoc.span.end - 2)].len())
-                    ));
+                    ).to_string());
                     continue;
                 };
 
                 if name_part.is_none()
                     || (name_part.is_some() && name_part.unwrap().parsed() == "*")
                 {
-                    errors.push(format!(
-                        "sor: {}: A @param-nak nincs név megadva\n{}\n{}",
-                        context.get_line(tag.span.start),
+                    errors.push(t!(
+                        "FD05", line =
+                        context.get_line(tag.span.start), jsdoc =
                         context.lines[context.get_line(jsdoc.span.start) - 1
                             ..=context.get_line(jsdoc.span.end) - 1]
                             .to_vec()
-                            .join("\n"),
+                            .join("\n"), highlight =
                         "^".repeat(context.lines[context.get_line(jsdoc.span.end - 2)].len())
-                    ));
+                    ).to_string());
                 } else {
                     // If there is no name, then we skip checking if it is in the parameter list.
                     // We can unwrap because we already checked if it is none.
                     if !params.any(|param| param == name_part.unwrap().parsed()) {
-                        errors.push(format!(
-                        "sor: {}: A JSDoc olyan paramétert tartalmaz, ami nincs a függvény szignatúrájában\n{}\n{}",
-                        context.get_line(tag.span.start),
+                        errors.push(t!(
+                        "FD06", line =
+                        context.get_line(tag.span.start), jsdoc =
                         context.lines[context.get_line(jsdoc.span.start) - 1
                             ..=context.get_line(jsdoc.span.end) - 1]
                             .to_vec()
-                            .join("\n"),
+                            .join("\n"), highlight =
                         "^".repeat(context.lines[context.get_line(jsdoc.span.end - 2)].len())
-                    ));
+                    ).to_string());
                     }
                 }
 
                 if comment_part.parsed().len() == 0 {
-                    errors.push(format!(
-                        "sor: {}: A @param-nak nincs leírás megadva\n{}\n{}",
-                        context.get_line(tag.span.start),
+                    errors.push(t!(
+                        "FD07", line =
+                        context.get_line(tag.span.start), jsdoc =
                         context.lines[context.get_line(jsdoc.span.start) - 1
                             ..=context.get_line(jsdoc.span.end) - 1]
                             .to_vec()
-                            .join("\n"),
+                            .join("\n"), highlight =
                         "^".repeat(context.lines[context.get_line(jsdoc.span.end - 2)].len())
-                    ));
+                    ).to_string());
                 }
             }
 
@@ -131,30 +132,30 @@ impl Handler for FunctionJsDocChecker {
                 .iter()
                 .find(|tag| tag.kind.parsed() == "returns");
             let Some(returns_tag) = returns_tag else {
-                errors.push(format!(
-                    "sor: {}: A függvény JSDoc-jában nincsen @returns\n{}\n{}",
-                    context.get_line(decl_start),
-                    context.lines[context.get_line(decl_start) - 1],
+                errors.push(t!(
+                    "FD08", line =
+                    context.get_line(decl_start), function =
+                    context.lines[context.get_line(decl_start) - 1], highlight =
                     format!(
                         "{}{}",
                         " ".repeat(context.get_column(decl_start) - 1),
                         "^".repeat((body.span.start - 1 - decl_start) as usize)
                     )
-                ));
+                ).to_string());
                 continue;
             };
 
             let type_part = returns_tag.r#type();
             if let None = type_part {
-                errors.push(format!(
-                    "sor: {}: A @returns-nek nincs típus megadva\n{}\n{}",
-                    context.get_line(returns_tag.span.start),
+                errors.push(t!(
+                    "FD09", line =
+                    context.get_line(returns_tag.span.start), jsdoc =
                     context.lines[context.get_line(jsdoc.span.start) - 1
                         ..=context.get_line(jsdoc.span.end) - 1]
                         .to_vec()
-                        .join("\n"),
+                        .join("\n"), highlight =
                     "^".repeat(context.lines[context.get_line(jsdoc.span.end - 2)].len())
-                ));
+                ).to_string());
             }
         }
 

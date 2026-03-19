@@ -18,8 +18,8 @@ use crate::rules::{
 };
 
 // Setting up i18n!
-// This is has to be in main, although it's never used here
-rust_i18n::i18n!("locale", fallback = "en");
+// This have to be in main, although it's never used here
+rust_i18n::i18n!("locales", fallback = "en");
 
 fn main() {
     // Reading and setting language
@@ -41,7 +41,7 @@ fn main() {
     // Needed for oxc.
     let mut allocator = Allocator::new();
 
-    let spin_message = format!("Running tests...\n");
+    let spin_message = "Running tests...\n";
     let mut spinner = Spinner::new(spinners::Circle, spin_message, Color::Blue);
     for file_name in files {
         // We do not check files other than .js files.

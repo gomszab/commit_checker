@@ -1,5 +1,5 @@
 use colored::Colorize;
-use rust_i18n::t;
+use crate::api::file_context::{FileFeedback};
 
 pub struct ErrorHandler {
     pub errored_files: Vec<FileFeedback>,
@@ -40,8 +40,7 @@ impl ErrorHandler {
     pub fn add_result(&mut self, result: Result<FileFeedback, String>) {
         match result {
             Ok(file_feedback) => {
-                let is_errored = file_feedback.tasks.iter().any(|task| task.errored);
-                if is_errored {
+                if file_feedback.tasks.iter().any(|task| task.errored) {
                     self.errored_files.push(file_feedback);
                 } else {
                     self.ok_files.push(file_feedback);
@@ -79,6 +78,7 @@ impl ErrorHandler {
         }
     }
 
+    // Summarize the file feedbacks
     pub fn summa(&self) {
         for file in &self.errored_files {
             let message = format!("❌ {} Sikertelen", file.file_name);
@@ -92,35 +92,5 @@ impl ErrorHandler {
 
     pub fn is_errored(&self) -> bool {
         self.errored_files.len() != 0
-    }
-}
-
-pub struct FileFeedback {
-    pub file_name: String,
-    pub tasks: Vec<TaskFeedback>,
-}
-
-impl FileFeedback {
-    pub fn new(file_name: String) -> FileFeedback {
-        FileFeedback {
-            file_name,
-            tasks: Vec::new(),
-        }
-    }
-}
-
-pub struct TaskFeedback {
-    pub task_name: String,
-    pub messages: Vec<String>,
-    pub errored: bool,
-}
-
-impl TaskFeedback {
-    pub fn new(task_name: String) -> TaskFeedback {
-        TaskFeedback {
-            task_name,
-            messages: Vec::new(),
-            errored: false,
-        }
     }
 }

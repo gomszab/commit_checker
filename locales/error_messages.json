@@ -26,11 +26,11 @@
   },
   "FD01": {
     "hu": "sor: %{line} | A függvénynek nincs JSDoc-ja!\n%{function}\n%{highlight}",
-    "en": "line: %{line} | The function is missing a JSDoc!\n%{function}\n%{highlight}"
+    "en": "line: %{line} | The function is missing its JSDoc!\n%{function}\n%{highlight}"
   },
   "FD02": {
-    "hu": "sor: %{line} | A függvénynek nincs leírása a JSDoc-ban!\n%{jsdoc}\n%{highlight}",
-    "en": "line: %{line} | The function is missing a description in it's JSDoc!\n%{jsdoc}\n%{highlight}"
+    "hu": "sor: %{line} | A függvénynek nincs leírása a JSDoc-ban!\n%{function}\n%{highlight}",
+    "en": "line: %{line} | The function is missing a description in it's JSDoc!\n%{function}\n%{highlight}"
   },
   "FD03": {
     "hu": "sor: %{line} | A függvény paramétereinek száma nem egyezik meg a JSDoc-ban lévő paraméterek számával!\n%{function}\n%{highlight}",
@@ -76,10 +76,6 @@
     "hu": "sor: %{line} | A(z) %{forbidden_type} használata típusként nem megengedett!\n%{jsdoc}\n%{highlight}",
     "en": "line: %{line} | %{forbidden_type} cannot be used as type!\n%{jsdoc}\n%{highlight}"
   },
-  "D02": {
-    "hu": "sor: %{line} | A(z) %{forbidden_type} használata típusként nem megengedett!\n%{jsdoc}\n%{highlight}",
-    "en": "line: %{line} | %{forbidden_type} cannot be used as type!\n%{jsdoc}\n%{highlight}"
-  },
   "P01": {
     "hu": "sor: %{line} | A property neveknek legalább 5 karakter hosszúnak kell lenniük!\n%{property}\n%{highlight}",
     "en": "line: %{line} | The names of the properties must be at least 5 characters long!\n%{property}\n%{highlight}"
@@ -93,8 +89,8 @@
     "en": "line: %{line} | The property is missing its JSDoc!\n%{property}\n%{highlight}"
   },
   "PD02": {
-    "hu": "sor: %{line} | A property JSDoc-jában nincsen @type!\n%{jsdoc}\n%{highlight}",
-    "en": "line: %{line} | The JSDoc of the property is missing its @type!\n%{jsdoc}\n%{highlight}"
+    "hu": "sor: %{line} | A property JSDoc-jában nincsen @type!\n%{property}\n%{highlight}",
+    "en": "line: %{line} | The JSDoc of the property is missing its @type!\n%{property}\n%{highlight}"
   },
   "TD01": {
     "hu": "sor: %{line} | A @type JSDoc-nak nincs se típus, se leírás megadva!\n%{jsdoc}\n%{highlight}",
@@ -141,7 +137,7 @@
     "en": "line: %{line} | The variable is missing its JSDoc!\n%{variable}\n%{highlight}"
   },
   "VD02": {
-    "hu": "sor: %{line} | A változó JSDoc-jában nincsen @type!\n%{jsdoc}\n%{highlight}",
-    "en": "line: %{line} | The JSDoc of the variable is missing its @type!\n%{jsdoc}\n%{highlight}"
+    "hu": "sor: %{line} | A változó JSDoc-jában nincsen @type!\n%{variable}\n%{highlight}",
+    "en": "line: %{line} | The JSDoc of the variable is missing its @type!\n%{variable}\n%{highlight}"
   }
 }
