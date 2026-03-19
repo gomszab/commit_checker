@@ -1,5 +1,6 @@
 use colored::Colorize;
 use crate::api::file_context::{FileFeedback};
+use rust_i18n::t;
 
 pub struct ErrorHandler {
     pub errored_files: Vec<FileFeedback>,
@@ -81,11 +82,11 @@ impl ErrorHandler {
     // Summarize the file feedbacks
     pub fn summa(&self) {
         for file in &self.errored_files {
-            let message = format!("❌ {} Sikertelen", file.file_name);
+            let message = t!("ERR", file_name = file.file_name).to_string();
             ErrorHandler::print_error(message);
         }
         for file in &self.ok_files {
-            let message = format!("✔ {} Sikeres", file.file_name);
+            let message = t!("OK", file_name = file.file_name).to_string();
             ErrorHandler::print_ok(message);
         }
     }

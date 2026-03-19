@@ -6,6 +6,7 @@ use std::rc::Rc;
 
 use colored::Colorize;
 use oxc::allocator::Allocator;
+use rust_i18n::t;
 use sys_language::detect_system_language;
 
 use crate::api::FileContext;
@@ -19,7 +20,7 @@ use crate::rules::{
 
 // Setting up i18n!
 // This have to be in main, although it's never used here
-rust_i18n::i18n!("locales", fallback = "en");
+rust_i18n::i18n!("i18n", fallback = "en");
 
 fn main() {
     // Reading and setting language
@@ -51,9 +52,9 @@ fn main() {
         let content = match std::fs::read_to_string(&file_name) {
             Ok(content) => content,
             Err(_) => {
-                let message = format!(
-                    "nem sikerült a {file_name} fájl olvasása\nelképzelhető hogy stagelve van egy fájl, amit kitöröltél; nézd meg a git status-t, és ha zölddel ott van egy fájl, ami törölve van, futtasd a git rm --cached {file_name} parancsot)"
-                );
+                let message = t!(
+                    "GIT01", file_name = file_name
+                ).to_string();
                 ErrorHandler::print_error(message);
                 exit(1);
             }
@@ -116,18 +117,18 @@ fn get_staged_files() -> Result<Vec<String>, String> {
             match diff_output {
                 Ok(diff_content) => {
                     if !diff_content.stdout.is_empty() {
-                        return Err(format!(
-                            "nem futtattad a git add parancsot miutan modositottad a kovetkezo fajlt: {filename}",
-                        ));
+                        return Err(t!(
+                            "GIT02", file_name = filename
+                        ).to_string());
                     }
                 }
                 Err(_) => {
-                    return Err("nem sikerult a modositott fajlok lekerese".to_string());
+                    return Err(t!("GIT03").to_string());
                 }
             }
         }
     } else {
-        return Err("nem sikerult a git staged fajlok lekerese".to_string());
+        return Err(t!("GIT04").to_string());
     }
 
     Ok(staged_files)

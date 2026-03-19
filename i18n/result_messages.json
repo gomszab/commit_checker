@@ -1,0 +1,11 @@
+{
+  "_version": 2,
+  "OK": {
+    "hu": "✔ %{file_name} Sikeres",
+    "en": "✔ %{file_name} Passed"
+  },
+  "ERR": {
+    "hu": "❌ %{file_name} Sikertelen",
+    "en": "❌ %{file_name} Failed"
+  }
+}

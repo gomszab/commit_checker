@@ -1,0 +1,19 @@
+{
+  "_version": 2,
+  "GIT01": {
+    "hu": "Nem sikerült a %{file_name} fájl olvasása\nElképzelhető hogy stagelve van egy fájl, amit kitöröltél; Nézd meg a git status-t, és ha zölddel ott van egy fájl, ami törölve van, futtasd a git rm --cached %{file_name} parancsot!",
+    "en": "Reading %{file_name} has failed\nMaybe there is a file that is staged and you deleted it; Use the command git status and if there is a file with a green name which is deleted, run the command git rm --cached %{file_name}!"
+  },
+  "GIT02": {
+    "hu": "Nem futtattad a git add parancsot miután módosítottad a következő fájlt: %{filename}!",
+    "en": "You didn't run the git add command after you made changes in the file: %{file_name}!"
+  },
+  "GIT03": {
+    "hu": "nem sikerült a módosított fájlok lekérése",
+    "en": "Haven't been able to get the changed files"
+  },
+  "GIT04": {
+    "hu": "nem sikerült a git staged fájlok lekérése",
+    "en": "Haven't been able to get the git staged files"
+  }
+}
