@@ -19,7 +19,7 @@ use crate::rules::{
 };
 
 // Setting up i18n!
-// This have to be in main, although it's never used here
+// This have to be in main, otherwise it won't work!
 rust_i18n::i18n!("i18n", fallback = "en");
 
 fn main() {
@@ -42,7 +42,7 @@ fn main() {
     // Needed for oxc.
     let mut allocator = Allocator::new();
 
-    let spin_message = "Running tests...\n";
+    let spin_message = t!("SW01").to_string() + "\n";
     let mut spinner = Spinner::new(spinners::Circle, spin_message, Color::Blue);
     for file_name in files {
         // We do not check files other than .js files.
@@ -102,7 +102,7 @@ fn main() {
 }
 
 fn show_feedback(error_handler: &ErrorHandler){
-    // Print Errored files
+    // Print errored files
     for file in &error_handler.errored_files {
         println!("{}:", file.file_name);
         for task in &file.tasks {
@@ -116,9 +116,9 @@ fn show_feedback(error_handler: &ErrorHandler){
         println!();
     }
 
-    // Print OK files
+    // Print ok files
     for file in &error_handler.ok_files {
-        println!("{}: ✔ Minden teszt lefutott sikeresen (:", file.file_name);
+        println!("{}", t!("SW02", file_name = file.file_name).to_string());
         for task in &file.tasks {
             println!("{}", task.task_name);
             ErrorHandler::print_oks(&task.messages);

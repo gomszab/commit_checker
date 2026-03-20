@@ -34,9 +34,9 @@ impl Handler for UnusedFunctionChecker {
     }
 
     fn success_message(&self) -> String {
-        format!("Minden függvény használva van")
+        t!("SCM11").to_string()
     }
     fn title(&self) -> String {
-        format!("Felhasználatlan függvények ellenőrzése...")
+        t!("TT11").to_string()
     }
 }

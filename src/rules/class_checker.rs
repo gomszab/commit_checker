@@ -55,7 +55,7 @@ impl Handler for ClassChecker {
                     .value
                     .body
                     .as_ref()
-                    .expect("A konstruktornak nincs body-ja");
+                    .expect(&t!("SW05").to_string());
 
                 if !super_exists(&body.statements) {
                     errors.push(
@@ -83,11 +83,11 @@ impl Handler for ClassChecker {
     }
 
     fn success_message(&self) -> String {
-        format!("Osztálydefiníciók rendben")
+       t!("SCM01").to_string()
     }
 
     fn title(&self) -> String {
-        format!("Osztálydefiníciók ellenőrzése...")
+       t!("TT01").to_string()
     }
 }
 

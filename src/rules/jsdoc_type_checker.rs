@@ -43,9 +43,9 @@ impl Handler for JsDocTypeChecker {
     }
 
     fn success_message(&self) -> String {
-        format!("A JSDoc típusok rendben")
+        t!("SCM06").to_string()
     }
     fn title(&self) -> String {
-        format!("JSDoc típusok ellenőrzése...")
+        t!("TT06").to_string()
     }
 }

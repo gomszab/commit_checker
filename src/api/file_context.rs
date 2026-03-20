@@ -5,7 +5,7 @@ use colored::Colorize;
 use line_numbers::LinePositions;
 use oxc::{allocator::Allocator, ast::ast::Program, parser::Parser, span::SourceType};
 use oxc_semantic::{Semantic, SemanticBuilder};
-
+use rust_i18n::t;
 use crate::api::{Handler, HandlerResult};
 
 pub struct FileContext<'a> {
@@ -28,7 +28,7 @@ impl<'a> FileContext<'a> {
         let parsed = Parser::new(allocator, file_contents, SourceType::mjs()).parse();
 
         if !parsed.errors.is_empty() {
-            return Err(format!("Hiba van a {file_name} fájlban!"));
+            return Err(t!("SW04", file_name = file_name).to_string());
         }
 
         let mut file_context = Box::pin(FileContext {
@@ -48,7 +48,7 @@ impl<'a> FileContext<'a> {
             .build(unsafe { &(*context_ptr).program });
 
         if !analyzed.errors.is_empty() {
-            return Err(format!("Hiba van a {file_name} fájlban!"));
+            return Err(t!("SW04", file_name = file_name).to_string());
         }
 
         // SAFETY: We don't do anything with the pinned Program and we don't cause any moves.

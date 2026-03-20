@@ -1,4 +1,5 @@
 use colored::Colorize;
+use rust_i18n::t;
 use crate::api::file_context::{FileFeedback};
 
 pub struct ErrorHandler {
@@ -25,7 +26,7 @@ impl ErrorHandler {
                 }
             }
             Err(_err) => {
-                ErrorHandler::print_error("Failed to handle files".to_string());
+                ErrorHandler::print_error(t!("SW03").to_string());
             }
         }
     }

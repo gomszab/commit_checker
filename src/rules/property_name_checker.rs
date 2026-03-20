@@ -59,9 +59,9 @@ impl Handler for PropertyNameChecker {
     }
 
     fn success_message(&self) -> String {
-        format!("Property nevek rendben")
+        t!("SCM08").to_string()
     }
     fn title(&self) -> String {
-        format!("Property nevek ellenőrzése...")
+        t!("TT08").to_string()
     }
 }

@@ -27,10 +27,10 @@ impl Handler for VarKeywordChecker {
     }
 
     fn success_message(&self) -> String {
-        format!("Nincs var")
+       t!("SCM13").to_string()
     }
 
     fn title(&self) -> String {
-        format!("Var használat ellenőrzése...")
+        t!("TT13").to_string()
     }
 }

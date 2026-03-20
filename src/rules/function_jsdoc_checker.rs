@@ -18,7 +18,7 @@ impl Handler for FunctionJsDocChecker {
         for (start, decl, jsdoc) in get_all_func_decl_jsdocs(nodes, semantic.jsdoc()) {
             let decl_start = start;
             let Some(body) = &decl.body else {
-                panic!("Typescriptet nem támogatunk");
+                panic!("{}", t!("SW06").to_string());
             };
 
             let Some(jsdoc) = jsdoc else {
@@ -167,10 +167,10 @@ impl Handler for FunctionJsDocChecker {
     }
 
     fn success_message(&self) -> String {
-        format!("Függvények JSDocjai rendben")
+        t!("SCM04").to_string()
     }
     fn title(&self) -> String {
-        format!("Függvények JSDocjainak ellenőrzése...")
+        t!("TT04").to_string()
     }
 }
 

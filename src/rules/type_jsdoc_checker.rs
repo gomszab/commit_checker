@@ -60,9 +60,9 @@ impl Handler for TypeJsDocChecker {
         }
     }
     fn success_message(&self) -> String {
-        format!("Type-ok rendben")
+        t!("SCM09").to_string()
     }
     fn title(&self) -> String {
-        format!("Type-ok analizálása...")
+        t!("TT09").to_string()
     }
 }

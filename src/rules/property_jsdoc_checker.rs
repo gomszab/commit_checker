@@ -55,10 +55,10 @@ impl Handler for PropertyJsDocChecker {
     }
 
     fn success_message(&self) -> String {
-        format!("Propertyk JSDocjai rendben")
+        t!("SCM07").to_string()
     }
     fn title(&self) -> String {
-        format!("Propertyk JSDocjainak ellenőrzése...")
+        t!("TT07").to_string()
     }
 }
 

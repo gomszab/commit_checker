@@ -9,11 +9,11 @@
     "en": "You didn't run the git add command after you made changes in the file: %{file_name}!"
   },
   "GIT03": {
-    "hu": "nem sikerült a módosított fájlok lekérése",
-    "en": "Haven't been able to get the changed files"
+    "hu": "Nem sikerült a módosított fájlok lekérése!",
+    "en": "Haven't been able to get the changed files!"
   },
   "GIT04": {
-    "hu": "nem sikerült a git staged fájlok lekérése",
-    "en": "Haven't been able to get the git staged files"
+    "hu": "Nem sikerült a git staged fájlok lekérése!",
+    "en": "Haven't been able to get the git staged files!"
   }
 }

@@ -64,9 +64,9 @@ impl Handler for TypedefJsDocChecker {
         }
     }
     fn success_message(&self) -> String {
-        format!("Typedef-ek rendben")
+        t!("SCM10").to_string()
     }
     fn title(&self) -> String {
-        format!("Typedef-ek analizálása...")
+        t!("TT10").to_string()
     }
 }

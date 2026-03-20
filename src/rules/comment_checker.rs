@@ -41,11 +41,11 @@ impl Handler for CommentChecker {
             HandlerResult::Error(errors)
         }
     }
-    fn title(&self) -> String {
-        format!("Sorvegi kommentek ellenorzese")
+    fn success_message(&self) -> String {
+        t!("SCM03").to_string()
     }
 
-    fn success_message(&self) -> String {
-        format!("Sorvegi komment jo")
+    fn title(&self) -> String {
+        t!("TT03").to_string()
     }
 }

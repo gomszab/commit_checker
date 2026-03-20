@@ -54,11 +54,11 @@ impl Handler for VariableNameChecker {
     }
 
     fn success_message(&self) -> String {
-        format!("Változónevek rendben")
+        t!("SCM15").to_string()
     }
 
     fn title(&self) -> String {
-        format!("Változónevek ellenőrzése...")
+        t!("TT15").to_string()
     }
 }
 

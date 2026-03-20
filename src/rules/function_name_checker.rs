@@ -44,11 +44,11 @@ impl Handler for FunctionNameChecker {
     }
 
     fn success_message(&self) -> String {
-        format!("Függvénynevek rendben")
+        t!("SCM05").to_string()
     }
 
     fn title(&self) -> String {
-        format!("Függvénynevek ellenőrzése...")
+        t!("TT05").to_string()
     }
 }
 
@@ -74,7 +74,7 @@ fn get_all_func_names_and_spans<'a>(nodes: &'a AstNodes) -> Vec<(oxc::span::Atom
                 // We have to do this, because for some reason the id is after the
                 // MethodDefinition.
                 let AstKind::IdentifierName(IdentifierName { span, name }) =
-                    nodes.next().expect("nincs a metódusnak neve").kind()
+                    nodes.next().expect(&t!("F04").to_string()).kind()
                 else {
                     continue;
                 };

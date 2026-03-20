@@ -34,9 +34,9 @@ impl Handler for UnusedVariableChecker {
     }
 
     fn success_message(&self) -> String {
-        format!("Minden változó használva van")
+        t!("SCM12").to_string()
     }
     fn title(&self) -> String {
-        format!("Felhasználatlan változók ellenőrzése...")
+        t!("TT12").to_string()
     }
 }

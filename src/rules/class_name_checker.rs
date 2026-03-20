@@ -56,10 +56,10 @@ impl Handler for ClassNameChecker {
     }
 
     fn success_message(&self) -> String {
-        format!("Class nevek rendben")
+       t!("SCM02").to_string()
     }
 
     fn title(&self) -> String {
-        format!("Class nevek ellenőrzése...")
+        t!("TT02").to_string()
     }
 }

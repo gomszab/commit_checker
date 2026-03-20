@@ -72,6 +72,10 @@
     "hu": "sor: %{line} | Felhasználatlan függvény!\n%{function}\n%{highlight}",
     "en": "line: %{line} | Unused function!\n%{function}\n%{highlight}"
   },
+  "F04": {
+    "hu": "Nincs a metódusnak neve!",
+    "en": "The function is missing its name!"
+  },
   "D01": {
     "hu": "sor: %{line} | A(z) %{forbidden_type} használata típusként nem megengedett!\n%{jsdoc}\n%{highlight}",
     "en": "line: %{line} | %{forbidden_type} cannot be used as type!\n%{jsdoc}\n%{highlight}"

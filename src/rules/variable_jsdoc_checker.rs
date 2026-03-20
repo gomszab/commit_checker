@@ -58,10 +58,10 @@ impl Handler for VariableJsDocChecker {
     }
 
     fn success_message(&self) -> String {
-        format!("Változók JSDocjai rendben")
+        t!("SCM14").to_string()
     }
     fn title(&self) -> String {
-        format!("Változók JSDocjainak ellenőrzése...")
+        t!("TT14").to_string()
     }
 }
 
