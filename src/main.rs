@@ -92,12 +92,49 @@ fn main() {
     }
     spinner.stop();
 
-    error_handler.show_feedback();
+    show_feedback(&error_handler);
     println!();
-    error_handler.summa();
+    summarize(&error_handler);
 
     if error_handler.is_errored() {
         exit(1);
+    }
+}
+
+fn show_feedback(error_handler: &ErrorHandler){
+    // Print Errored files
+    for file in &error_handler.errored_files {
+        println!("{}:", file.file_name);
+        for task in &file.tasks {
+            println!("{}", task.task_name);
+            if task.errored {
+                ErrorHandler::print_errors(&task.messages); // print errored tasks
+            } else {
+                ErrorHandler::print_oks(&task.messages); // print ok tasks
+            }
+        }
+        println!();
+    }
+
+    // Print OK files
+    for file in &error_handler.ok_files {
+        println!("{}: ✔ Minden teszt lefutott sikeresen (:", file.file_name);
+        for task in &file.tasks {
+            println!("{}", task.task_name);
+            ErrorHandler::print_oks(&task.messages);
+        }
+        println!();
+    }
+}
+
+fn summarize(error_handler: &ErrorHandler){
+    for file in &error_handler.errored_files {
+        let message = t!("ERR", file_name = file.file_name).to_string();
+        ErrorHandler::print_error(message);
+    }
+    for file in &error_handler.ok_files {
+        let message = t!("OK", file_name = file.file_name).to_string();
+        ErrorHandler::print_ok(message);
     }
 }
 
