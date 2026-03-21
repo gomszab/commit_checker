@@ -14,16 +14,19 @@ impl Handler for UnusedVariableChecker {
 
         for var_id in unused_variables {
             let span = scope.symbol_span(var_id);
-            errors.push(t!(
-                "V01", line =
-                context.get_line(span.start), variable =
-                context.lines[context.get_line(span.start) - 1], highlight =
-                format!(
-                    "{}{}",
-                    " ".repeat(context.get_column(span.start) - 1),
-                    "^".repeat((span.end - span.start) as usize)
+            errors.push(
+                t!(
+                    "V01",
+                    line = context.get_line(span.start),
+                    variable = context.lines[context.get_line(span.start) - 1],
+                    highlight = format!(
+                        "{}{}",
+                        " ".repeat(context.get_column(span.start) - 1),
+                        "^".repeat((span.end - span.start) as usize)
+                    )
                 )
-            ).to_string());
+                .to_string(),
+            );
         }
 
         if errors.is_empty() {

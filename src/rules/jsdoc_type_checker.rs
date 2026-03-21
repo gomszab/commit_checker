@@ -22,16 +22,20 @@ impl Handler for JsDocTypeChecker {
                     continue;
                 };
 
-                errors.push(t!(
-                    "D01", line =
-                    context.get_line(tag.span.start), forbidden_type =
-                    found_forbidden, jsdoc =
-                    context.lines[context.get_line(jsdoc.span.start) - 1
-                        ..=context.get_line(jsdoc.span.end) - 1]
-                        .to_vec()
-                        .join("\n"), highlight =
-                    "^".repeat(context.lines[context.get_line(jsdoc.span.end - 2)].len())
-                ).to_string());
+                errors.push(
+                    t!(
+                        "D01",
+                        line = context.get_line(tag.span.start),
+                        forbidden_type = found_forbidden,
+                        jsdoc = context.lines[context.get_line(jsdoc.span.start) - 1
+                            ..=context.get_line(jsdoc.span.end) - 1]
+                            .to_vec()
+                            .join("\n"),
+                        highlight =
+                            "^".repeat(context.lines[context.get_line(jsdoc.span.end - 2)].len())
+                    )
+                    .to_string(),
+                );
             }
         }
 

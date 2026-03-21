@@ -14,16 +14,19 @@ impl Handler for UnusedFunctionChecker {
 
         for func_id in unused_functions {
             let span = scope.symbol_span(func_id);
-            errors.push(t!(
-                "F03", line =
-                context.get_line(span.start), function =
-                context.lines[context.get_line(span.start) - 1], highlight =
-                format!(
-                    "{}{}",
-                    " ".repeat(context.get_column(span.start) - 1),
-                    "^".repeat((span.end - span.start) as usize)
+            errors.push(
+                t!(
+                    "F03",
+                    line = context.get_line(span.start),
+                    function = context.lines[context.get_line(span.start) - 1],
+                    highlight = format!(
+                        "{}{}",
+                        " ".repeat(context.get_column(span.start) - 1),
+                        "^".repeat((span.end - span.start) as usize)
+                    )
                 )
-            ).to_string());
+                .to_string(),
+            );
         }
 
         if errors.is_empty() {

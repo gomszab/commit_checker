@@ -15,34 +15,40 @@ impl Handler for PropertyJsDocChecker {
         for (decl, jsdoc) in get_all_property_decl_jsdocs(nodes, semantic.jsdoc()) {
             let decl_start = decl.span.start;
             let Some(jsdoc) = jsdoc else {
-                errors.push(t!(
-                    "PD01", line =
-                    context.get_line(decl_start), property =
-                    context.lines[context.get_line(decl_start) - 1], highlight =
-                    format_args!(
-                        "{}{}",
-                        " ".repeat(context.get_column(decl_start) - 1),
-                        "^".repeat((decl.span.end - decl_start) as usize)
+                errors.push(
+                    t!(
+                        "PD01",
+                        line = context.get_line(decl_start),
+                        property = context.lines[context.get_line(decl_start) - 1],
+                        highlight = format_args!(
+                            "{}{}",
+                            " ".repeat(context.get_column(decl_start) - 1),
+                            "^".repeat((decl.span.end - decl_start) as usize)
+                        )
                     )
-                ).to_string());
+                    .to_string(),
+                );
                 continue;
             };
 
             let type_tag = jsdoc.tags().iter().find(|tag| tag.kind.parsed() == "type");
             if type_tag.is_none() {
-                errors.push(t!(
-                    "PD02", line =
-                    context.get_line(decl_start), property =
-                    context.lines
-                        [context.get_line(jsdoc.span.start) - 1..=context.get_line(decl_start) - 1]
-                        .to_vec()
-                        .join("\n"), highlight =
-                    format_args!(
-                        "{}{}",
-                        " ".repeat(context.get_column(decl_start) - 1),
-                        "^".repeat((decl.span.end - decl_start) as usize)
+                errors.push(
+                    t!(
+                        "PD02",
+                        line = context.get_line(decl_start),
+                        property = context.lines[context.get_line(jsdoc.span.start) - 1
+                            ..=context.get_line(decl_start) - 1]
+                            .to_vec()
+                            .join("\n"),
+                        highlight = format_args!(
+                            "{}{}",
+                            " ".repeat(context.get_column(decl_start) - 1),
+                            "^".repeat((decl.span.end - decl_start) as usize)
+                        )
                     )
-                ).to_string());
+                    .to_string(),
+                );
                 continue;
             };
         }

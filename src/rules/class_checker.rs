@@ -83,11 +83,11 @@ impl Handler for ClassChecker {
     }
 
     fn success_message(&self) -> String {
-       t!("SCM01").to_string()
+        t!("SCM01").to_string()
     }
 
     fn title(&self) -> String {
-       t!("TT01").to_string()
+        t!("TT01").to_string()
     }
 }
 

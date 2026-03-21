@@ -18,33 +18,41 @@ impl Handler for ClassNameChecker {
             };
 
             let Some(binding_identifier) = &class.id else {
-                errors.push(t!(
-                    "C01", line = context.get_line(class.span.start)
-                ).to_string());
+                errors.push(t!("C01", line = context.get_line(class.span.start)).to_string());
                 continue;
             };
             let name = binding_identifier.name;
             let start = binding_identifier.span.start;
             if name.len() < 5 {
-                errors.push(t!(
-                    "C02",
-                    line = context.get_line(start),
-                    class = context.lines[context.get_line(start) - 1],
-                    highlight =
-                    format!(
-                        "{}{}",
-                        " ".repeat(context.get_column(start) - 1),
-                        "^".repeat(name.len())
+                errors.push(
+                    t!(
+                        "C02",
+                        line = context.get_line(start),
+                        class = context.lines[context.get_line(start) - 1],
+                        highlight = format!(
+                            "{}{}",
+                            " ".repeat(context.get_column(start) - 1),
+                            "^".repeat(name.len())
+                        )
                     )
-                ).to_string());
+                    .to_string(),
+                );
             }
 
             if contains_number_or_hungarian_letter(name.as_str()) {
-                errors.push(t!(
-                            "C03", line = context.get_line(start), class =
-                            context.lines[context.get_line(start) - 1], highlight =
-                            format!("{}{}", " ".repeat(context.get_column(start) - 1), "^".repeat(name.len()))
-                        ).to_string());
+                errors.push(
+                    t!(
+                        "C03",
+                        line = context.get_line(start),
+                        class = context.lines[context.get_line(start) - 1],
+                        highlight = format!(
+                            "{}{}",
+                            " ".repeat(context.get_column(start) - 1),
+                            "^".repeat(name.len())
+                        )
+                    )
+                    .to_string(),
+                );
             }
         }
 
@@ -56,7 +64,7 @@ impl Handler for ClassNameChecker {
     }
 
     fn success_message(&self) -> String {
-       t!("SCM02").to_string()
+        t!("SCM02").to_string()
     }
 
     fn title(&self) -> String {

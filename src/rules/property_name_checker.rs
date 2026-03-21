@@ -29,25 +29,35 @@ impl Handler for PropertyNameChecker {
             };
 
             if name.len() < 5 {
-                errors.push(t!(
-                    "P01", line =
-                    context.get_line(start), property =
-                    context.lines[context.get_line(start) - 1], highlight =
-                    format!(
-                        "{}{}",
-                        " ".repeat(context.get_column(start) - 1),
-                        "^".repeat(name.len())
+                errors.push(
+                    t!(
+                        "P01",
+                        line = context.get_line(start),
+                        property = context.lines[context.get_line(start) - 1],
+                        highlight = format!(
+                            "{}{}",
+                            " ".repeat(context.get_column(start) - 1),
+                            "^".repeat(name.len())
+                        )
                     )
-                ).to_string());
+                    .to_string(),
+                );
             }
 
             if contains_number_or_hungarian_letter(name) {
-                errors.push(t!(
-                            "P02", line =
-                            context.get_line(start), property =
-                            context.lines[context.get_line(start) - 1], highlight =
-                            format!("{}{}", " ".repeat(context.get_column(start) - 1), "^".repeat(name.len()))
-                        ).to_string());
+                errors.push(
+                    t!(
+                        "P02",
+                        line = context.get_line(start),
+                        property = context.lines[context.get_line(start) - 1],
+                        highlight = format!(
+                            "{}{}",
+                            " ".repeat(context.get_column(start) - 1),
+                            "^".repeat(name.len())
+                        )
+                    )
+                    .to_string(),
+                );
             }
         }
 

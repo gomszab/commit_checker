@@ -26,12 +26,15 @@ impl Handler for CommentChecker {
             }
 
             if trimmed.chars().any(|c| c.is_alphanumeric()) && !trimmed.contains("//") {
-                errors.push(t!(
-                    "COM01", line =
-                    line_number + 1, comment =
-                    trimmed,highlight =
-                    "^".repeat(trimmed.len())
-                ).to_string());
+                errors.push(
+                    t!(
+                        "COM01",
+                        line = line_number + 1,
+                        comment = trimmed,
+                        highlight = "^".repeat(trimmed.len())
+                    )
+                    .to_string(),
+                );
             }
         }
 

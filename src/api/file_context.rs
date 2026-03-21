@@ -2,11 +2,11 @@ use std::{cell::OnceCell, marker::PhantomPinned, pin::Pin, rc::Rc};
 
 use colored::Colorize;
 
+use crate::api::{Handler, HandlerResult};
 use line_numbers::LinePositions;
 use oxc::{allocator::Allocator, ast::ast::Program, parser::Parser, span::SourceType};
 use oxc_semantic::{Semantic, SemanticBuilder};
 use rust_i18n::t;
-use crate::api::{Handler, HandlerResult};
 
 pub struct FileContext<'a> {
     pub file_name: String,

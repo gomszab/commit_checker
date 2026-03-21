@@ -52,9 +52,7 @@ fn main() {
         let content = match std::fs::read_to_string(&file_name) {
             Ok(content) => content,
             Err(_) => {
-                let message = t!(
-                    "GIT01", file_name = file_name
-                ).to_string();
+                let message = t!("GIT01", file_name = file_name).to_string();
                 ErrorHandler::print_error(message);
                 exit(1);
             }
@@ -101,7 +99,7 @@ fn main() {
     }
 }
 
-fn show_feedback(error_handler: &ErrorHandler){
+fn show_feedback(error_handler: &ErrorHandler) {
     // Print errored files
     for file in &error_handler.errored_files {
         println!("{}:", file.file_name);
@@ -127,7 +125,7 @@ fn show_feedback(error_handler: &ErrorHandler){
     }
 }
 
-fn summarize(error_handler: &ErrorHandler){
+fn summarize(error_handler: &ErrorHandler) {
     for file in &error_handler.errored_files {
         let message = t!("ERR", file_name = file.file_name).to_string();
         ErrorHandler::print_error(message);
@@ -154,9 +152,7 @@ fn get_staged_files() -> Result<Vec<String>, String> {
             match diff_output {
                 Ok(diff_content) => {
                     if !diff_content.stdout.is_empty() {
-                        return Err(t!(
-                            "GIT02", file_name = filename
-                        ).to_string());
+                        return Err(t!("GIT02", file_name = filename).to_string());
                     }
                 }
                 Err(_) => {

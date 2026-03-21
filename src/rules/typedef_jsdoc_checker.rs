@@ -20,38 +20,50 @@ impl Handler for TypedefJsDocChecker {
                 if let None = type_part
                     && name_part.parsed().len() == 0
                 {
-                    errors.push(t!(
-                        "TD04", line =
-                        context.get_line(tag.span.start), jsdoc =
-                        context.lines[context.get_line(jsdoc.span.start) - 1
-                            ..=context.get_line(jsdoc.span.end) - 1]
-                            .to_vec()
-                            .join("\n"), highlight =
-                        "^".repeat(context.lines[context.get_line(jsdoc.span.end - 2)].len())
-                    ).to_string());
+                    errors.push(
+                        t!(
+                            "TD04",
+                            line = context.get_line(tag.span.start),
+                            jsdoc = context.lines[context.get_line(jsdoc.span.start) - 1
+                                ..=context.get_line(jsdoc.span.end) - 1]
+                                .to_vec()
+                                .join("\n"),
+                            highlight = "^"
+                                .repeat(context.lines[context.get_line(jsdoc.span.end - 2)].len())
+                        )
+                        .to_string(),
+                    );
                     continue;
                 } else if name_part.parsed().len() == 0 {
-                    errors.push(t!(
-                        "TD05", line =
-                        context.get_line(tag.span.start), jsdoc =
-                        context.lines[context.get_line(jsdoc.span.start) - 1
-                            ..=context.get_line(jsdoc.span.end) - 1]
-                            .to_vec()
-                            .join("\n"), highlight =
-                        "^".repeat(context.lines[context.get_line(jsdoc.span.end - 2)].len())
-                    ).to_string());
+                    errors.push(
+                        t!(
+                            "TD05",
+                            line = context.get_line(tag.span.start),
+                            jsdoc = context.lines[context.get_line(jsdoc.span.start) - 1
+                                ..=context.get_line(jsdoc.span.end) - 1]
+                                .to_vec()
+                                .join("\n"),
+                            highlight = "^"
+                                .repeat(context.lines[context.get_line(jsdoc.span.end - 2)].len())
+                        )
+                        .to_string(),
+                    );
 
                     continue;
                 } else if let None = type_part {
-                    errors.push(t!(
-                        "TD06", line =
-                        context.get_line(tag.span.start), jsdoc =
-                        context.lines[context.get_line(jsdoc.span.start) - 1
-                            ..=context.get_line(jsdoc.span.end) - 1]
-                            .to_vec()
-                            .join("\n"), highlight =
-                        "^".repeat(context.lines[context.get_line(jsdoc.span.end - 2)].len())
-                    ).to_string());
+                    errors.push(
+                        t!(
+                            "TD06",
+                            line = context.get_line(tag.span.start),
+                            jsdoc = context.lines[context.get_line(jsdoc.span.start) - 1
+                                ..=context.get_line(jsdoc.span.end) - 1]
+                                .to_vec()
+                                .join("\n"),
+                            highlight = "^"
+                                .repeat(context.lines[context.get_line(jsdoc.span.end - 2)].len())
+                        )
+                        .to_string(),
+                    );
                     continue;
                 }
             }

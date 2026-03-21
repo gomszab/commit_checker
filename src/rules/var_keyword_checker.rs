@@ -12,10 +12,7 @@ impl Handler for VarKeywordChecker {
             if let Statement::VariableDeclaration(decl) = declaration
                 && let VariableDeclarationKind::Var = decl.kind
             {
-                errors.push(t!(
-                    "V02", line =
-                    context.get_line(decl.span.start)
-                ).to_string());
+                errors.push(t!("V02", line = context.get_line(decl.span.start)).to_string());
             }
         }
 
@@ -27,7 +24,7 @@ impl Handler for VarKeywordChecker {
     }
 
     fn success_message(&self) -> String {
-       t!("SCM13").to_string()
+        t!("SCM13").to_string()
     }
 
     fn title(&self) -> String {

@@ -34,12 +34,19 @@ impl Handler for VariableNameChecker {
                         }
 
                         if contains_number_or_hungarian_letter(name.as_str()) {
-                            errors.push(t!(
-                            "V04", line =
-                            context.get_line(start), variable =
-                            context.lines[context.get_line(start) - 1], highlight =
-                            format!("{}{}", " ".repeat(context.get_column(start) - 1), "^".repeat(name.len()))
-                        ).to_string());
+                            errors.push(
+                                t!(
+                                    "V04",
+                                    line = context.get_line(start),
+                                    variable = context.lines[context.get_line(start) - 1],
+                                    highlight = format!(
+                                        "{}{}",
+                                        " ".repeat(context.get_column(start) - 1),
+                                        "^".repeat(name.len())
+                                    )
+                                )
+                                .to_string(),
+                            );
                         }
                     }
                 }
