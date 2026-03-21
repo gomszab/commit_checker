@@ -11,3 +11,5 @@ oxc = { version = "0.102.0", features = ["semantic"] }
 oxc_semantic = { version = "0.102.0", features = ["linter"] }
 line-numbers = "0.4.0"
 rustc-hash = "2.1.1"
+rust-i18n = "3"
+sys_language = "0.1.0"

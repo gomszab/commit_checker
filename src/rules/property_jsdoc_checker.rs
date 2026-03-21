@@ -1,5 +1,6 @@
 use oxc::ast::{AstKind, ast::PropertyDefinition};
 use oxc_semantic::{AstNodes, JSDoc, JSDocFinder};
+use rust_i18n::t;
 
 use crate::api::{Handler, HandlerResult};
 
@@ -14,34 +15,34 @@ impl Handler for PropertyJsDocChecker {
         for (decl, jsdoc) in get_all_property_decl_jsdocs(nodes, semantic.jsdoc()) {
             let decl_start = decl.span.start;
             let Some(jsdoc) = jsdoc else {
-                errors.push(format!(
-                    "sor: {}: A property-nek nincs JSDoc-ja\n{}\n{}",
-                    context.get_line(decl_start),
-                    context.lines[context.get_line(decl_start) - 1],
+                errors.push(t!(
+                    "PD01", line =
+                    context.get_line(decl_start), property =
+                    context.lines[context.get_line(decl_start) - 1], highlight =
                     format_args!(
                         "{}{}",
                         " ".repeat(context.get_column(decl_start) - 1),
                         "^".repeat((decl.span.end - decl_start) as usize)
                     )
-                ));
+                ).to_string());
                 continue;
             };
 
             let type_tag = jsdoc.tags().iter().find(|tag| tag.kind.parsed() == "type");
             if type_tag.is_none() {
-                errors.push(format!(
-                    "sor: {}: A property JSDoc-jában nincsen @type\n{}\n{}",
-                    context.get_line(decl_start),
+                errors.push(t!(
+                    "PD02", line =
+                    context.get_line(decl_start), property =
                     context.lines
                         [context.get_line(jsdoc.span.start) - 1..=context.get_line(decl_start) - 1]
                         .to_vec()
-                        .join("\n"),
+                        .join("\n"), highlight =
                     format_args!(
                         "{}{}",
                         " ".repeat(context.get_column(decl_start) - 1),
                         "^".repeat((decl.span.end - decl_start) as usize)
                     )
-                ));
+                ).to_string());
                 continue;
             };
         }
@@ -54,10 +55,10 @@ impl Handler for PropertyJsDocChecker {
     }
 
     fn success_message(&self) -> String {
-        format!("Propertyk JSDocjai rendben")
+        t!("SCM07").to_string()
     }
     fn title(&self) -> String {
-        format!("Propertyk JSDocjainak ellenőrzése...")
+        t!("TT07").to_string()
     }
 }
 

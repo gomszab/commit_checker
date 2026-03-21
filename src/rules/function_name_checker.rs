@@ -3,6 +3,7 @@ use oxc::ast::{
     ast::{BindingIdentifier, IdentifierName},
 };
 use oxc_semantic::AstNodes;
+use rust_i18n::t;
 
 use crate::{
     api::{Handler, HandlerResult},
@@ -17,21 +18,21 @@ impl Handler for FunctionNameChecker {
         let semantic = context.semantic.get().unwrap();
         for (name, start) in get_all_func_names_and_spans(semantic.nodes()) {
             if name.len() < 5 {
-                errors.push(format!(
-                            "sor: {}: A függvényneveknek legalább 5 karakter hosszúnak kell lenniük\n{}\n{}",
-                            context.get_line(start),
-                            context.lines[context.get_line(start) - 1],
+                errors.push(t!(
+                            "F01", line =
+                            context.get_line(start), function =
+                            context.lines[context.get_line(start) - 1], highlight =
                             format!("{}{}", " ".repeat(context.get_column(start) - 1), "^".repeat(name.len()))
-                        ));
+                        ).to_string());
             }
 
             if contains_number_or_hungarian_letter(&name) {
-                errors.push(format!(
-                            "sor: {}: A függvénynév számot vagy ékezetes karaktert tartalmaz, ami rontja az olvashatóságot\n{}\n{}",
-                            context.get_line(start),
-                            context.lines[context.get_line(start) - 1],
+                errors.push(t!(
+                            "F02", line =
+                            context.get_line(start), function =
+                            context.lines[context.get_line(start) - 1], highlight =
                             format!("{}{}", " ".repeat(context.get_column(start) - 1), "^".repeat(name.len()))
-                        ));
+                        ).to_string());
             }
         }
 
@@ -43,11 +44,11 @@ impl Handler for FunctionNameChecker {
     }
 
     fn success_message(&self) -> String {
-        format!("Függvénynevek rendben")
+        t!("SCM05").to_string()
     }
 
     fn title(&self) -> String {
-        format!("Függvénynevek ellenőrzése...")
+        t!("TT05").to_string()
     }
 }
 
@@ -73,7 +74,7 @@ fn get_all_func_names_and_spans<'a>(nodes: &'a AstNodes) -> Vec<(oxc::span::Atom
                 // We have to do this, because for some reason the id is after the
                 // MethodDefinition.
                 let AstKind::IdentifierName(IdentifierName { span, name }) =
-                    nodes.next().expect("nincs a metódusnak neve").kind()
+                    nodes.next().expect(&t!("F04").to_string()).kind()
                 else {
                     continue;
                 };

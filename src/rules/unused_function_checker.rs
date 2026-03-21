@@ -1,4 +1,5 @@
 use crate::api::{Handler, HandlerResult};
+use rust_i18n::t;
 
 pub struct UnusedFunctionChecker;
 
@@ -13,16 +14,16 @@ impl Handler for UnusedFunctionChecker {
 
         for func_id in unused_functions {
             let span = scope.symbol_span(func_id);
-            errors.push(format!(
-                "sor: {}: Felhasználatlan függvény\n{}\n{}",
-                context.get_line(span.start),
-                context.lines[context.get_line(span.start) - 1],
+            errors.push(t!(
+                "F03", line =
+                context.get_line(span.start), function =
+                context.lines[context.get_line(span.start) - 1], highlight =
                 format!(
                     "{}{}",
                     " ".repeat(context.get_column(span.start) - 1),
                     "^".repeat((span.end - span.start) as usize)
                 )
-            ));
+            ).to_string());
         }
 
         if errors.is_empty() {
@@ -33,9 +34,9 @@ impl Handler for UnusedFunctionChecker {
     }
 
     fn success_message(&self) -> String {
-        format!("Minden függvény használva van")
+        t!("SCM11").to_string()
     }
     fn title(&self) -> String {
-        format!("Felhasználatlan függvények ellenőrzése...")
+        t!("TT11").to_string()
     }
 }

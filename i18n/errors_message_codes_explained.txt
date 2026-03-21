@@ -1,0 +1,28 @@
+JS - errors:
+    D - related to JS documentation
+    F - related to functions
+    C - related to classes
+    P - related to properties
+    V - related to variables and variable declarations
+    COM - related to comments
+    (example: FD01 - it's related both to JSDoc and functions)
+syntax:
+    t!("CODE", line = int).to_string()
+    or if there is a variable that need to be highlighted
+    t!("CODE", line = int, class/function/variable/... = string, highlight = string).to_string()
+    or you can add your custom placeholder
+    t!("CODE", line = int, custom = string/int/...).to_string()
+
+Git related errors: GIT
+
+For validation:
+    OK - Successful
+    ERR - Errored
+
+Test related messages:
+    SCM - success message
+    TT - title
+    example: SCM01 and TT01 is for the same test
+
+Software related errors: SW
+    messages like - "Running tests...", "TypeScript isn't supported", ... - things that are in the code, but not really releated to anything

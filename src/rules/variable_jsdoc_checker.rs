@@ -3,6 +3,7 @@ use oxc::{
     span::ContentEq,
 };
 use oxc_semantic::{AstNodes, JSDoc, JSDocFinder};
+use rust_i18n::t;
 
 use crate::api::{Handler, HandlerResult};
 
@@ -17,34 +18,34 @@ impl Handler for VariableJsDocChecker {
         for (decl, jsdoc) in get_all_var_decl_jsdocs(nodes, semantic.jsdoc()) {
             let decl_start = decl.span.start;
             let Some(jsdoc) = jsdoc else {
-                errors.push(format!(
-                    "sor: {}: A változónak nincs JSDoc-ja\n{}\n{}",
-                    context.get_line(decl_start),
-                    context.lines[context.get_line(decl_start) - 1],
+                errors.push(t!(
+                    "VD01", line =
+                    context.get_line(decl_start), variable =
+                    context.lines[context.get_line(decl_start) - 1], highlight =
                     format!(
                         "{}{}",
                         " ".repeat(context.get_column(decl_start) - 1),
                         "^".repeat((decl.span.end - decl_start) as usize)
                     )
-                ));
+                ).to_string());
                 continue;
             };
 
             let type_tag = jsdoc.tags().iter().find(|tag| tag.kind.parsed() == "type");
             if type_tag.is_none() {
-                errors.push(format!(
-                    "sor: {}: A változó JSDoc-jában nincsen @type\n{}\n{}",
-                    context.get_line(decl_start),
+                errors.push(t!(
+                    "VD02", line =
+                    context.get_line(decl_start), variable =
                     context.lines
                         [context.get_line(jsdoc.span.start) - 1..=context.get_line(decl_start) - 1]
                         .to_vec()
-                        .join("\n"),
+                        .join("\n"), highlight =
                     format!(
                         "{}{}",
                         " ".repeat(context.get_column(decl_start) - 1),
                         "^".repeat((decl.span.end - decl_start) as usize)
                     )
-                ));
+                ).to_string());
                 continue;
             };
         }
@@ -57,10 +58,10 @@ impl Handler for VariableJsDocChecker {
     }
 
     fn success_message(&self) -> String {
-        format!("Változók JSDocjai rendben")
+        t!("SCM14").to_string()
     }
     fn title(&self) -> String {
-        format!("Változók JSDocjainak ellenőrzése...")
+        t!("TT14").to_string()
     }
 }
 

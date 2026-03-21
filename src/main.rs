@@ -1,11 +1,13 @@
 mod api;
 mod rules;
-
+use spinoff::{Color, Spinner, spinners};
 use std::process::{Command, exit};
 use std::rc::Rc;
 
 use colored::Colorize;
 use oxc::allocator::Allocator;
+use rust_i18n::t;
+use sys_language::detect_system_language;
 
 use crate::api::FileContext;
 use crate::api::error_handler::ErrorHandler;
@@ -16,7 +18,16 @@ use crate::rules::{
     VariableNameChecker,
 };
 
+// Setting up i18n!
+// This have to be in main, otherwise it won't work!
+rust_i18n::i18n!("i18n", fallback = "en");
+
 fn main() {
+    // Reading and setting language
+    let lang = detect_system_language();
+    rust_i18n::set_locale(lang.as_str());
+
+    // Getting staged files
     let files = match get_staged_files() {
         Ok(files) => files,
         Err(message) => {
@@ -25,29 +36,29 @@ fn main() {
         }
     };
 
+    // ErrorHandler
+    let mut error_handler = ErrorHandler::new();
+
     // Needed for oxc.
     let mut allocator = Allocator::new();
-    let mut file_errored_flag = false;
-    let mut files_errored = Vec::new();
 
-    // Changed it to borrow, so we won't move the files, we need it to access it later...
+    let spin_message = t!("SW01").to_string() + "\n";
+    let mut spinner = Spinner::new(spinners::Circle, spin_message, Color::Blue);
     for file_name in files {
         // We do not check files other than .js files.
         if !file_name.ends_with(".js") {
             continue;
         }
-
         let content = match std::fs::read_to_string(&file_name) {
             Ok(content) => content,
             Err(_) => {
-                let message = format!(
-                    "nem sikerült a {file_name} fájl olvasása\nelképzelhető hogy stagelve van egy fájl, amit kitöröltél; nézd meg a git status-t, és ha zölddel ott van egy fájl, ami törölve van, futtasd a git rm --cached {file_name} parancsot)"
-                );
+                let message = t!(
+                    "GIT01", file_name = file_name
+                ).to_string();
                 ErrorHandler::print_error(message);
                 exit(1);
             }
         };
-
         let mut context = match FileContext::new(file_name.clone(), &content, &allocator) {
             Ok(context) => context,
             Err(message) => {
@@ -62,6 +73,7 @@ fn main() {
         context.register_handler(Rc::new(TypeJsDocChecker));
         context.register_handler(Rc::new(JsDocTypeChecker));
         context.register_handler(Rc::new(VarKeywordChecker));
+
         context.register_handler(Rc::new(VariableNameChecker));
         context.register_handler(Rc::new(FunctionNameChecker));
         context.register_handler(Rc::new(FunctionJsDocChecker));
@@ -76,37 +88,53 @@ fn main() {
         let result = context.run();
         allocator.reset();
 
-        match result {
-            Ok(errored) => {
-                if !errored {
-                    let message = format!("{file_name}: ✔ Minden teszt lefutott sikeresen (:");
-                    println!("{}", message.green());
-                    files_errored.push((file_name, errored));
-                } else {
-                    file_errored_flag = true;
-                    files_errored.push((file_name, errored));
-                }
-            }
-            Err(message) => {
-                ErrorHandler::print_error(message);
-                exit(1);
+        error_handler.add_result(result);
+    }
+    spinner.stop();
+
+    show_feedback(&error_handler);
+    println!();
+    summarize(&error_handler);
+
+    if error_handler.is_errored() {
+        exit(1);
+    }
+}
+
+fn show_feedback(error_handler: &ErrorHandler){
+    // Print errored files
+    for file in &error_handler.errored_files {
+        println!("{}:", file.file_name);
+        for task in &file.tasks {
+            println!("{}", task.task_name);
+            if task.errored {
+                ErrorHandler::print_errors(&task.messages); // print errored tasks
+            } else {
+                ErrorHandler::print_oks(&task.messages); // print ok tasks
             }
         }
+        println!();
     }
 
-    println!();
-    for (file_name, flag) in files_errored {
-        if !flag {
-            let message = format!("{} ✔ Sikeres", file_name);
-            println!("{}", message.green());
-            continue;
+    // Print ok files
+    for file in &error_handler.ok_files {
+        println!("{}", t!("SW02", file_name = file.file_name).to_string());
+        for task in &file.tasks {
+            println!("{}", task.task_name);
+            ErrorHandler::print_oks(&task.messages);
         }
-        let message = format!("{} Sikertelen", file_name);
+        println!();
+    }
+}
+
+fn summarize(error_handler: &ErrorHandler){
+    for file in &error_handler.errored_files {
+        let message = t!("ERR", file_name = file.file_name).to_string();
         ErrorHandler::print_error(message);
     }
-
-    if file_errored_flag {
-        exit(1);
+    for file in &error_handler.ok_files {
+        let message = t!("OK", file_name = file.file_name).to_string();
+        ErrorHandler::print_ok(message);
     }
 }
 
@@ -126,18 +154,18 @@ fn get_staged_files() -> Result<Vec<String>, String> {
             match diff_output {
                 Ok(diff_content) => {
                     if !diff_content.stdout.is_empty() {
-                        return Err(format!(
-                            "nem futtattad a git add parancsot miutan modositottad a kovetkezo fajlt: {filename}",
-                        ));
+                        return Err(t!(
+                            "GIT02", file_name = filename
+                        ).to_string());
                     }
                 }
                 Err(_) => {
-                    return Err("nem sikerult a modositott fajlok lekerese".to_string());
+                    return Err(t!("GIT03").to_string());
                 }
             }
         }
     } else {
-        return Err("nem sikerult a git staged fajlok lekerese".to_string());
+        return Err(t!("GIT04").to_string());
     }
 
     Ok(staged_files)

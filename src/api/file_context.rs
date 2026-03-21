@@ -5,11 +5,8 @@ use colored::Colorize;
 use line_numbers::LinePositions;
 use oxc::{allocator::Allocator, ast::ast::Program, parser::Parser, span::SourceType};
 use oxc_semantic::{Semantic, SemanticBuilder};
-
-use spinoff::{Color, Spinner, spinners};
-
+use rust_i18n::t;
 use crate::api::{Handler, HandlerResult};
-use crate::api::error_handler::{ErrorHandler};
 
 pub struct FileContext<'a> {
     pub file_name: String,
@@ -31,7 +28,7 @@ impl<'a> FileContext<'a> {
         let parsed = Parser::new(allocator, file_contents, SourceType::mjs()).parse();
 
         if !parsed.errors.is_empty() {
-            return Err(format!("Hiba van a {file_name} fájlban!"));
+            return Err(t!("SW04", file_name = file_name).to_string());
         }
 
         let mut file_context = Box::pin(FileContext {
@@ -51,7 +48,7 @@ impl<'a> FileContext<'a> {
             .build(unsafe { &(*context_ptr).program });
 
         if !analyzed.errors.is_empty() {
-            return Err(format!("Hiba van a {file_name} fájlban!"));
+            return Err(t!("SW04", file_name = file_name).to_string());
         }
 
         // SAFETY: We don't do anything with the pinned Program and we don't cause any moves.
@@ -73,30 +70,28 @@ impl<'a> FileContext<'a> {
         handlers.push(handler);
     }
 
-    pub fn run(&'a self) -> Result<bool, String> {
-        let mut errored = false;
+    pub fn run(&'a self) -> Result<FileFeedback, String> {
+        let mut file_feedback = FileFeedback::new(self.file_name.clone());
+
         for i in 0..self.handlers.len() {
             let handler = self.handlers[i].clone();
-            let message = format!("{}: {}", self.file_name, handler.title());
-            let mut spinner = Spinner::new(spinners::Circle, message, Color::Blue);
+            let mut task_feedback = TestFeedback::new(handler.title());
 
             // SAFETY: Handlers only get an immutable reference to self, so they can't invalidate
             // any pointers.
             let result = handler.handle(self);
-            spinner.stop();
-
             match result {
-                HandlerResult::Ok => {
-                    println!("{}: {}", self.file_name, handler.success_message().green())
-                }
-                HandlerResult::Error(errors) => {
-                    errored = true;
-                    ErrorHandler::print_errors(errors);
+                HandlerResult::Ok => task_feedback.messages.push(handler.success_message()),
+                HandlerResult::Error(mut errors) => {
+                    task_feedback.messages.append(&mut errors);
+                    task_feedback.errored = true;
                 }
             };
+
+            file_feedback.tasks.push(task_feedback);
         }
 
-        Ok(errored)
+        Ok(file_feedback)
     }
 
     pub fn get_line(&self, offset: u32) -> usize {
@@ -105,5 +100,36 @@ impl<'a> FileContext<'a> {
 
     pub fn get_column(&self, offset: u32) -> usize {
         self.line_positions.from_offset(offset as usize).1 as usize + 1
+    }
+}
+
+// For storing feedbacks from FileContext
+pub struct FileFeedback {
+    pub file_name: String,
+    pub tasks: Vec<TestFeedback>,
+}
+
+impl FileFeedback {
+    pub fn new(file_name: String) -> FileFeedback {
+        FileFeedback {
+            file_name,
+            tasks: Vec::new(),
+        }
+    }
+}
+
+pub struct TestFeedback {
+    pub task_name: String,
+    pub messages: Vec<String>,
+    pub errored: bool,
+}
+
+impl TestFeedback {
+    pub fn new(task_name: String) -> TestFeedback {
+        TestFeedback {
+            task_name,
+            messages: Vec::new(),
+            errored: false,
+        }
     }
 }
