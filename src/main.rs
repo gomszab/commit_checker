@@ -4,7 +4,6 @@ use spinoff::{Color, Spinner, spinners};
 use std::process::{Command, exit};
 use std::rc::Rc;
 
-use colored::Colorize;
 use oxc::allocator::Allocator;
 use rust_i18n::t;
 use sys_language::detect_system_language;

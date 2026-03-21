@@ -1,7 +1,5 @@
 use std::{cell::OnceCell, marker::PhantomPinned, pin::Pin, rc::Rc};
 
-use colored::Colorize;
-
 use crate::api::{Handler, HandlerResult};
 use line_numbers::LinePositions;
 use oxc::{allocator::Allocator, ast::ast::Program, parser::Parser, span::SourceType};

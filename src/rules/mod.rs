@@ -24,7 +24,6 @@ pub use property_jsdoc_checker::PropertyJsDocChecker;
 pub use property_name_checker::PropertyNameChecker;
 pub use type_jsdoc_checker::TypeJsDocChecker;
 pub use typedef_jsdoc_checker::TypedefJsDocChecker;
-pub use unused_function_checker::UnusedFunctionChecker;
 pub use unused_variable_checker::UnusedVariableChecker;
 pub use var_keyword_checker::VarKeywordChecker;
 pub use variable_jsdoc_checker::VariableJsDocChecker;
