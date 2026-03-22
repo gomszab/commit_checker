@@ -119,6 +119,24 @@ dependencies = [
 ]
 
 [[package]]
+name = "commit_checker_application"
+version = "0.1.0"
+dependencies = [
+ "commit_checker_message_handler",
+]
+
+[[package]]
+name = "commit_checker_core"
+version = "0.1.0"
+
+[[package]]
+name = "commit_checker_message_handler"
+version = "0.1.0"
+dependencies = [
+ "rust-i18n",
+]
+
+[[package]]
 name = "compact_str"
 version = "0.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"

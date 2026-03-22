@@ -1,0 +1,5 @@
+[package]
+name = "commit_checker_core"
+version = "0.1.0"
+authors = ["Jämes Ménétrey <james@menetrey.me>"]
+edition = "2018"

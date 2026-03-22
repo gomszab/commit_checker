@@ -1,0 +1,27 @@
+{
+  "_version": 2,
+  "SW01": {
+    "hu": "Tesztek futtatása...",
+    "en": "Running tests..."
+  },
+  "SW02": {
+    "hu": "%{file_name}: ✔ Minden teszt lefutott sikeresen! (:",
+    "en": "%{file_name}: ✔ Every test have passed successfully! (:"
+  },
+  "SW03": {
+    "hu": "Hiba történt a fájlok kezelésekor!",
+    "en": "Failed to handle files!"
+  },
+  "SW04": {
+    "hu": "Hiba van a %{file_name} fájlban!",
+    "en": "There's an error in this file: %{file_name}"
+  },
+  "SW05": {
+    "hu": "A konstruktornak nincs body-ja!",
+    "en": "The constructor is missing its body!"
+  },
+  "SW06": {
+    "hu": "TypeScriptet nem támogatunk!",
+    "en": "The program doesn't support TypeScript!"
+  }
+}

@@ -1,0 +1,123 @@
+{
+  "_version": 2,
+  "TT01": {
+    "hu": "Osztálydefiníciók ellenőrzése...",
+    "en": "Checking class definitions..."
+  },
+  "SCM01": {
+    "hu": "Osztálydefiníciók rendben!",
+    "en": "Class definitions are all right!"
+  },
+  "TT02": {
+    "hu": "Class nevek ellenőrzése...",
+    "en": "Checking the names of classes..."
+  },
+  "SCM02": {
+    "hu": "Class nevek rendben!",
+    "en": "The names of classes are all right!"
+  },
+  "TT03": {
+    "hu": "Sorvégi kommentek ellenőrzése...",
+    "en": "Checking end-of-line comments..."
+  },
+  "SCM03": {
+    "hu": "Sorvégi kommentek rendben!",
+    "en": "End-of-line comments are all right!"
+  },
+  "TT04": {
+    "hu": "Függvények JSDocjainak ellenőrzése...",
+    "en": "Checking the JSDocs of functions..."
+  },
+  "SCM04": {
+    "hu": "Függvények JSDocjai rendben!",
+    "en": "The JSDocs of functions are all right!"
+  },
+  "TT05": {
+    "hu": "Függvénynevek ellenőrzése...",
+    "en": "Checking the names of functions..."
+  },
+  "SCM05": {
+    "hu": "Függvénynevek rendben!",
+    "en": "The names of functions are all right!"
+  },
+  "TT06": {
+    "hu":"JSDoc típusok ellenőrzése...",
+    "en": "Checking JSDoc types..."
+  },
+  "SCM06": {
+    "hu": "A JSDoc típusok rendben!",
+    "en": "JSDoc types are all right!"
+  },
+  "TT07": {
+    "hu": "Propertyk JSDocjainak ellenőrzése...",
+    "en": "Checking the JSDocs of properties..."
+  },
+  "SCM07": {
+    "hu": "Propertyk JSDocjai rendben!",
+    "en": "The JSDocs of properties are all right!"
+  },
+  "TT08": {
+    "hu": "Property nevek ellenőrzése...",
+    "en": "Checking the names of the properties..."
+  },
+  "SCM08": {
+    "hu": "Property nevek rendben!",
+    "en": "The names of the properties are all right!"
+  },
+  "TT09": {
+    "hu": "Type-ok analizálása...",
+    "en": "Analyzing types..."
+  },
+  "SCM09": {
+    "hu": "Type-ok rendben!",
+    "en": "Types are all right!"
+  },
+  "TT10": {
+    "hu": "Typedef-ek analizálása...",
+    "en": "Analyzing typedefs..."
+  },
+  "SCM10": {
+    "hu": "Typedef-ek rendben!",
+    "en": "Typedefs are all right!"
+  },
+  "TT11": {
+    "hu": "Felhasználatlan függvények ellenőrzése...",
+    "en": "Checking unused functions..."
+  },
+  "SCM11": {
+    "hu": "Minden függvény használva van!",
+    "en": "Every function is used!"
+  },
+  "TT12": {
+    "hu": "Felhasználatlan változók ellenőrzése...",
+    "en": "Checking unused variables..."
+  },
+  "SCM12": {
+    "hu": "Minden változó használva van!",
+    "en": "Every variable is used!"
+  },
+  "TT13": {
+    "hu": "Var használat ellenőrzése...",
+    "en": "Checking the use of var..."
+  },
+  "SCM13": {
+    "hu": "Nincs var használva!",
+    "en": "Var isn't used anywhere!"
+  },
+  "TT14": {
+    "hu": "Változók JSDocjainak ellenőrzése...",
+    "en": "Checking the JSDocs of variables..."
+  },
+  "SCM14": {
+    "hu": "Változók JSDocjai rendben!",
+    "en": "The JSDocs of variables are all right!"
+  },
+  "TT15": {
+    "hu": "Változónevek ellenőrzése...",
+    "en": "Checking the names of variables..."
+  },
+  "SCM15": {
+    "hu": "Változónevek rendben!",
+    "en": "The names of variables are all right!"
+  }
+}
