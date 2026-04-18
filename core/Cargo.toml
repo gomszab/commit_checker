@@ -3,3 +3,9 @@ name = "commit_checker_core"
 version = "0.1.0"
 authors = ["Jämes Ménétrey <james@menetrey.me>"]
 edition = "2018"
+
+[dependencies]
+"commit_checker_message_handler" = { path = "../message_handler" }
+oxc = { version = "0.102.0", features = ["semantic"] }
+oxc_semantic = { version = "0.102.0", features = ["linter"] }
+line-numbers = "0.4.0"

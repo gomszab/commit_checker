@@ -8,3 +8,4 @@ edition = "2018"
 
 [dependencies]
 "commit_checker_message_handler" = { path = "../message_handler" }
+"commit_checker_core" = {path = "../core"}

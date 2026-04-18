@@ -21,12 +21,12 @@ pub enum Message {
     }
 }
 
-struct MessageHandler {
+pub struct MessageHandler {
     messages: Vec<Message>
 }
 
 impl MessageHandler {
-    fn build() -> Self {
+    pub fn build() -> Self {
         MessageHandler { messages: Vec::new() }
     }
 }
