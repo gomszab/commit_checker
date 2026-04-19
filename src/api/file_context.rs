@@ -64,8 +64,7 @@ impl<'a> FileContext<'a> {
 
     pub fn register_handler(self: &mut Pin<Box<Self>>, handler: Rc<dyn Handler>) {
         // SAFETY: We only access handlers to push, so we don't move it.
-        let handlers = &mut unsafe { self.as_mut().get_unchecked_mut() }.handlers;
-        handlers.push(handler);
+        
     }
 
     pub fn run(&'a self) -> Result<FileFeedback, String> {

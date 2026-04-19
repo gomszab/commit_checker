@@ -1,17 +1,16 @@
-use std::rc::Rc;
+use std::pin::Pin;
 
 use commit_checker_message_handler::MessageHandler;
-use oxc::allocator::Allocator;
 
-use crate::rules::api::handler::Handler;
+use crate::rules::api::{RuleHandler};
 
 pub struct CommitCheckerIoC{
-    handlers: Vec<Rc<dyn Handler>>,
-    message_handler: MessageHandler,
+    pub rule_handler: Pin<Box<RuleHandler>>,
+    pub message_handler: MessageHandler,
 }
 
 impl CommitCheckerIoC {
     pub fn new() -> Self{
-        CommitCheckerIoC { handlers: Vec::new(), message_handler: MessageHandler::build()}
+       Self { rule_handler: RuleHandler::new(), message_handler: MessageHandler::build()}
     }
 }

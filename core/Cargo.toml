@@ -2,7 +2,7 @@
 name = "commit_checker_core"
 version = "0.1.0"
 authors = ["Jämes Ménétrey <james@menetrey.me>"]
-edition = "2018"
+edition = "2024"
 
 [dependencies]
 "commit_checker_message_handler" = { path = "../message_handler" }
