@@ -6,7 +6,7 @@ pub struct UnusedVariableChecker;
 impl Handler for UnusedVariableChecker {
     fn handle<'a>(&self, context: &'a crate::api::FileContext<'a>) -> HandlerResult {
         let mut errors = Vec::new();
-        let semantic = context.semantic.get().unwrap();
+        let semantic = &context.semantic;
         let scope = semantic.scoping();
         let unused_variables = scope
             .symbol_ids()

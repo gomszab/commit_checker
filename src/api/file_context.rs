@@ -1,4 +1,4 @@
-use std::{cell::OnceCell, marker::PhantomPinned, pin::Pin, rc::Rc};
+use std::rc::Rc;
 
 use crate::api::{Handler, HandlerResult};
 use line_numbers::LinePositions;
@@ -10,11 +10,9 @@ pub struct FileContext<'a> {
     pub file_name: String,
     pub lines: Vec<&'a str>,
     pub line_positions: LinePositions,
-    // Semantic, then program, for the correct drop order.
-    pub semantic: OnceCell<Semantic<'a>>,
-    pub program: Program<'a>,
+    pub semantic: Semantic<'a>,
+    pub program: Box<Program<'a>>,
     handlers: Vec<Rc<dyn Handler>>,
-    _pin: PhantomPinned,
 }
 
 impl<'a> FileContext<'a> {
@@ -22,50 +20,33 @@ impl<'a> FileContext<'a> {
         file_name: String,
         file_contents: &'a str,
         allocator: &'a Allocator,
-    ) -> Result<Pin<Box<Self>>, String> {
+    ) -> Result<Self, String> {
         let parsed = Parser::new(allocator, file_contents, SourceType::mjs()).parse();
 
         if !parsed.errors.is_empty() {
             return Err(t!("SW04", file_name = file_name).to_string());
         }
 
-        let mut file_context = Box::pin(FileContext {
-            file_name: file_name.clone(),
-            lines: file_contents.lines().collect(),
-            line_positions: LinePositions::from(file_contents),
-            semantic: OnceCell::new(),
-            program: parsed.program,
-            handlers: Vec::new(),
-            _pin: PhantomPinned,
-        });
-
-        let context_ptr = file_context.as_ref().get_ref() as *const FileContext;
+        let program = Box::new(parsed.program);
         let analyzed = SemanticBuilder::new()
-            // SAFETY: The pointer is fine, as we just got it. Semantic will be dropped before
-            // program, because of the declaration order.
-            .build(unsafe { &(*context_ptr).program });
+            .build(unsafe { (&*program as *const Program).as_ref().unwrap() });
 
         if !analyzed.errors.is_empty() {
             return Err(t!("SW04", file_name = file_name).to_string());
         }
 
-        // SAFETY: We don't do anything with the pinned Program and we don't cause any moves.
-        unsafe {
-            // This should always succeed.
-            let _ = file_context
-                .as_mut()
-                .get_unchecked_mut()
-                .semantic
-                .set(analyzed.semantic);
-        }
-
-        Ok(file_context)
+        Ok(FileContext {
+            file_name: file_name.clone(),
+            lines: file_contents.lines().collect(),
+            line_positions: LinePositions::from(file_contents),
+            semantic: analyzed.semantic,
+            program,
+            handlers: Vec::new(),
+        })
     }
 
-    pub fn register_handler(self: &mut Pin<Box<Self>>, handler: Rc<dyn Handler>) {
-        // SAFETY: We only access handlers to push, so we don't move it.
-        let handlers = &mut unsafe { self.as_mut().get_unchecked_mut() }.handlers;
-        handlers.push(handler);
+    pub fn register_handler(&mut self, handler: Rc<dyn Handler>) {
+        self.handlers.push(handler);
     }
 
     pub fn run(&'a self) -> Result<FileFeedback, String> {
@@ -75,8 +56,6 @@ impl<'a> FileContext<'a> {
             let handler = self.handlers[i].clone();
             let mut task_feedback = TestFeedback::new(handler.title());
 
-            // SAFETY: Handlers only get an immutable reference to self, so they can't invalidate
-            // any pointers.
             let result = handler.handle(self);
             match result {
                 HandlerResult::Ok => task_feedback.messages.push(handler.success_message()),

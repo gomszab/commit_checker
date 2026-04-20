@@ -15,7 +15,7 @@ pub struct FunctionNameChecker;
 impl Handler for FunctionNameChecker {
     fn handle(&self, context: &crate::api::FileContext) -> HandlerResult {
         let mut errors = Vec::new();
-        let semantic = context.semantic.get().unwrap();
+        let semantic = &context.semantic;
         for (name, start) in get_all_func_names_and_spans(semantic.nodes()) {
             if name.len() < 5 {
                 errors.push(

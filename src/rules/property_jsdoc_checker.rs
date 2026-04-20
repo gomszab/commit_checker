@@ -9,7 +9,7 @@ pub struct PropertyJsDocChecker;
 impl Handler for PropertyJsDocChecker {
     fn handle<'a>(&self, context: &'a crate::api::FileContext<'a>) -> HandlerResult {
         let mut errors = Vec::new();
-        let semantic = context.semantic.get().unwrap();
+        let semantic = &context.semantic;
         let nodes = semantic.nodes();
 
         for (decl, jsdoc) in get_all_property_decl_jsdocs(nodes, semantic.jsdoc()) {

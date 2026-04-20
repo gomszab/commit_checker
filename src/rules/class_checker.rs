@@ -11,7 +11,7 @@ pub struct ClassChecker;
 impl Handler for ClassChecker {
     fn handle(&self, context: &crate::api::FileContext) -> HandlerResult {
         let mut errors = Vec::new();
-        let semantic = context.semantic.get().unwrap();
+        let semantic = &context.semantic;
         for node in semantic.nodes() {
             let AstKind::Class(class) = node.kind() else {
                 continue;

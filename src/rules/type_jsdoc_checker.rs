@@ -6,7 +6,7 @@ pub struct TypeJsDocChecker;
 impl Handler for TypeJsDocChecker {
     fn handle(&self, context: &crate::api::FileContext) -> HandlerResult {
         let mut errors = Vec::new();
-        let semantic = context.semantic.get().unwrap();
+        let semantic = &context.semantic;
 
         for jsdoc in semantic.jsdoc().iter_all() {
             if let Some(tag) = jsdoc.tags().iter().find(|tag| tag.kind.parsed() == "type") {

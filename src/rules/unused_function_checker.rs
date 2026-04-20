@@ -6,7 +6,7 @@ pub struct UnusedFunctionChecker;
 impl Handler for UnusedFunctionChecker {
     fn handle<'a>(&self, context: &'a crate::api::FileContext<'a>) -> HandlerResult {
         let mut errors = Vec::new();
-        let semantic = context.semantic.get().unwrap();
+        let semantic = &context.semantic;
         let scope = semantic.scoping();
         let unused_functions = scope
             .symbol_ids()

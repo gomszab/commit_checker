@@ -11,7 +11,7 @@ pub struct PropertyNameChecker;
 impl Handler for PropertyNameChecker {
     fn handle<'a>(&self, context: &'a crate::api::FileContext<'a>) -> HandlerResult {
         let mut errors = Vec::new();
-        let semantic = context.semantic.get().unwrap();
+        let semantic = &context.semantic;
         let nodes = semantic.nodes();
         for node in nodes {
             let AstKind::PropertyDefinition(def) = node.kind() else {

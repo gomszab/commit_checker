@@ -9,7 +9,7 @@ const FORBIDDEN_TYPES: [&str; 3] = ["Object", "Array", "*"];
 impl Handler for JsDocTypeChecker {
     fn handle<'a>(&self, context: &'a crate::api::FileContext<'a>) -> HandlerResult {
         let mut errors = Vec::new();
-        let semantic = context.semantic.get().unwrap();
+        let semantic = &context.semantic;
 
         for jsdoc in semantic.jsdoc().iter_all() {
             for tag in jsdoc.tags() {

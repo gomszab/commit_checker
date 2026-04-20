@@ -8,7 +8,7 @@ pub struct VariableNameChecker;
 impl Handler for VariableNameChecker {
     fn handle(&self, context: &crate::api::FileContext) -> HandlerResult {
         let mut errors = Vec::new();
-        let semantic = context.semantic.get().unwrap();
+        let semantic = &context.semantic;
         for node in semantic.nodes() {
             if let AstKind::VariableDeclaration(decl) = node.kind() {
                 // There can be multiple declarations in a single line.

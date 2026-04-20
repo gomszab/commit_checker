@@ -6,7 +6,7 @@ pub struct TypedefJsDocChecker;
 impl Handler for TypedefJsDocChecker {
     fn handle(&self, context: &crate::api::FileContext) -> HandlerResult {
         let mut errors = Vec::new();
-        let semantic = context.semantic.get().unwrap();
+        let semantic = &context.semantic;
 
         for jsdoc in semantic.jsdoc().iter_all() {
             #[allow(for_loops_over_fallibles)]

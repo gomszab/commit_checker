@@ -12,7 +12,7 @@ pub struct FunctionJsDocChecker;
 impl Handler for FunctionJsDocChecker {
     fn handle<'a>(&self, context: &'a crate::api::FileContext<'a>) -> HandlerResult {
         let mut errors = Vec::new();
-        let semantic = context.semantic.get().unwrap();
+        let semantic = &context.semantic;
         let nodes = semantic.nodes();
 
         for (start, decl, jsdoc) in get_all_func_decl_jsdocs(nodes, semantic.jsdoc()) {
