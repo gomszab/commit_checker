@@ -10,6 +10,7 @@ pub struct FileContext<'a> {
     pub file_name: String,
     pub lines: Vec<&'a str>,
     pub line_positions: LinePositions,
+    // Semantic, then program, for the correct drop order.
     pub semantic: Semantic<'a>,
     pub program: Box<Program<'a>>,
     handlers: Vec<Rc<dyn Handler>>,
