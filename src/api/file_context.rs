@@ -28,7 +28,9 @@ impl<'a> FileContext<'a> {
         }
 
         let program = Box::new(parsed.program);
-        // SAFETY: The pointer is fine because we just got it.
+        // SAFETY: The pointer is fine because we just got it. Handlers only ever get access to
+        // immutable self, so program can't be moved (and it shouldn't be, as that would lead to
+        // a dangling reference).
         let analyzed = SemanticBuilder::new()
             .build(unsafe { (&*program as *const Program).as_ref_unchecked() });
 
