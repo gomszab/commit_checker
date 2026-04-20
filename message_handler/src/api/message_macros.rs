@@ -20,45 +20,31 @@ macro_rules! rule_break_message {
 #[macro_export]
 macro_rules! error_message {
     ($handler:expr, $code:expr) => {{
-        $handler.put_message(
-            commit_checker_message_handler::Message::Error {
-                code: $code,
-                param: None
-            }
-        );
+        $handler.put_message(commit_checker_message_handler::Message::Error {
+            code: $code,
+            param: None,
+        });
     }};
 
     ($handler:expr, $code:expr, $param_name:ident = $param_value:expr) => {{
-       use commit_checker_message_handler::MessageHandlerApi;
-       $handler.put_message(
-           commit_checker_message_handler::Message::Error {
-               code: $code,
-               param: Some(
-                   ($param_value).to_string(),
-               ),
-           }
-       );
+        use commit_checker_message_handler::MessageHandlerApi;
+        $handler.put_message(commit_checker_message_handler::Message::Error {
+            code: $code,
+            param: Some(($param_value).to_string()),
+        });
     }};
 }
 
 #[macro_export]
 macro_rules! title_message {
     ($handler:expr, $code:expr) => {{
-        $handler.put_message(
-            commit_checker_message_handler::Message::Success {
-                code: $code
-            }
-        );
+        $handler.put_message(commit_checker_message_handler::Message::Success { code: $code });
     }};
 }
 
 #[macro_export]
 macro_rules! success_message {
     ($handler:expr, $code:expr) => {{
-        $handler.put_message(
-            commit_checker_message_handler::Message::Title {
-                code: $code
-            }
-        );
+        $handler.put_message(commit_checker_message_handler::Message::Title { code: $code });
     }};
 }

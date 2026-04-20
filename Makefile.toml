@@ -1,0 +1,29 @@
+[env]
+CARGO_MAKE_EXTEND_WORKSPACE_MAKEFILE = true
+
+[tasks.wasm]
+description = "Build vscodeadapter to wasm and run wasm-bindgen"
+command = "sh"
+args = ["-c", """
+set -euo pipefail
+
+ROOT=$(pwd)
+CRATE=vscodeadapter
+TARGET=wasm32-unknown-unknown
+PROFILE=release
+OUT_DIR="${ROOT}/../dist/wasm"
+WASM_INPUT="${ROOT}/target/${TARGET}/${PROFILE}/${CRATE}.wasm"
+
+rustup target add ${TARGET}
+
+cargo build -p ${CRATE} --release --target ${TARGET}
+
+echo "Using wasm input: ${WASM_INPUT}"
+
+mkdir -p "${OUT_DIR}"
+
+wasm-bindgen \
+  --target web \
+  --out-dir "${OUT_DIR}" \
+  "${WASM_INPUT}"
+"""]

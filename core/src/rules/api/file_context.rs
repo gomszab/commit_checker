@@ -1,4 +1,4 @@
-use std::{cell::OnceCell};
+use std::cell::OnceCell;
 
 use commit_checker_message_handler::{MessageHandler, error_message};
 use line_numbers::LinePositions;
@@ -19,7 +19,7 @@ impl<'a> FileContext<'a> {
         file_name: String,
         file_contents: &'a str,
         allocator: &'a Allocator,
-        handler: &mut MessageHandler
+        handler: &mut MessageHandler,
     ) -> Result<Self, String> {
         let parsed = Parser::new(&allocator, file_contents, SourceType::mjs()).parse();
 
@@ -47,12 +47,8 @@ impl<'a> FileContext<'a> {
             return Err("error happened".to_string());
         }
 
-
-            // This should always succeed.
-        let _ = file_context
-            .semantic
-            .set(analyzed.semantic);
-        
+        // This should always succeed.
+        let _ = file_context.semantic.set(analyzed.semantic);
 
         Ok(file_context)
     }

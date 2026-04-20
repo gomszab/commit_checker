@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2024"
 
 [workspace]
-members = ["application", "message_handler", "core"]
+members = ["application", "message_handler", "core", "vscodeadapter"]
 
 [dependencies]
 colored = "3.0.0"

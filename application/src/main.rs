@@ -1,6 +1,6 @@
 use commit_checker_core::api::commit_checker_facade;
 
-fn main(){
+fn main() {
     let file_name = "something.js";
     let file_contents = r#"
     class FormField{
@@ -34,6 +34,8 @@ fn main(){
     set value(newVal){
         this.#input.value = newVal;
     }
+
+    constructor(){}
 
     validate(){
         let result = true;
