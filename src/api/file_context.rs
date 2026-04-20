@@ -30,7 +30,7 @@ impl<'a> FileContext<'a> {
         let program = Box::new(parsed.program);
         // SAFETY: The pointer is fine because we just got it.
         let analyzed = SemanticBuilder::new()
-            .build(unsafe { (&*program as *const Program).as_ref().unwrap() });
+            .build(unsafe { (&*program as *const Program).as_ref_unchecked() });
 
         if !analyzed.errors.is_empty() {
             return Err(t!("SW04", file_name = file_name).to_string());
