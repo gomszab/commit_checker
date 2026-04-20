@@ -28,6 +28,7 @@ impl<'a> FileContext<'a> {
         }
 
         let program = Box::new(parsed.program);
+        // SAFETY: The pointer is fine because we just got it.
         let analyzed = SemanticBuilder::new()
             .build(unsafe { (&*program as *const Program).as_ref().unwrap() });
 
