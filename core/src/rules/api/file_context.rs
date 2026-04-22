@@ -1,6 +1,6 @@
 use std::cell::OnceCell;
 
-use commit_checker_message_handler::{MessageHandler, error_message};
+use commit_checker_message_handler::{MessageHandler,software_error};
 use line_numbers::LinePositions;
 use oxc::{allocator::Allocator, ast::ast::Program, parser::Parser, span::SourceType};
 use oxc_semantic::{Semantic, SemanticBuilder};
@@ -24,7 +24,7 @@ impl<'a> FileContext<'a> {
         let parsed = Parser::new(&allocator, file_contents, SourceType::mjs()).parse();
 
         if !parsed.errors.is_empty() {
-            error_message!(handler, "SW04", file_name = file_name.to_string());
+            software_error!(handler, "SW04", Some(file_name.to_string()));
             return Err("Error Happened".to_string());
         }
 
@@ -43,7 +43,7 @@ impl<'a> FileContext<'a> {
             .build(unsafe { &(*context_ptr).program });
 
         if !analyzed.errors.is_empty() {
-            error_message!(handler, "SW04", file_name = file_name.to_string());
+            software_error!(handler, "SW04", Some(file_name.to_string()));
             return Err("error happened".to_string());
         }
 

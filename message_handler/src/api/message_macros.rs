@@ -1,50 +1,49 @@
 #[macro_export]
-macro_rules! rule_break_message {
-    ($handler:expr, $code:expr, $file_name:expr, $($name:ident = $value:expr),+ $(,)?) => {{
+macro_rules! validation_error {
+    ($handler:expr, $code:expr, $file_name:expr, $row:expr, $column_start:expr, $column_end:expr, $($name:ident = $value:expr),+ $(,)? ) => {
         let params = vec![
             $(
                 (stringify!($name).to_string(), ($value).to_string())
             ),+
         ];
-
-        $handler.put_message(
-            commit_checker_message_handler::Message::BreakingRule {
+        $handler.handle(commit_checker_message_handler::IncommingMessage::ValidationError {
                 code: $code,
                 file_name: ($file_name).to_string(),
-                params,
-            }
-        );
-    }};
+                row: $row,
+                column_start: $column_start,
+                column_end: $column_end,
+                params 
+        })
+    };
 }
 
 #[macro_export]
-macro_rules! error_message {
-    ($handler:expr, $code:expr) => {{
-        $handler.put_message(commit_checker_message_handler::Message::Error {
-            code: $code,
-            param: None,
-        });
-    }};
-
-    ($handler:expr, $code:expr, $param_name:ident = $param_value:expr) => {{
-        use commit_checker_message_handler::MessageHandlerApi;
-        $handler.put_message(commit_checker_message_handler::Message::Error {
-            code: $code,
-            param: Some(($param_value).to_string()),
-        });
-    }};
+macro_rules! software_error {
+    ($handler:expr, $code:expr, $file_name:expr) => {
+        use commit_checker_message_handler::{
+    MessageHandlerApi
+};
+        $handler.handle(commit_checker_message_handler::IncommingMessage::Error {
+                code: $code,
+                file_name: $file_name
+        })
+    };
 }
 
 #[macro_export]
-macro_rules! title_message {
-    ($handler:expr, $code:expr) => {{
-        $handler.put_message(commit_checker_message_handler::Message::Success { code: $code });
-    }};
+macro_rules! info_message {
+    ($handler:expr, $code:expr) => {
+        $handler.handle(commit_checker_message_handler::IncommingMessage::RuleStart {
+                code: $code,
+        })
+    };
 }
 
 #[macro_export]
-macro_rules! success_message {
-    ($handler:expr, $code:expr) => {{
-        $handler.put_message(commit_checker_message_handler::Message::Title { code: $code });
-    }};
+macro_rules! rule_success_message {
+    ($handler:expr, $code:expr) => {
+        $handler.handle(commit_checker_message_handler::IncommingMessage::RuleSuccess {
+                code: $code,
+        })
+    };
 }

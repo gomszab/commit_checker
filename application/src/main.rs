@@ -1,4 +1,4 @@
-use commit_checker_core::api::commit_checker_facade;
+use commit_checker_core::{api::commit_checker_facade, message_handler::MessageOutput};
 
 fn main() {
     let file_name = "something.js";
@@ -31,11 +31,11 @@ fn main() {
         return this.#input.value;
     }
 
+    constructor(){}
+
     set value(newVal){
         this.#input.value = newVal;
     }
-
-    constructor(){}
 
     validate(){
         let result = true;
@@ -49,6 +49,45 @@ fn main() {
     }
 }
     "#;
-    let mut facade = commit_checker_facade::CommitCheckerFacade::build();
+    let mut adapter = ConsoleAdapter::new();
+    let mut facade = commit_checker_facade::CommitCheckerFacade::build(&mut adapter);
     facade.analyze(file_name, file_contents);
+}
+
+struct ConsoleAdapter{
+
+}
+
+impl ConsoleAdapter{
+    fn new()-> Self{
+        Self {}
+    }
+}
+
+impl MessageOutput for ConsoleAdapter{
+    fn push(&mut self, message: commit_checker_core::message_handler::LocalizedMessage) {
+        let typ = message.typ;
+        match typ {
+            commit_checker_core::message_handler::MessageType::ValidationError => {
+                let details = message.details.to_string();
+                let meta = &message.meta.unwrap();
+                let row = &meta.row.unwrap();
+                let column_start = &meta.column_start.unwrap();
+                let column_end = &meta.column_end.unwrap();
+                let details = details.replace("%{line}", &row.to_string());
+                println!("{}\n{}", details, format_args!("{}{}",
+                            " ".repeat(*column_start),
+                            "^".repeat(*column_end-*column_start)))
+            },
+            commit_checker_core::message_handler::MessageType::Info => {
+                println!("[Info] {}", message.details)
+            },
+            commit_checker_core::message_handler::MessageType::Success => {
+                println!("[Success] {} ", message.details)
+            },
+            commit_checker_core::message_handler::MessageType::Error => {
+                println!("[Error] ")
+            }
+        }
+    }
 }

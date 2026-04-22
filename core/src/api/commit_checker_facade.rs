@@ -1,20 +1,20 @@
-use commit_checker_message_handler::MessageHandlerApi;
+use commit_checker_message_handler::{message_handler::MessageOutput};
 use oxc::allocator::Allocator;
 
 use crate::{api::commit_checker_ioc::CommitCheckerIoC, rules::api::FileContext};
 
-pub struct CommitCheckerFacade {
-    container: CommitCheckerIoC,
+pub struct CommitCheckerFacade<'a> {
+    container: CommitCheckerIoC<'a>,
 }
 
-impl CommitCheckerFacade {
-    pub fn build() -> Self {
+impl <'a> CommitCheckerFacade<'a> {
+    pub fn build(out: &'a mut dyn MessageOutput) -> Self {
         CommitCheckerFacade {
-            container: CommitCheckerIoC::new(),
+            container: CommitCheckerIoC::new(out),
         }
     }
 
-    pub fn analyze(&mut self, file_name: &str, file_content: &str) -> Vec<String> {
+    pub fn analyze(&mut self, file_name: &str, file_content: &str){
         let allocator = Allocator::new();
         let file_context = FileContext::new(
             file_name.to_string(),
@@ -33,7 +33,6 @@ impl CommitCheckerFacade {
                     handler.success_message(&mut self.container);
                 }
             }
-        }
-        self.container.message_handler.get_all_messages()
+        };
     }
 }

@@ -1,5 +1,5 @@
 use commit_checker_message_handler::{
-    MessageHandlerApi, error_message, rule_break_message, success_message, title_message,
+    MessageHandlerApi,info_message, rule_success_message, software_error, validation_error
 };
 use oxc::ast::{
     AstKind,
@@ -27,12 +27,7 @@ impl Handler for ClassChecker {
             };
 
             let Some(id) = &class.id else {
-                rule_break_message!(
-                    &mut ioc.message_handler,
-                    "C01",
-                    &context.file_name,
-                    line = context.get_line(class.span.start)
-                );
+                 validation_error!(&mut ioc.message_handler,"C01", &context.file_name, context.get_line(class.span.start) as usize, 0_usize, 1_usize, nope="");
                 fail = true;
                 continue;
             };
@@ -45,18 +40,7 @@ impl Handler for ClassChecker {
             });
 
             let Some(ClassElement::MethodDefinition(constructor)) = constructor else {
-                rule_break_message!(
-                    &mut ioc.message_handler,
-                    "C04",
-                    &context.file_name,
-                    line = context.get_line(class.span.start),
-                    class = context.lines[context.get_line(class.span.start) - 1],
-                    highlight = format_args!(
-                        "{}{}",
-                        " ".repeat(context.get_column(id.span.start) - 1),
-                        "^".repeat((class.body.span.start - 1 - id.span.start) as usize)
-                    )
-                );
+                validation_error!(&mut ioc.message_handler,"C04", &context.file_name, context.get_line(class.span.start) as usize, context.get_column(id.span.start) - 1, (class.body.span.start - 1) as usize, class = context.lines[context.get_line(class.span.start) - 1] );
 
                 fail = true;
                 continue;
@@ -70,23 +54,12 @@ impl Handler for ClassChecker {
                 let body = constructor.value.body.as_ref();
                 // .expect(&t!("SW05").to_string());
                 if body.is_none() {
-                    error_message!(&mut ioc.message_handler, "SW05");
+                    software_error!(&mut ioc.message_handler, "SW05", None);
                 }
                 let body = body.unwrap();
 
                 if !super_exists(&body.statements) {
-                    rule_break_message!(
-                        &mut ioc.message_handler,
-                        "C05",
-                        &context.file_name,
-                        line = context.get_line(class.span.start),
-                        class = context.lines[context.get_line(class.span.start) - 1],
-                        highlight = format_args!(
-                            "{}{}",
-                            " ".repeat(context.get_column(id.span.start) - 1),
-                            "^".repeat((super_id.span.end - id.span.start) as usize)
-                        )
-                    );
+                    validation_error!(&mut ioc.message_handler,"C05", &context.file_name, context.get_line(class.span.start) as usize, context.get_column(id.span.start) - 1, super_id.span.end as usize, class = context.lines[context.get_line(class.span.start) - 1] );
                     fail = false;
                 }
             }
@@ -100,11 +73,11 @@ impl Handler for ClassChecker {
     }
 
     fn success_message(&self, ioc: &mut CommitCheckerIoC) -> () {
-        success_message!(&mut ioc.message_handler, "SCM01");
+        rule_success_message!(&mut ioc.message_handler, "SCM01");
     }
 
     fn title(&self, ioc: &mut CommitCheckerIoC) -> () {
-        title_message!(&mut ioc.message_handler, "TT01");
+        info_message!(&mut ioc.message_handler, "TT01");
     }
 }
 
