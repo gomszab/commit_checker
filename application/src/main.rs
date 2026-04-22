@@ -31,8 +31,6 @@ fn main() {
         return this.#input.value;
     }
 
-    constructor(){}
-
     set value(newVal){
         this.#input.value = newVal;
     }

@@ -4,7 +4,7 @@
 export class WasmCommitChecker {
     free(): void;
     [Symbol.dispose](): void;
-    analyze(file_name: string, file_contents: string): string[];
+    analyze(file_name: string, file_contents: string): string;
     constructor();
 }
 
@@ -18,7 +18,6 @@ export interface InitOutput {
     readonly __wbindgen_externrefs: WebAssembly.Table;
     readonly __wbindgen_malloc: (a: number, b: number) => number;
     readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;
-    readonly __externref_drop_slice: (a: number, b: number) => void;
     readonly __wbindgen_free: (a: number, b: number, c: number) => void;
     readonly __wbindgen_start: () => void;
 }

@@ -1069,6 +1069,8 @@ name = "vscodeadapter"
 version = "0.1.0"
 dependencies = [
  "commit_checker_core",
+ "serde",
+ "serde_json",
  "wasm-bindgen",
 ]
 
