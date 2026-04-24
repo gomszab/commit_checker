@@ -1,14 +1,19 @@
 use commit_checker_message_handler::{info_message, rule_success_message, validation_error};
 use oxc::ast::AstKind;
 
-use crate::{handler_impl::check_helper::contains_number_or_hungarian_letter, rules::api::{Handler, HandlerResult}};
-
+use crate::{
+    handler_impl::check_helper::contains_number_or_hungarian_letter,
+    rules::api::{Handler, HandlerResult},
+};
 
 pub struct ClassNameChecker;
 
 impl Handler for ClassNameChecker {
-    fn handle(&self, context: &crate::rules::api::FileContext,
-        ioc: &mut crate::api::CommitCheckerIoC) -> HandlerResult {
+    fn handle(
+        &self,
+        context: &crate::rules::api::FileContext,
+        ioc: &mut crate::api::CommitCheckerIoC,
+    ) -> HandlerResult {
         let semantic = context.semantic.get().unwrap();
         for node in semantic.nodes() {
             let AstKind::Class(class) = node.kind() else {
@@ -29,7 +34,7 @@ impl Handler for ClassNameChecker {
             let name = binding_identifier.name;
             let start = binding_identifier.span.start;
             if name.len() < 5 {
-                 validation_error!(
+                validation_error!(
                     &mut ioc.message_handler,
                     "C02",
                     &context.file_name,
@@ -53,16 +58,14 @@ impl Handler for ClassNameChecker {
             }
         }
 
-
         HandlerResult::Ok
-
     }
 
-    fn success_message(&self, ioc: &mut crate::api::CommitCheckerIoC){
+    fn success_message(&self, ioc: &mut crate::api::CommitCheckerIoC) {
         rule_success_message!(&mut ioc.message_handler, "SCM02");
     }
 
-    fn title(&self, ioc: &mut crate::api::CommitCheckerIoC){
+    fn title(&self, ioc: &mut crate::api::CommitCheckerIoC) {
         info_message!(&mut ioc.message_handler, "TT02");
     }
 }

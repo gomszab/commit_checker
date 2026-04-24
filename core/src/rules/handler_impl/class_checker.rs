@@ -1,5 +1,5 @@
 use commit_checker_message_handler::{
-    MessageHandlerApi, info_message, rule_success_message, software_error, validation_error,
+    info_message, rule_success_message, software_error, validation_error,
 };
 use oxc::ast::{
     AstKind,
@@ -71,7 +71,7 @@ impl Handler for ClassChecker {
                 if let Some(body) = body
                     && !super_exists(&body.statements)
                 {
-                     validation_error!(
+                    validation_error!(
                         &mut ioc.message_handler,
                         "C05",
                         &context.file_name,
