@@ -69,10 +69,12 @@ impl MessageOutput for ConsoleAdapter{
             commit_checker_core::message_handler::MessageType::ValidationError => {
                 let details = message.details.to_string();
                 let meta = &message.meta.unwrap();
+                let params = &meta.params.clone().unwrap();
                 let row = &meta.row.unwrap();
                 let column_start = &meta.column_start.unwrap();
                 let column_end = &meta.column_end.unwrap();
                 let details = details.replace("%{line}", &row.to_string());
+                let details = render(details, params);
                 println!("{}\n{}", details, format_args!("{}{}",
                             " ".repeat(*column_start),
                             "^".repeat(*column_end-*column_start)))
@@ -88,4 +90,12 @@ impl MessageOutput for ConsoleAdapter{
             }
         }
     }
+}
+
+fn render(details: String, params: &Vec<(String, String)>) -> String{
+    let mut text = details;
+    for (k, v) in params {
+                text = text.replace(&format!("%{{{}}}", k), &v);
+            }
+    text
 }

@@ -1,5 +1,5 @@
 use commit_checker_message_handler::{
-    MessageHandlerApi,info_message, rule_success_message, software_error, validation_error
+    MessageHandlerApi, info_message, rule_success_message, software_error, validation_error,
 };
 use oxc::ast::{
     AstKind,
@@ -27,7 +27,14 @@ impl Handler for ClassChecker {
             };
 
             let Some(id) = &class.id else {
-                 validation_error!(&mut ioc.message_handler,"C01", &context.file_name, context.get_line(class.span.start) as usize, 0_usize, 1_usize, nope="");
+                validation_error!(
+                    &mut ioc.message_handler,
+                    "C01",
+                    &context.file_name,
+                    context.get_line(class.span.start) as usize,
+                    0_usize,
+                    1_usize
+                );
                 fail = true;
                 continue;
             };
@@ -40,7 +47,15 @@ impl Handler for ClassChecker {
             });
 
             let Some(ClassElement::MethodDefinition(constructor)) = constructor else {
-                validation_error!(&mut ioc.message_handler,"C04", &context.file_name, context.get_line(class.span.start) as usize, context.get_column(id.span.start) - 1, (class.body.span.start - 1) as usize, class = context.lines[context.get_line(class.span.start) - 1] );
+                validation_error!(
+                    &mut ioc.message_handler,
+                    "C04",
+                    &context.file_name,
+                    context.get_line(class.span.start) as usize,
+                    context.get_column(id.span.start) - 1,
+                    (class.body.span.start - 1) as usize,
+                    class = context.lines[context.get_line(class.span.start) - 1]
+                );
 
                 fail = true;
                 continue;
@@ -52,21 +67,29 @@ impl Handler for ClassChecker {
                 // I honestly can't be bothered to handle a constructor missing a body.
                 // TODO: handle missing constructor body
                 let body = constructor.value.body.as_ref();
-                // .expect(&t!("SW05").to_string());
-                if body.is_none() {
-                    software_error!(&mut ioc.message_handler, "SW05", None);
-                }
-                let body = body.unwrap();
 
-                if !super_exists(&body.statements) {
-                    validation_error!(&mut ioc.message_handler,"C05", &context.file_name, context.get_line(class.span.start) as usize, context.get_column(id.span.start) - 1, super_id.span.end as usize, class = context.lines[context.get_line(class.span.start) - 1] );
-                    fail = false;
-                }
+                if let Some(body) = body
+                    && !super_exists(&body.statements)
+                {
+                     validation_error!(
+                        &mut ioc.message_handler,
+                        "C05",
+                        &context.file_name,
+                        context.get_line(class.span.start) as usize,
+                        context.get_column(id.span.start) - 1,
+                        super_id.span.end as usize,
+                        class = context.lines[context.get_line(class.span.start) - 1]
+                    );
+                    fail = true
+                } else {
+                    software_error!(&mut ioc.message_handler, "SW05", None);
+                    fail = true
+                };
             }
         }
 
         if fail {
-            HandlerResult::Error(vec![])
+            HandlerResult::Error
         } else {
             HandlerResult::Ok
         }

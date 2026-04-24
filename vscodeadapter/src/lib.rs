@@ -20,8 +20,7 @@ impl WasmCommitChecker {
       let mut out = VsCodeAdapter::new();
       let mut facade = CommitCheckerFacade::build(&mut out);
       facade.analyze(&file_name, &file_contents);
-      let list: Vec<&PluginMessage> = out.messages.iter().filter(|item| !item.ignored).collect();
-      serde_json::to_string(&list).unwrap()
+      serde_json::to_string(&out.messages).unwrap()
     }
 }
 
@@ -31,7 +30,6 @@ pub struct PluginMessage{
     pub row: usize,
     pub column_start: usize,
     pub column_end: usize,
-    ignored: bool
 }
 
 struct VsCodeAdapter{
@@ -54,27 +52,25 @@ impl MessageOutput for VsCodeAdapter{
                 let details = message.details.to_string();
                 let meta = &message.meta.unwrap();
                 let row = meta.row.unwrap();
-                let (_, details) = details.split_at(14);
+                let (_, right) = details.split_once('|').unwrap();
+                let (middle, _) = right.split_once('\n').unwrap();
+
+                let details = middle.trim();
                 let column_start = meta.column_start.unwrap();
                 let column_end = meta.column_end.unwrap();
-                PluginMessage{
+                Some(PluginMessage{
                     column_end,
                     column_start,
                     details: details.to_string(),
                     row,
-                    ignored: false
-                }
+                })
             },
             commit_checker_core::message_handler::MessageType::Error | commit_checker_core::message_handler::MessageType::Success | commit_checker_core::message_handler::MessageType::Info => {
-                PluginMessage{
-                    column_start: 0_usize,
-                    column_end: 1_usize,
-                    details: message.details,
-                    row: 0_usize,
-                    ignored: true
-                }
+                None
             }
         };
-        self.messages.push(message);
+        if let Some(message) = message {
+            self.messages.push(message);
+        }
     }
 }

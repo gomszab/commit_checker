@@ -36,6 +36,7 @@ pub struct MetaInfo{
     pub row: Option<usize>,
     pub column_start: Option<usize>,
     pub column_end: Option<usize>,
+    pub params: Option<Vec<(String, String)>>
 }
 
 pub struct LocalizedMessage{
@@ -71,7 +72,7 @@ impl <'a> MessageHandlerApi for MessageHandler<'a> {
                 typ: MessageType::Error,
                 details: code.to_string(),
                 title: t!(code).to_string(),
-                meta: Some(MetaInfo { file_name, row: None, column_start: None, column_end: None })
+                meta: Some(MetaInfo { file_name, row: None, column_start: None, column_end: None, params: None })
             },
             IncommingMessage::RuleStart { code} => LocalizedMessage {
                 typ: MessageType::Info,
@@ -87,22 +88,13 @@ impl <'a> MessageHandlerApi for MessageHandler<'a> {
             },
             IncommingMessage::ValidationError { code, file_name, row, column_start, column_end, params } => LocalizedMessage {
                 title: code.to_string(),
-                details: render(code, params),
+                details: t!(code).to_string(),
                 typ: MessageType::ValidationError,
-                meta: Some(MetaInfo { file_name: Some(file_name), row: Some(row), column_start: Some(column_start), column_end: Some(column_end) })
+                meta: Some(MetaInfo { file_name: Some(file_name), row: Some(row), column_start: Some(column_start), column_end: Some(column_end), params: Some(params) })
             }
 
         };
         self.adapter.push(localized);
     }
 
-}
-
-
-fn render(code: &str, params: Vec<(String, String)>) -> String{
-    let mut text = t!(code).to_string();
-    for (k, v) in params {
-                text = text.replace(&format!("%{{{}}}", k), &v);
-            }
-    text
 }
