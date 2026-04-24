@@ -1,6 +1,6 @@
 use std::{marker::PhantomPinned, pin::Pin, rc::Rc};
 
-use crate::{handler_impl::{ClassChecker, ClassNameChecker, CommentChecker, FunctionJsDocChecker}, rules::api::handler::Handler};
+use crate::{handler_impl::{ClassChecker, ClassNameChecker, CommentChecker, FunctionJsDocChecker, PropertyJsDocChecker, PropertyNameChecker}, rules::api::handler::Handler};
 
 pub struct RuleHandler {
     pub handlers: Vec<Rc<dyn Handler>>,
@@ -24,6 +24,8 @@ impl RuleHandler {
         instance.register_handler(Rc::new(ClassNameChecker));
         instance.register_handler(Rc::new(CommentChecker));
         instance.register_handler(Rc::new(FunctionJsDocChecker));
+        instance.register_handler(Rc::new(PropertyJsDocChecker));
+        instance.register_handler(Rc::new(PropertyNameChecker));
         instance
     }
 }
