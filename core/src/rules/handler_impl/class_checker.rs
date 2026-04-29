@@ -19,7 +19,7 @@ impl Handler for ClassChecker {
         context: &crate::rules::api::FileContext,
         ioc: &mut CommitCheckerIoC,
     ) -> HandlerResult {
-        let mut fail = false;
+        let mut result = HandlerResult::Ok;
         let semantic = context.semantic.get().unwrap();
         for node in semantic.nodes() {
             let AstKind::Class(class) = node.kind() else {
@@ -27,15 +27,7 @@ impl Handler for ClassChecker {
             };
 
             let Some(id) = &class.id else {
-                validation_error!(
-                    &mut ioc.message_handler,
-                    "C01",
-                    &context.file_name,
-                    context.get_line(class.span.start) as usize,
-                    0_usize,
-                    1_usize
-                );
-                fail = true;
+                // The error is handled only in the ClassNameChecker.
                 continue;
             };
 
@@ -53,11 +45,11 @@ impl Handler for ClassChecker {
                     &context.file_name,
                     context.get_line(class.span.start) as usize,
                     context.get_column(id.span.start) - 1,
-                    (class.body.span.start - 1) as usize,
+                    context.get_column(id.span.end) as usize,
                     class = context.lines[context.get_line(class.span.start) - 1]
                 );
 
-                fail = true;
+                result = HandlerResult::Error;
                 continue;
             };
 
@@ -77,22 +69,18 @@ impl Handler for ClassChecker {
                         &context.file_name,
                         context.get_line(class.span.start) as usize,
                         context.get_column(id.span.start) - 1,
-                        super_id.span.end as usize,
+                        context.get_column(super_id.span.end) as usize,
                         class = context.lines[context.get_line(class.span.start) - 1]
                     );
-                    fail = true
+                    result = HandlerResult::Error;
                 } else {
-                    software_error!(&mut ioc.message_handler, "SW05", None);
-                    fail = true
+                    software_error!(&mut ioc.message_handler, "SW05", None); // never happened becuse of sw04 edit: only in commented codelines
+                    result = HandlerResult::Error;
                 };
             }
         }
 
-        if fail {
-            HandlerResult::Error
-        } else {
-            HandlerResult::Ok
-        }
+        result
     }
 
     fn success_message(&self, ioc: &mut CommitCheckerIoC) -> () {

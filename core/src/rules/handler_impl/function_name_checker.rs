@@ -6,7 +6,6 @@ use oxc::ast::{
 use oxc_semantic::AstNodes;
 
 use crate::{
-    api::CommitCheckerIoC,
     handler_impl::check_helper::contains_number_or_hungarian_letter,
     rules::api::{Handler, HandlerResult},
 };
@@ -19,6 +18,7 @@ impl Handler for FunctionNameChecker {
         context: &'a crate::rules::api::FileContext<'a>,
         ioc: &mut crate::api::CommitCheckerIoC,
     ) -> HandlerResult {
+        let mut result = HandlerResult::Ok;
         let semantic = context.semantic.get().unwrap();
         for (name, start) in get_all_func_names_and_spans(semantic.nodes(), ioc, &context) {
             if name.len() < 5 {
@@ -28,9 +28,10 @@ impl Handler for FunctionNameChecker {
                     &context.file_name,
                     context.get_line(start) as usize,
                     (context.get_column(start) - 1) as usize,
-                    (context.get_column(start) - 1 + name.len()) as usize,
+                    (context.get_column(start) + name.len()) as usize,
                     function = context.lines[context.get_line(start) - 1],
                 );
+                result = HandlerResult::Error;
             }
 
             if contains_number_or_hungarian_letter(&name) {
@@ -40,13 +41,14 @@ impl Handler for FunctionNameChecker {
                     &context.file_name,
                     context.get_line(start) as usize,
                     (context.get_column(start) - 1) as usize,
-                    (context.get_column(start) - 1 + name.len()) as usize,
+                    (context.get_column(start) + name.len()) as usize, //TODO Are the Hungarian letters skiped at the length determination?
                     function = context.lines[context.get_line(start) - 1],
                 );
+                result = HandlerResult::Error;
             }
         }
 
-        HandlerResult::Ok
+        result
     }
 
     fn success_message(&self, ioc: &mut crate::api::CommitCheckerIoC) {

@@ -14,6 +14,7 @@ impl Handler for VariableNameChecker {
         context: &'a crate::rules::api::FileContext<'a>,
         ioc: &mut crate::api::CommitCheckerIoC,
     ) -> HandlerResult {
+        let mut result = HandlerResult::Ok;
         let semantic = context.semantic.get().unwrap();
         for node in semantic.nodes() {
             if let AstKind::VariableDeclaration(decl) = node.kind() {
@@ -30,9 +31,10 @@ impl Handler for VariableNameChecker {
                                 &context.file_name,
                                 context.get_line(start) as usize,
                                 context.get_column(start) - 1,
-                                context.get_column(start) - 1 + name.len() as usize,
+                                context.get_column(start) + name.len() as usize,
                                 variable = context.lines[context.get_line(start) - 1],
                             );
+                            result = HandlerResult::Ok;
                         }
 
                         if contains_number_or_hungarian_letter(name.as_str()) {
@@ -42,16 +44,17 @@ impl Handler for VariableNameChecker {
                                 &context.file_name,
                                 context.get_line(start) as usize,
                                 context.get_column(start) - 1,
-                                context.get_column(start) - 1 + name.len() as usize,
+                                context.get_column(start) + name.len() as usize,
                                 variable = context.lines[context.get_line(start) - 1],
                             );
+                             result = HandlerResult::Error;
                         }
                     }
                 }
             }
         }
 
-        HandlerResult::Ok
+        result
     }
 
     fn success_message(&self, ioc: &mut crate::api::CommitCheckerIoC) {

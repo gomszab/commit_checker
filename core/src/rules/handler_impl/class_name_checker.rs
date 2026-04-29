@@ -14,6 +14,7 @@ impl Handler for ClassNameChecker {
         context: &crate::rules::api::FileContext,
         ioc: &mut crate::api::CommitCheckerIoC,
     ) -> HandlerResult {
+        let mut result = HandlerResult::Ok;
         let semantic = context.semantic.get().unwrap();
         for node in semantic.nodes() {
             let AstKind::Class(class) = node.kind() else {
@@ -26,9 +27,10 @@ impl Handler for ClassNameChecker {
                     "C01",
                     &context.file_name,
                     context.get_line(class.span.start) as usize,
-                    0_usize,
-                    1_usize
+                    context.get_column(class.span.start)-1,
+                    context.get_column(class.span.end)
                 );
+                result = HandlerResult::Error;
                 continue;
             };
             let name = binding_identifier.name;
@@ -40,9 +42,10 @@ impl Handler for ClassNameChecker {
                     &context.file_name,
                     context.get_line(class.span.start) as usize,
                     context.get_column(start) - 1,
-                    context.get_column(start) - 1 + name.len(),
+                    context.get_column(start) + name.len(),
                     class = context.lines[context.get_line(start) - 1],
                 );
+                result = HandlerResult::Error;
             }
 
             if contains_number_or_hungarian_letter(name.as_str()) {
@@ -55,10 +58,11 @@ impl Handler for ClassNameChecker {
                     context.get_column(start) - 1 + name.len(),
                     class = context.lines[context.get_line(start) - 1],
                 );
+                result = HandlerResult::Error;
             }
         }
 
-        HandlerResult::Ok
+        result
     }
 
     fn success_message(&self, ioc: &mut crate::api::CommitCheckerIoC) {

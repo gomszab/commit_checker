@@ -12,6 +12,7 @@ impl Handler for PropertyJsDocChecker {
         context: &'a crate::rules::api::FileContext<'a>,
         ioc: &mut crate::api::CommitCheckerIoC,
     ) -> HandlerResult {
+        let mut result = HandlerResult::Ok;
         let semantic = context.semantic.get().unwrap();
         let nodes = semantic.nodes();
 
@@ -24,9 +25,10 @@ impl Handler for PropertyJsDocChecker {
                     &context.file_name,
                     context.get_line(decl_start) as usize,
                     context.get_column(decl_start) - 1,
-                    (decl.span.end - decl_start) as usize,
+                    (decl.span.end) as usize,
                     property = context.lines[context.get_line(decl_start) - 1]
                 );
+                result = HandlerResult::Error;
                 continue;
             };
 
@@ -38,17 +40,18 @@ impl Handler for PropertyJsDocChecker {
                     &context.file_name,
                     context.get_line(decl_start) as usize,
                     context.get_column(decl_start) - 1,
-                    (decl.span.end - decl_start) as usize,
+                    decl.span.end as usize,
                     property = context.lines
                         [context.get_line(jsdoc.span.start) - 1..=context.get_line(decl_start) - 1]
                         .to_vec()
                         .join("\n")
                 );
+                result = HandlerResult::Error;
                 continue;
             };
         }
 
-        HandlerResult::Ok
+        result
     }
 
     fn success_message(&self, ioc: &mut crate::api::CommitCheckerIoC) {

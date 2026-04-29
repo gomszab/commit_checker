@@ -10,6 +10,7 @@ impl Handler for TypeJsDocChecker {
         context: &'a crate::rules::api::FileContext<'a>,
         ioc: &mut crate::api::CommitCheckerIoC,
     ) -> HandlerResult {
+        let mut result =  HandlerResult::Ok;
         let semantic = context.semantic.get().unwrap();
 
         for jsdoc in semantic.jsdoc().iter_all() {
@@ -27,45 +28,40 @@ impl Handler for TypeJsDocChecker {
                         "TD01",
                         &context.file_name,
                         line_num as usize,
-                        (context.get_column(comment_span.start) - 1) as usize,
+                        0_usize,
                         (context.get_column(comment_span.start)) as usize,
                         jsdoc = context.lines[line_num - 1],
                     );
+                    result = HandlerResult::Error;
                     continue;
                 } else if type_comment.0.is_none() {
-                    if ty.is_none() && comment.is_empty() {
-                        validation_error!(
-                            &mut ioc.message_handler,
-                            "TD02",
-                            &context.file_name,
-                            line_num as usize,
-                            (context.get_column(comment_span.start) - 1) as usize,
-                            (context.get_column(comment_span.start)) as usize,
-                            jsdoc = context.lines[line_num - 1],
-                        );
-                        continue;
-                    } else if comment.is_empty() {
-                        // We can unwrap because if we get here, ty is not None
-                        let ty_span = ty.unwrap().span;
-                        if ty.is_none() && comment.is_empty() {
-                            validation_error!(
-                                &mut ioc.message_handler,
-                                "TD03",
-                                &context.file_name,
-                                line_num as usize,
-                                (context.get_column(ty_span.end) - 1) as usize,
-                                (context.get_column(ty_span.end)) as usize,
-                                jsdoc = context.lines[line_num - 1],
-                            );
-
-                            continue;
-                        }
-                    }
+                    validation_error!(
+                        &mut ioc.message_handler,
+                        "TD02",
+                        &context.file_name,
+                        line_num as usize,
+                        0_usize,
+                        context.lines[line_num - 1].len()+1, 
+                        jsdoc = context.lines[line_num - 1],
+                    );
+                    result = HandlerResult::Error;
+                    continue;
+                } else if comment.is_empty() {
+                    validation_error!(
+                        &mut ioc.message_handler,
+                        "TD03",
+                        &context.file_name,
+                        line_num as usize,
+                        0_usize,
+                        context.lines[line_num - 1].len()+1,
+                        jsdoc = context.lines[line_num - 1],
+                    );
+                    result = HandlerResult::Error;
+                    continue;
                 }
             }
         }
-
-        HandlerResult::Ok
+        result
     }
 
     fn success_message(&self, ioc: &mut crate::api::CommitCheckerIoC) {

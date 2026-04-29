@@ -10,6 +10,7 @@ impl Handler for TypedefJsDocChecker {
         context: &'a crate::rules::api::FileContext<'a>,
         ioc: &mut crate::api::CommitCheckerIoC,
     ) -> HandlerResult {
+        let mut result = HandlerResult::Ok;
         let semantic = context.semantic.get().unwrap();
 
         for jsdoc in semantic.jsdoc().iter_all() {
@@ -30,12 +31,13 @@ impl Handler for TypedefJsDocChecker {
                         &context.file_name,
                         context.get_line(tag.span.start) as usize,
                         0_usize,
-                        context.lines[context.get_line(jsdoc.span.end - 2)].len() as usize,
+                        context.lines[context.get_line(tag.span.start)-1].len()+1 as usize,
                         jsdoc = context.lines[context.get_line(jsdoc.span.start) - 1
                             ..=context.get_line(jsdoc.span.end) - 1]
                             .to_vec()
                             .join("\n"),
                     );
+                    result = HandlerResult::Error;
                     continue;
                 } else if name_part.parsed().len() == 0 {
                     validation_error!(
@@ -44,12 +46,13 @@ impl Handler for TypedefJsDocChecker {
                         &context.file_name,
                         context.get_line(tag.span.start) as usize,
                         0_usize,
-                        context.lines[context.get_line(jsdoc.span.end - 2)].len() as usize,
+                        context.lines[context.get_line(tag.span.start)-1].len()+1 as usize,
                         jsdoc = context.lines[context.get_line(jsdoc.span.start) - 1
                             ..=context.get_line(jsdoc.span.end) - 1]
                             .to_vec()
                             .join("\n"),
                     );
+                    result = HandlerResult::Error;
                     continue;
                 } else if let None = type_part {
                     validation_error!(
@@ -58,18 +61,19 @@ impl Handler for TypedefJsDocChecker {
                         &context.file_name,
                         context.get_line(tag.span.start) as usize,
                         0_usize,
-                        context.lines[context.get_line(jsdoc.span.end - 2)].len() as usize,
+                        context.lines[context.get_line(tag.span.start)-1].len()+1 as usize,
                         jsdoc = context.lines[context.get_line(jsdoc.span.start) - 1
                             ..=context.get_line(jsdoc.span.end) - 1]
                             .to_vec()
                             .join("\n"),
                     );
+                    result = HandlerResult::Error;
                     continue;
                 }
             }
         }
 
-        HandlerResult::Ok
+        result
     }
 
     fn success_message(&self, ioc: &mut crate::api::CommitCheckerIoC) {

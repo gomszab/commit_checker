@@ -4,6 +4,9 @@ use crate::rules::api::{Handler, HandlerResult};
 
 pub struct UnusedFunctionChecker;
 
+///
+/// FIXME: Not used
+/// 
 impl Handler for UnusedFunctionChecker {
     fn handle<'a>(
         &self,

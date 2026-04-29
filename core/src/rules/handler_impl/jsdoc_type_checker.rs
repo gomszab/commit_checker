@@ -13,6 +13,7 @@ impl Handler for JsDocTypeChecker {
         context: &'a crate::rules::api::FileContext<'a>,
         ioc: &mut crate::api::CommitCheckerIoC,
     ) -> HandlerResult {
+        let mut result = HandlerResult::Ok;
         let semantic = context.semantic.get().unwrap();
 
         for jsdoc in semantic.jsdoc().iter_all() {
@@ -31,18 +32,19 @@ impl Handler for JsDocTypeChecker {
                     "D01",
                     &context.file_name,
                     context.get_line(tag.span.start) as usize,
-                    context.get_line(tag.span.start) as usize,
-                    context.lines[context.get_line(jsdoc.span.end - 2)].len() as usize,
+                    context.get_column(type_part.span.start) as usize,
+                    context.get_column(type_part.span.end)-1 as usize,
                     jsdoc = context.lines[context.get_line(jsdoc.span.start) - 1
                         ..=context.get_line(jsdoc.span.end) - 1]
                         .to_vec()
                         .join("\n"),
                     forbidden_type = found_forbidden,
                 );
+                result =  HandlerResult::Error
             }
         }
 
-        HandlerResult::Ok
+        result
     }
 
     fn success_message(&self, ioc: &mut crate::api::CommitCheckerIoC) {

@@ -53,7 +53,13 @@ impl MessageOutput for VsCodeAdapter{
                 let meta = &message.meta.unwrap();
                 let row = meta.row.unwrap();
                 let (_, right) = details.split_once('|').unwrap();
-                let (middle, _) = right.split_once('\n').unwrap();
+                let middle = right.trim();
+                let middle = if right.contains('\n') {
+                    let (middle, _) = right.split_once('\n').unwrap();
+                    middle
+                } else{
+                    middle
+                };
 
                 let details = middle.trim();
                 let column_start = meta.column_start.unwrap();
@@ -65,7 +71,15 @@ impl MessageOutput for VsCodeAdapter{
                     row,
                 })
             },
-            commit_checker_core::message_handler::MessageType::Error | commit_checker_core::message_handler::MessageType::Success | commit_checker_core::message_handler::MessageType::Info => {
+            commit_checker_core::message_handler::MessageType::Error => {
+            Some(PluginMessage{
+                    column_end: 2_usize,
+                    column_start: 0_usize,
+                    details: message.details.to_string(),
+                    row: 0_usize,
+                })
+            },
+            commit_checker_core::message_handler::MessageType::Success | commit_checker_core::message_handler::MessageType::Info => {
                 None
             }
         };

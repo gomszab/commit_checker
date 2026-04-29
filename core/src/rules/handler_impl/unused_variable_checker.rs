@@ -9,6 +9,7 @@ impl Handler for UnusedVariableChecker {
     fn handle<'a>( &self,
         context: &'a crate::rules::api::FileContext<'a>,
         ioc: &mut crate::api::CommitCheckerIoC,) -> HandlerResult {
+        let mut result = HandlerResult::Ok;
         let semantic = context.semantic.get().unwrap();
         let scope = semantic.scoping();
         let unused_variables = scope
@@ -26,9 +27,10 @@ impl Handler for UnusedVariableChecker {
                 span.end as usize,
                 variable = context.lines[context.get_line(span.start) - 1],
             );
+            result = HandlerResult::Error;
         }
 
-        HandlerResult::Ok
+        result
 
     }
 

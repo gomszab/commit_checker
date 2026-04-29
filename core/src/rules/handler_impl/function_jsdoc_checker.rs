@@ -17,14 +17,16 @@ impl Handler for FunctionJsDocChecker {
         context: &'a crate::rules::api::FileContext<'a>,
         ioc: &mut crate::api::CommitCheckerIoC,
     ) -> HandlerResult {
+        let mut result = HandlerResult::Ok;
         let semantic = context.semantic.get().unwrap();
         let nodes = semantic.nodes();
 
         for (start, decl, jsdoc) in get_all_func_decl_jsdocs(nodes, semantic.jsdoc()) {
             let decl_start = start;
             let Some(body) = &decl.body else {
-                software_error!(&mut ioc.message_handler, "SW06", None);
-                panic!("error happened");
+                software_error!(&mut ioc.message_handler, "SW06", None); //FIXME: no testcase
+                result = HandlerResult::Error;
+                continue;
             };
 
             let Some(jsdoc) = jsdoc else {
@@ -37,6 +39,7 @@ impl Handler for FunctionJsDocChecker {
                     (body.span.start - 1 - decl_start) as usize,
                     function = context.lines[context.get_line(decl_start) - 1]
                 );
+                result = HandlerResult::Error;
                 continue;
             };
 
@@ -50,6 +53,7 @@ impl Handler for FunctionJsDocChecker {
                     (body.span.start - 1 - decl_start) as usize,
                     function = context.lines[context.get_line(decl_start) - 1]
                 );
+                result = HandlerResult::Error;
             }
 
             let param_tags = jsdoc
@@ -67,6 +71,7 @@ impl Handler for FunctionJsDocChecker {
                     (body.span.start - 1 - decl_start) as usize,
                     function = context.lines[context.get_line(decl_start) - 1]
                 );
+                result = HandlerResult::Error;
             }
 
             let mut params = decl
@@ -83,12 +88,13 @@ impl Handler for FunctionJsDocChecker {
                         &context.file_name,
                         context.get_line(tag.span.start),
                         0_usize,
-                        context.lines[context.get_line(jsdoc.span.end - 2)].len(),
+                        context.get_line(tag.span.start) + context.lines[context.get_line(tag.span.start)].len(),
                         jsdoc = context.lines[context.get_line(jsdoc.span.start) - 1
                             ..=context.get_line(jsdoc.span.end) - 1]
                             .to_vec()
                             .join("\n")
                     );
+                    result = HandlerResult::Error;
                     continue;
                 };
 
@@ -101,12 +107,14 @@ impl Handler for FunctionJsDocChecker {
                         &context.file_name,
                         context.get_line(tag.span.start),
                         0_usize,
-                        context.lines[context.get_line(jsdoc.span.end - 2)].len(),
+                        context.get_line(tag.span.start) + context.lines[context.get_line(tag.span.start)].len(),
                         jsdoc = context.lines[context.get_line(jsdoc.span.start) - 1
                             ..=context.get_line(jsdoc.span.end) - 1]
                             .to_vec()
                             .join("\n")
                     );
+                    result = HandlerResult::Error;
+                    continue;
                 } else {
                     // If there is no name, then we skip checking if it is in the parameter list.
                     // We can unwrap because we already checked if it is none.
@@ -117,12 +125,13 @@ impl Handler for FunctionJsDocChecker {
                             &context.file_name,
                             context.get_line(tag.span.start),
                             0_usize,
-                            context.lines[context.get_line(jsdoc.span.end - 2)].len(),
+                            context.get_line(tag.span.start) + context.lines[context.get_line(tag.span.start)].len(),
                             jsdoc = context.lines[context.get_line(jsdoc.span.start) - 1
                                 ..=context.get_line(jsdoc.span.end) - 1]
                                 .to_vec()
                                 .join("\n")
                         );
+                        result = HandlerResult::Error;
                     }
                 }
 
@@ -133,12 +142,13 @@ impl Handler for FunctionJsDocChecker {
                         &context.file_name,
                         context.get_line(tag.span.start),
                         0_usize,
-                        context.lines[context.get_line(jsdoc.span.end - 2)].len(),
+                        context.get_line(tag.span.start) + context.lines[context.get_line(tag.span.start)].len(),
                         jsdoc = context.lines[context.get_line(jsdoc.span.start) - 1
                             ..=context.get_line(jsdoc.span.end) - 1]
                             .to_vec()
                             .join("\n")
                     );
+                    result = HandlerResult::Error;
                 }
             }
 
@@ -156,6 +166,7 @@ impl Handler for FunctionJsDocChecker {
                     (body.span.start - 1 - decl_start) as usize,
                     function = context.lines[context.get_line(decl_start) - 1]
                 );
+                result = HandlerResult::Error;
                 continue;
             };
 
@@ -167,16 +178,17 @@ impl Handler for FunctionJsDocChecker {
                     &context.file_name,
                     context.get_line(returns_tag.span.start),
                     0_usize,
-                    context.lines[context.get_line(jsdoc.span.end - 2)].len() as usize,
+                     context.get_line(returns_tag.span.start) + context.lines[context.get_line(returns_tag.span.start)].len(),
                     jsdoc = context.lines[context.get_line(jsdoc.span.start) - 1
                         ..=context.get_line(jsdoc.span.end) - 1]
                         .to_vec()
                         .join("\n"),
                 );
+                result = HandlerResult::Error;
             }
         }
 
-        HandlerResult::Ok
+        result
     }
 
     fn success_message(&self, ioc: &mut crate::api::CommitCheckerIoC) {

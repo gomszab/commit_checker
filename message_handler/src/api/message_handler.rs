@@ -70,9 +70,13 @@ impl <'a> MessageHandlerApi for MessageHandler<'a> {
         let localized = match message {
             IncommingMessage::Error { code, file_name } => LocalizedMessage {
                 typ: MessageType::Error,
-                details: code.to_string(),
-                title: t!(code).to_string(),
-                meta: Some(MetaInfo { file_name, row: None, column_start: None, column_end: None, params: None })
+                details:   if let Some(file_name) = &file_name {
+                    t!(code, file_name = file_name.to_string()).to_string() 
+                }else{
+                    t!(code).to_string()
+                }, 
+                title:code.to_string(),
+                meta: Some(MetaInfo { file_name: file_name, row: None, column_start: None, column_end: None, params: None })
             },
             IncommingMessage::RuleStart { code} => LocalizedMessage {
                 typ: MessageType::Info,
@@ -88,7 +92,7 @@ impl <'a> MessageHandlerApi for MessageHandler<'a> {
             },
             IncommingMessage::ValidationError { code, file_name, row, column_start, column_end, params } => LocalizedMessage {
                 title: code.to_string(),
-                details: t!(code).to_string(),
+                details: render(t!(code).to_string(), &params),
                 typ: MessageType::ValidationError,
                 meta: Some(MetaInfo { file_name: Some(file_name), row: Some(row), column_start: Some(column_start), column_end: Some(column_end), params: Some(params) })
             }
@@ -97,4 +101,12 @@ impl <'a> MessageHandlerApi for MessageHandler<'a> {
         self.adapter.push(localized);
     }
 
+}
+
+fn render(details: String, params: &Vec<(String, String)>) -> String{
+    let mut text = details;
+    for (k, v) in params {
+                text = text.replace(&format!("%{{{}}}", k), &v);
+            }
+    text
 }

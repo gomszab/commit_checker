@@ -10,6 +10,7 @@ impl Handler for CommentChecker {
         context: &crate::rules::api::FileContext,
         ioc: &mut crate::api::CommitCheckerIoC,
     ) -> HandlerResult {
+        let mut result = HandlerResult::Ok;
         let mut in_jsdoc = false;
         for (line_number, line) in context.lines.iter().enumerate() {
             let trimmed = line.trim();
@@ -35,14 +36,16 @@ impl Handler for CommentChecker {
                     "COM01",
                     &context.file_name,
                     line_number + 1 as usize,
-                    line.len() - trimmed.len(),
+                    determine_start(line),
                     line.len(),
                     comment = line
                 );
+
+                result = HandlerResult::Error;
             }
         }
 
-        HandlerResult::Ok
+        result
     }
     fn success_message(&self, ioc: &mut crate::api::CommitCheckerIoC) {
         rule_success_message!(&mut ioc.message_handler, "SCM03");
@@ -51,4 +54,13 @@ impl Handler for CommentChecker {
     fn title(&self, ioc: &mut crate::api::CommitCheckerIoC) {
         info_message!(&mut ioc.message_handler, "TT03");
     }
+}
+
+fn determine_start(line: &str) -> usize {
+   if let Some((index, _)) = line.char_indices()
+        .find(|&(_, c)| !c.is_whitespace()){
+            index
+        }else{
+            0_usize
+        }
 }

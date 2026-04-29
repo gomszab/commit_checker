@@ -14,6 +14,7 @@ impl Handler for PropertyNameChecker {
         context: &'a crate::rules::api::FileContext<'a>,
         ioc: &mut crate::api::CommitCheckerIoC,
     ) -> HandlerResult {
+        let mut result = HandlerResult::Ok;
         let semantic = context.semantic.get().unwrap();
         let nodes = semantic.nodes();
         for node in nodes {
@@ -38,9 +39,10 @@ impl Handler for PropertyNameChecker {
                     &context.file_name,
                     context.get_line(start) as usize,
                     context.get_column(start) - 1,
-                    (context.get_column(start) - 1 + name.len()) as usize,
+                    (context.get_column(start) + name.len()) as usize,
                     property = context.lines[context.get_line(start) - 1],
                 );
+                result = HandlerResult::Error;
             }
 
             if contains_number_or_hungarian_letter(name) {
@@ -50,13 +52,14 @@ impl Handler for PropertyNameChecker {
                     &context.file_name,
                     context.get_line(start) as usize,
                     context.get_column(start) - 1,
-                    (context.get_column(start) - 1 + name.len()) as usize,
+                    (context.get_column(start) + name.len()) as usize,
                     property = context.lines[context.get_line(start) - 1],
                 );
+                result = HandlerResult::Error;
             }
         }
 
-        HandlerResult::Ok
+        result
 
     }
 

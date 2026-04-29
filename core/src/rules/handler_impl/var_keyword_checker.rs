@@ -11,6 +11,7 @@ impl Handler for VarKeywordChecker {
         context: &'a crate::rules::api::FileContext<'a>,
         ioc: &mut crate::api::CommitCheckerIoC,
     ) -> HandlerResult {
+        let mut result = HandlerResult::Ok;
         for declaration in context.program.body.iter() {
             if let Statement::VariableDeclaration(decl) = declaration
                 && let VariableDeclarationKind::Var = decl.kind
@@ -23,10 +24,11 @@ impl Handler for VarKeywordChecker {
                     0_usize,
                     1_usize as usize
                 );
+                result = HandlerResult::Error
             }
         }
 
-        HandlerResult::Ok
+        result
     }
 
     fn success_message(&self, ioc: &mut crate::api::CommitCheckerIoC) {
