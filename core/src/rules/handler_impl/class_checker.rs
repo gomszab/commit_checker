@@ -104,3 +104,21 @@ fn super_exists(stmts: &oxc::allocator::Vec<Statement>) -> bool {
 
     false
 }
+#[cfg(test)]
+mod tests {
+    use std::vec;
+
+    use super::*;
+
+    #[test]
+    fn test_c04() {
+       let mut env = crate::tests::TestEnv::new("TT01/missing_constructor.js");
+        let (context, mut ioc) = env.build();
+
+        let checker = ClassChecker;
+        let result = checker.handle(&context, &mut ioc);
+
+        crate::assertHandlerResultError!(result);
+        assert_eq!(env.test_out.messages, vec!["C04"])
+    }
+}

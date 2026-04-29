@@ -47,4 +47,12 @@ impl RuleHandler {
         instance.register_handler(Rc::new(PropertyNameChecker));
         instance
     }
+
+    #[cfg(test)]
+    pub(crate) fn new_empty() -> Pin<Box<Self>>{
+        Box::pin(Self {
+            handlers: Vec::new(),
+            _pin: PhantomPinned,
+        })
+    }
 }

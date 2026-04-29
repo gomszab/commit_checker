@@ -9,3 +9,6 @@ edition = "2018"
 [dependencies]
 "commit_checker_message_handler" = { path = "../message_handler" }
 "commit_checker_core" = {path = "../core"}
+colored = "3.0.0"
+spinoff = "0.8.0"
+sys_language = "0.1.0"

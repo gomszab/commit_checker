@@ -104,26 +104,14 @@ dependencies = [
 ]
 
 [[package]]
-name = "commit_checker"
-version = "0.1.0"
-dependencies = [
- "colored 3.0.0",
- "line-numbers",
- "oxc",
- "oxc_semantic",
- "regex",
- "rust-i18n",
- "rustc-hash",
- "spinoff",
- "sys_language",
-]
-
-[[package]]
 name = "commit_checker_application"
 version = "0.1.0"
 dependencies = [
+ "colored 3.0.0",
  "commit_checker_core",
  "commit_checker_message_handler",
+ "spinoff",
+ "sys_language",
 ]
 
 [[package]]
