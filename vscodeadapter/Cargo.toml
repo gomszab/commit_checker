@@ -1,6 +1,7 @@
 [package]
 name = "vscodeadapter"
 version = "0.1.0"
+authors = ["Kristof Rabel ", "Bence Marcell Egi-Matus", "Szabolcs Gombos"]
 edition = "2021"
 
 [lib]

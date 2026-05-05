@@ -39,3 +39,12 @@ impl Handler for VarKeywordChecker {
         info_message!(&mut ioc.message_handler, "TT13");
     }
 }
+
+#[cfg(test)]
+mod tests {
+
+    crate::declare_tests! {
+       test_v02 => ("TT13/vardeclaration.js", VarKeywordChecker, "V02", Error),
+       test_valid => ("TT13/constdeclaration.js", VarKeywordChecker, "", Ok),
+    }
+}

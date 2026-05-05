@@ -15,6 +15,7 @@ impl Handler for VariableJsDocChecker {
         context: &'a crate::rules::api::FileContext<'a>,
         ioc: &mut crate::api::CommitCheckerIoC,
     ) -> HandlerResult {
+        let mut result = HandlerResult::Ok;
         let semantic = context.semantic.get().unwrap();
         let nodes = semantic.nodes();
 
@@ -30,6 +31,7 @@ impl Handler for VariableJsDocChecker {
                     decl.span.end as usize,
                     variable = context.lines[context.get_line(decl_start) - 1],
                 );
+                result = HandlerResult::Error;
                 continue;
             };
 
@@ -47,11 +49,12 @@ impl Handler for VariableJsDocChecker {
                         .to_vec()
                         .join("\n"),
                 );
+                result = HandlerResult::Error;
                 continue;
             };
         }
 
-        HandlerResult::Ok
+        result
     }
 
     fn success_message(&self, ioc: &mut crate::api::CommitCheckerIoC) {
@@ -103,4 +106,14 @@ fn get_all_var_decl_jsdocs<'a>(
     }
 
     declarations
+}
+
+#[cfg(test)]
+mod tests {
+
+    crate::declare_tests! {
+       test_vd01 => ("TT14/nojsdoc.js", VariableJsDocChecker, "VD01", Error),
+       test_vd02 => ("TT14/jsdoc_notype.js", VariableJsDocChecker, "VD02", Error),
+       test_valid => ("TT14/valid.js", VariableJsDocChecker, "", Ok),
+    }
 }

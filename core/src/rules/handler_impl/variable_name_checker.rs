@@ -34,7 +34,7 @@ impl Handler for VariableNameChecker {
                                 context.get_column(start) + name.len() as usize,
                                 variable = context.lines[context.get_line(start) - 1],
                             );
-                            result = HandlerResult::Ok;
+                            result = HandlerResult::Error;
                         }
 
                         if contains_number_or_hungarian_letter(name.as_str()) {
@@ -47,7 +47,7 @@ impl Handler for VariableNameChecker {
                                 context.get_column(start) + name.len() as usize,
                                 variable = context.lines[context.get_line(start) - 1],
                             );
-                             result = HandlerResult::Error;
+                            result = HandlerResult::Error;
                         }
                     }
                 }
@@ -63,5 +63,16 @@ impl Handler for VariableNameChecker {
 
     fn title(&self, ioc: &mut crate::api::CommitCheckerIoC) {
         info_message!(&mut ioc.message_handler, "TT15");
+    }
+}
+
+#[cfg(test)]
+mod tests {
+
+    crate::declare_tests! {
+       test_v03 => ("TT15/small_variable_name.js", VariableNameChecker, "V03", Error),
+       test_v04_hun => ("TT15/variable_name_hun.js", VariableNameChecker, "V04", Error),
+       test_v04_num => ("TT15/variable_name_num.js", VariableNameChecker, "V04", Error),
+       test_valid => ("TT15/valid.js", VariableNameChecker, "", Ok),
     }
 }

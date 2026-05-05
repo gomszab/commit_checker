@@ -107,3 +107,15 @@ fn get_all_func_names_and_spans<'a>(
 
     names
 }
+
+#[cfg(test)]
+mod tests {
+
+    crate::declare_tests! {
+       test_f01 => ("TT05/small_function_name.js", FunctionNameChecker, "F01", Error),
+       test_f02_num=> ("TT05/function_name_num.js", FunctionNameChecker, "F02", Error),
+       test_f02_hun => ("TT05/function_name_hun.js", FunctionNameChecker, "F02", Error),
+    //    test_f04 => ("TT05/function_no_name.js", FunctionNameChecker, "F04", Error),
+       test_valid => ("TT05/valid.js", FunctionNameChecker, "", Ok),
+    }
+}

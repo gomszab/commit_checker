@@ -2,13 +2,14 @@ use commit_checker_message_handler::{info_message, rule_success_message, validat
 
 use crate::rules::api::{Handler, HandlerResult};
 
-
 pub struct UnusedVariableChecker;
 
 impl Handler for UnusedVariableChecker {
-    fn handle<'a>( &self,
+    fn handle<'a>(
+        &self,
         context: &'a crate::rules::api::FileContext<'a>,
-        ioc: &mut crate::api::CommitCheckerIoC,) -> HandlerResult {
+        ioc: &mut crate::api::CommitCheckerIoC,
+    ) -> HandlerResult {
         let mut result = HandlerResult::Ok;
         let semantic = context.semantic.get().unwrap();
         let scope = semantic.scoping();
@@ -31,9 +32,7 @@ impl Handler for UnusedVariableChecker {
         }
 
         result
-
     }
-
 
     fn success_message(&self, ioc: &mut crate::api::CommitCheckerIoC) {
         rule_success_message!(&mut ioc.message_handler, "SCM12");
@@ -41,5 +40,14 @@ impl Handler for UnusedVariableChecker {
 
     fn title(&self, ioc: &mut crate::api::CommitCheckerIoC) {
         info_message!(&mut ioc.message_handler, "TT12");
+    }
+}
+
+#[cfg(test)]
+mod tests {
+
+    crate::declare_tests! {
+       test_v01 => ("TT12/notused_var.js", UnusedVariableChecker, "V01", Error),
+       test_valid => ("TT12/usedvar.js", UnusedVariableChecker, "", Ok),
     }
 }

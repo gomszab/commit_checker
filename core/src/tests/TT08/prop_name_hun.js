@@ -1,0 +1,5 @@
+class AnotherParentClass { 
+    #htmldivá; 
+    constructor() {
+    }
+}

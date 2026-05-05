@@ -57,10 +57,18 @@ impl Handler for CommentChecker {
 }
 
 fn determine_start(line: &str) -> usize {
-   if let Some((index, _)) = line.char_indices()
-        .find(|&(_, c)| !c.is_whitespace()){
-            index
-        }else{
-            0_usize
-        }
+    if let Some((index, _)) = line.char_indices().find(|&(_, c)| !c.is_whitespace()) {
+        index
+    } else {
+        0_usize
+    }
+}
+
+#[cfg(test)]
+mod tests {
+
+    crate::declare_tests! {
+       test_com01 => ("TT03/no_comment.js", CommentChecker, "COM01", Error),
+       test_valid => ("TT03/valid.js", CommentChecker, "", Ok),
+    }
 }

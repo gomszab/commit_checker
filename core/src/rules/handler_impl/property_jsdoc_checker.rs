@@ -78,3 +78,13 @@ fn get_all_property_decl_jsdocs<'a>(
 
     declarations
 }
+
+#[cfg(test)]
+mod tests {
+
+    crate::declare_tests! {
+       test_pd01 => ("TT07/missing_jsdoc.js", PropertyJsDocChecker, "PD01", Error),
+       test_pd02 => ("TT07/missing_type.js", PropertyJsDocChecker, "PD02", Error),
+       test_valid => ("TT09/valid.js", PropertyJsDocChecker, "", Ok),
+    }
+}

@@ -60,7 +60,6 @@ impl Handler for PropertyNameChecker {
         }
 
         result
-
     }
 
     fn success_message(&self, ioc: &mut crate::api::CommitCheckerIoC) {
@@ -69,5 +68,16 @@ impl Handler for PropertyNameChecker {
 
     fn title(&self, ioc: &mut crate::api::CommitCheckerIoC) {
         info_message!(&mut ioc.message_handler, "TT08");
+    }
+}
+
+#[cfg(test)]
+mod tests {
+
+    crate::declare_tests! {
+       test_p01 => ("TT08/small_prop_name.js", PropertyNameChecker, "P01", Error),
+       test_p02_num => ("TT08/prop_name_num.js", PropertyNameChecker, "P02", Error),
+       test_p02_hun => ("TT08/prop_name_hun.js", PropertyNameChecker, "P02", Error),
+       test_valid => ("TT08/valid.js", PropertyNameChecker, "", Ok),
     }
 }

@@ -26,7 +26,7 @@ macro_rules! validation_error {
                 row: $row,
                 column_start: $column_start,
                 column_end: $column_end,
-                params 
+                params
         })
     };
 
@@ -44,15 +44,14 @@ macro_rules! validation_error {
         })
     };
 }
-    
 
 #[macro_export]
 macro_rules! software_error {
     ($handler:expr, $code:expr, $file_name:expr) => {
         use commit_checker_message_handler::MessageHandlerApi;
         $handler.handle(commit_checker_message_handler::IncommingMessage::Error {
-                code: $code,
-                file_name: $file_name
+            code: $code,
+            file_name: $file_name,
         })
     };
 }
@@ -61,9 +60,7 @@ macro_rules! software_error {
 macro_rules! info_message {
     ($handler:expr, $code:expr) => {
         use commit_checker_message_handler::MessageHandlerApi;
-        $handler.handle(commit_checker_message_handler::IncommingMessage::RuleStart {
-                code: $code,
-        })
+        $handler.handle(commit_checker_message_handler::IncommingMessage::RuleStart { code: $code })
     };
 }
 
@@ -71,8 +68,7 @@ macro_rules! info_message {
 macro_rules! rule_success_message {
     ($handler:expr, $code:expr) => {
         use commit_checker_message_handler::MessageHandlerApi;
-        $handler.handle(commit_checker_message_handler::IncommingMessage::RuleSuccess {
-                code: $code,
-        })
+        $handler
+            .handle(commit_checker_message_handler::IncommingMessage::RuleSuccess { code: $code })
     };
 }

@@ -27,7 +27,7 @@ impl Handler for ClassNameChecker {
                     "C01",
                     &context.file_name,
                     context.get_line(class.span.start) as usize,
-                    context.get_column(class.span.start)-1,
+                    context.get_column(class.span.start) - 1,
                     context.get_column(class.span.end)
                 );
                 result = HandlerResult::Error;
@@ -71,5 +71,17 @@ impl Handler for ClassNameChecker {
 
     fn title(&self, ioc: &mut crate::api::CommitCheckerIoC) {
         info_message!(&mut ioc.message_handler, "TT02");
+    }
+}
+
+#[cfg(test)]
+mod tests {
+
+    crate::declare_tests! {
+       test_c01 => ("TT02/no_class_name.js", ClassNameChecker, "C01", Error),
+       test_c02 => ("TT02/small_class_name.js", ClassNameChecker, "C02", Error),
+       test_c03_number => ("TT02/classname_number.js", ClassNameChecker, "C03", Error),
+       test_c03_hun => ("TT02/classname_hungarian.js", ClassNameChecker, "C03", Error),
+       test_valid => ("TT02/valid.js", ClassNameChecker, "", Ok),
     }
 }

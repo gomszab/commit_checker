@@ -2,8 +2,6 @@ use std::{fs, path::PathBuf};
 
 use oxc::allocator::Allocator;
 
-use super::*;
-
 pub struct TestEnv {
     pub source_path: String,
     pub file_contents: String,
@@ -12,12 +10,14 @@ pub struct TestEnv {
 }
 
 pub struct TestOut {
-   pub messages: Vec<String>
+    pub messages: Vec<String>,
 }
 
-impl TestOut{
-    fn new() -> Self{
-        Self { messages: Vec::new() }
+impl TestOut {
+    fn new() -> Self {
+        Self {
+            messages: Vec::new(),
+        }
     }
 }
 
@@ -37,9 +37,11 @@ impl TestEnv {
         }
     }
 
-    pub fn build<'a>(&'a mut self) -> (
+    pub fn build<'a>(
+        &'a mut self,
+    ) -> (
         crate::rules::api::FileContext<'a>,
-        crate::api::CommitCheckerIoC<'a>
+        crate::api::CommitCheckerIoC<'a>,
     ) {
         let mut ioc = crate::api::CommitCheckerIoC::new(&mut self.test_out);
         ioc.rule_handler = crate::rules::api::RuleHandler::new_empty();
@@ -56,8 +58,7 @@ impl TestEnv {
     }
 }
 
-
-fn read_file_from_test_folder(path_inside_test_folder: &str) -> String{
+fn read_file_from_test_folder(path_inside_test_folder: &str) -> String {
     let path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
         .join("src")
         .join("tests")
@@ -92,5 +93,41 @@ macro_rules! assertHandlerResultError {
                 panic!("expected HandlerResult::Error, got HandlerResult::Ok");
             }
         }
+    };
+}
+
+#[macro_export]
+macro_rules! declare_tests {
+    (
+        $(
+            $test_name:ident => ($path:expr, $checker:ident, $code:expr, $resulttype:ident)
+        ),* $(,)?
+    ) => {
+        $(
+            #[test]
+            fn $test_name() {
+                use super::*;
+                use HandlerResult::*;
+
+                let mut env = crate::tests::TestEnv::new($path);
+                let (context, mut ioc) = env.build();
+
+                let checker = $checker;
+                let result = checker.handle(&context, &mut ioc);
+
+                match $resulttype {
+                    HandlerResult::Error => {
+                        assert_eq!(env.test_out.messages, vec![$code]);
+                        crate::assertHandlerResultError!(result);
+                    },
+                    HandlerResult::Ok => {
+                        let vec: Vec<String> = Vec::new();
+                        assert_eq!(env.test_out.messages, vec);
+                        crate::assertHandlerResultOk!(result);
+                    }
+                }
+
+            }
+        )*
     };
 }

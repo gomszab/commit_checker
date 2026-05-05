@@ -88,7 +88,8 @@ impl Handler for FunctionJsDocChecker {
                         &context.file_name,
                         context.get_line(tag.span.start),
                         0_usize,
-                        context.get_line(tag.span.start) + context.lines[context.get_line(tag.span.start)].len(),
+                        context.get_line(tag.span.start)
+                            + context.lines[context.get_line(tag.span.start)].len(),
                         jsdoc = context.lines[context.get_line(jsdoc.span.start) - 1
                             ..=context.get_line(jsdoc.span.end) - 1]
                             .to_vec()
@@ -107,7 +108,8 @@ impl Handler for FunctionJsDocChecker {
                         &context.file_name,
                         context.get_line(tag.span.start),
                         0_usize,
-                        context.get_line(tag.span.start) + context.lines[context.get_line(tag.span.start)].len(),
+                        context.get_line(tag.span.start)
+                            + context.lines[context.get_line(tag.span.start)].len(),
                         jsdoc = context.lines[context.get_line(jsdoc.span.start) - 1
                             ..=context.get_line(jsdoc.span.end) - 1]
                             .to_vec()
@@ -125,7 +127,8 @@ impl Handler for FunctionJsDocChecker {
                             &context.file_name,
                             context.get_line(tag.span.start),
                             0_usize,
-                            context.get_line(tag.span.start) + context.lines[context.get_line(tag.span.start)].len(),
+                            context.get_line(tag.span.start)
+                                + context.lines[context.get_line(tag.span.start)].len(),
                             jsdoc = context.lines[context.get_line(jsdoc.span.start) - 1
                                 ..=context.get_line(jsdoc.span.end) - 1]
                                 .to_vec()
@@ -142,7 +145,8 @@ impl Handler for FunctionJsDocChecker {
                         &context.file_name,
                         context.get_line(tag.span.start),
                         0_usize,
-                        context.get_line(tag.span.start) + context.lines[context.get_line(tag.span.start)].len(),
+                        context.get_line(tag.span.start)
+                            + context.lines[context.get_line(tag.span.start)].len(),
                         jsdoc = context.lines[context.get_line(jsdoc.span.start) - 1
                             ..=context.get_line(jsdoc.span.end) - 1]
                             .to_vec()
@@ -178,7 +182,8 @@ impl Handler for FunctionJsDocChecker {
                     &context.file_name,
                     context.get_line(returns_tag.span.start),
                     0_usize,
-                     context.get_line(returns_tag.span.start) + context.lines[context.get_line(returns_tag.span.start)].len(),
+                    context.get_line(returns_tag.span.start)
+                        + context.lines[context.get_line(returns_tag.span.start)].len(),
                     jsdoc = context.lines[context.get_line(jsdoc.span.start) - 1
                         ..=context.get_line(jsdoc.span.end) - 1]
                         .to_vec()
@@ -227,4 +232,22 @@ fn get_all_func_decl_jsdocs<'a>(
     }
 
     declarations
+}
+
+#[cfg(test)]
+mod tests {
+
+    crate::declare_tests! {
+       test_fd01 => ("TT04/no_jsdoc.js", FunctionJsDocChecker, "FD01", Error),
+       test_fd02 => ("TT04/no_description.js", FunctionJsDocChecker, "FD02", Error),
+       test_fd03_func => ("TT04/invalid_param_func.js", FunctionJsDocChecker, "FD03", Error),
+       test_fd03_jsdoc => ("TT04/invalid_param_jsdoc.js", FunctionJsDocChecker, "FD03", Error),
+       test_fd04 => ("TT04/no_param_type.js", FunctionJsDocChecker, "FD04", Error),
+       test_fd05 => ("TT04/no_param_name.js", FunctionJsDocChecker, "FD05", Error),
+       test_fd06 => ("TT04/not_exist_param_jsdoc.js", FunctionJsDocChecker, "FD06", Error),
+       test_fd07 => ("TT04/no_param_desc.js", FunctionJsDocChecker, "FD07", Error),
+       test_fd08 => ("TT04/no_return.js", FunctionJsDocChecker, "FD08", Error),
+       test_fd09 => ("TT04/no_returntype.js", FunctionJsDocChecker, "FD09", Error),
+       test_valid => ("TT04/valid.js", FunctionJsDocChecker, "", Ok),
+    }
 }

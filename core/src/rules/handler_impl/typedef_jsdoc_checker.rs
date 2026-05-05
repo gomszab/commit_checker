@@ -31,7 +31,7 @@ impl Handler for TypedefJsDocChecker {
                         &context.file_name,
                         context.get_line(tag.span.start) as usize,
                         0_usize,
-                        context.lines[context.get_line(tag.span.start)-1].len()+1 as usize,
+                        context.lines[context.get_line(tag.span.start) - 1].len() + 1 as usize,
                         jsdoc = context.lines[context.get_line(jsdoc.span.start) - 1
                             ..=context.get_line(jsdoc.span.end) - 1]
                             .to_vec()
@@ -46,7 +46,7 @@ impl Handler for TypedefJsDocChecker {
                         &context.file_name,
                         context.get_line(tag.span.start) as usize,
                         0_usize,
-                        context.lines[context.get_line(tag.span.start)-1].len()+1 as usize,
+                        context.lines[context.get_line(tag.span.start) - 1].len() + 1 as usize,
                         jsdoc = context.lines[context.get_line(jsdoc.span.start) - 1
                             ..=context.get_line(jsdoc.span.end) - 1]
                             .to_vec()
@@ -61,7 +61,7 @@ impl Handler for TypedefJsDocChecker {
                         &context.file_name,
                         context.get_line(tag.span.start) as usize,
                         0_usize,
-                        context.lines[context.get_line(tag.span.start)-1].len()+1 as usize,
+                        context.lines[context.get_line(tag.span.start) - 1].len() + 1 as usize,
                         jsdoc = context.lines[context.get_line(jsdoc.span.start) - 1
                             ..=context.get_line(jsdoc.span.end) - 1]
                             .to_vec()
@@ -82,5 +82,16 @@ impl Handler for TypedefJsDocChecker {
 
     fn title(&self, ioc: &mut crate::api::CommitCheckerIoC) {
         info_message!(&mut ioc.message_handler, "TT10");
+    }
+}
+
+#[cfg(test)]
+mod tests {
+
+    crate::declare_tests! {
+       test_td04 => ("TT10/typedef_noname_notype.js", TypedefJsDocChecker, "TD04", Error),
+       test_td05 => ("TT10/typedef_noname.js", TypedefJsDocChecker, "TD05", Error),
+       test_td06 => ("TT10/typedef_notype.js", TypedefJsDocChecker, "TD06", Error),
+       test_valid => ("TT10/valid.js", TypedefJsDocChecker, "", Ok),
     }
 }

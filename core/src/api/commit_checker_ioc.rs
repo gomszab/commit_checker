@@ -9,7 +9,7 @@ pub struct CommitCheckerIoC<'a> {
     pub message_handler: MessageHandler<'a>,
 }
 
-impl <'a>CommitCheckerIoC<'a> {
+impl<'a> CommitCheckerIoC<'a> {
     pub fn new(out: &'a mut dyn MessageOutput) -> Self {
         Self {
             rule_handler: RuleHandler::new(),

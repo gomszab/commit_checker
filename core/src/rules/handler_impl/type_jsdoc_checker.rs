@@ -10,7 +10,7 @@ impl Handler for TypeJsDocChecker {
         context: &'a crate::rules::api::FileContext<'a>,
         ioc: &mut crate::api::CommitCheckerIoC,
     ) -> HandlerResult {
-        let mut result =  HandlerResult::Ok;
+        let mut result = HandlerResult::Ok;
         let semantic = context.semantic.get().unwrap();
 
         for jsdoc in semantic.jsdoc().iter_all() {
@@ -41,7 +41,7 @@ impl Handler for TypeJsDocChecker {
                         &context.file_name,
                         line_num as usize,
                         0_usize,
-                        context.lines[line_num - 1].len()+1, 
+                        context.lines[line_num - 1].len() + 1,
                         jsdoc = context.lines[line_num - 1],
                     );
                     result = HandlerResult::Error;
@@ -53,7 +53,7 @@ impl Handler for TypeJsDocChecker {
                         &context.file_name,
                         line_num as usize,
                         0_usize,
-                        context.lines[line_num - 1].len()+1,
+                        context.lines[line_num - 1].len() + 1,
                         jsdoc = context.lines[line_num - 1],
                     );
                     result = HandlerResult::Error;
@@ -70,5 +70,16 @@ impl Handler for TypeJsDocChecker {
 
     fn title(&self, ioc: &mut crate::api::CommitCheckerIoC) {
         info_message!(&mut ioc.message_handler, "TT09");
+    }
+}
+
+#[cfg(test)]
+mod tests {
+
+    crate::declare_tests! {
+       test_td01 => ("TT09/no_type_no_desc.js", TypeJsDocChecker, "TD01", Error),
+       test_td02 => ("TT09/no_type.js", TypeJsDocChecker, "TD02", Error),
+       test_td03 => ("TT09/no_desc.js", TypeJsDocChecker, "TD03", Error),
+       test_valid => ("TT09/valid.js", TypeJsDocChecker, "", Ok),
     }
 }

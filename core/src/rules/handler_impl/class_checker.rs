@@ -73,7 +73,7 @@ impl Handler for ClassChecker {
                         class = context.lines[context.get_line(class.span.start) - 1]
                     );
                     result = HandlerResult::Error;
-                } else {
+                } else if body.is_none() {
                     software_error!(&mut ioc.message_handler, "SW05", None); // never happened becuse of sw04 edit: only in commented codelines
                     result = HandlerResult::Error;
                 };
@@ -106,19 +106,12 @@ fn super_exists(stmts: &oxc::allocator::Vec<Statement>) -> bool {
 }
 #[cfg(test)]
 mod tests {
-    use std::vec;
 
-    use super::*;
-
-    #[test]
-    fn test_c04() {
-       let mut env = crate::tests::TestEnv::new("TT01/missing_constructor.js");
-        let (context, mut ioc) = env.build();
-
-        let checker = ClassChecker;
-        let result = checker.handle(&context, &mut ioc);
-
-        crate::assertHandlerResultError!(result);
-        assert_eq!(env.test_out.messages, vec!["C04"])
+    crate::declare_tests! {
+       test_c04 => ("TT01/missing_constructor.js", ClassChecker, "C04", Error),
+       test_c05 => ("TT01/missing_super.js", ClassChecker, "C05", Error),
+       //test_sw05 => ("TT01/no_constructor_body.js", ClassChecker, "SW05", Error),
+       test_constructor_exist => ("TT01/constructor_exist.js", ClassChecker, "", Ok),
+       test_super_called => ("TT01/super_called.js", ClassChecker, "", Ok),
     }
 }

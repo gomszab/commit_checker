@@ -33,14 +33,14 @@ impl Handler for JsDocTypeChecker {
                     &context.file_name,
                     context.get_line(tag.span.start) as usize,
                     context.get_column(type_part.span.start) as usize,
-                    context.get_column(type_part.span.end)-1 as usize,
+                    context.get_column(type_part.span.end) - 1 as usize,
                     jsdoc = context.lines[context.get_line(jsdoc.span.start) - 1
                         ..=context.get_line(jsdoc.span.end) - 1]
                         .to_vec()
                         .join("\n"),
                     forbidden_type = found_forbidden,
                 );
-                result =  HandlerResult::Error
+                result = HandlerResult::Error
             }
         }
 
@@ -53,5 +53,16 @@ impl Handler for JsDocTypeChecker {
 
     fn title(&self, ioc: &mut crate::api::CommitCheckerIoC) {
         info_message!(&mut ioc.message_handler, "TT09");
+    }
+}
+
+#[cfg(test)]
+mod tests {
+
+    crate::declare_tests! {
+       test_d01_obj => ("TT09/object_type.js", JsDocTypeChecker, "D01", Error),
+       test_d01_array => ("TT09/array_type.js", JsDocTypeChecker, "D01", Error),
+       test_d01_star => ("TT09/star_type.js", JsDocTypeChecker, "D01", Error),
+       test_valid => ("TT09/valid.js", JsDocTypeChecker, "", Ok),
     }
 }

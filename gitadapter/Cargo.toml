@@ -1,5 +1,5 @@
 [package]
 name = "commit_checker_message_handler"
 version = "0.1.0"
-authors = ["Jämes Ménétrey <james@menetrey.me>"]
+authors = ["Kristof Rabel ", "Bence Marcell Egi-Matus", "Szabolcs Gombos"]
 edition = "2024"

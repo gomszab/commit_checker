@@ -49,7 +49,7 @@ impl RuleHandler {
     }
 
     #[cfg(test)]
-    pub(crate) fn new_empty() -> Pin<Box<Self>>{
+    pub(crate) fn new_empty() -> Pin<Box<Self>> {
         Box::pin(Self {
             handlers: Vec::new(),
             _pin: PhantomPinned,

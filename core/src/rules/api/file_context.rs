@@ -1,6 +1,6 @@
 use std::cell::OnceCell;
 
-use commit_checker_message_handler::{MessageHandler,software_error};
+use commit_checker_message_handler::{MessageHandler, software_error};
 use line_numbers::LinePositions;
 use oxc::{allocator::Allocator, ast::ast::Program, parser::Parser, span::SourceType};
 use oxc_semantic::{Semantic, SemanticBuilder};
