@@ -35,8 +35,8 @@ impl Handler for VarKeywordChecker {
         rule_success_message!(&mut ioc.message_handler, "SCM13");
     }
 
-    fn title(&self, ioc: &mut crate::api::CommitCheckerIoC) {
-        info_message!(&mut ioc.message_handler, "TT13");
+    fn code(&self) -> &'static str {
+        "TT13"
     }
 }
 

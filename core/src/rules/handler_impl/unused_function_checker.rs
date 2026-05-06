@@ -39,7 +39,7 @@ impl Handler for UnusedFunctionChecker {
         rule_success_message!(&mut ioc.message_handler, "SCM11");
     }
 
-    fn title(&self, ioc: &mut crate::api::CommitCheckerIoC) {
-        info_message!(&mut ioc.message_handler, "TT11");
+    fn code(&self) -> &'static str {
+        "TT11"
     }
 }

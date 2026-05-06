@@ -80,8 +80,8 @@ impl Handler for TypedefJsDocChecker {
         rule_success_message!(&mut ioc.message_handler, "SCM10");
     }
 
-    fn title(&self, ioc: &mut crate::api::CommitCheckerIoC) {
-        info_message!(&mut ioc.message_handler, "TT10");
+    fn code(&self) -> &'static str {
+        "TT10"
     }
 }
 

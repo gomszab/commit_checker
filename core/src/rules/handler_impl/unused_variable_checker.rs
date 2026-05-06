@@ -38,8 +38,8 @@ impl Handler for UnusedVariableChecker {
         rule_success_message!(&mut ioc.message_handler, "SCM12");
     }
 
-    fn title(&self, ioc: &mut crate::api::CommitCheckerIoC) {
-        info_message!(&mut ioc.message_handler, "TT12");
+    fn code(&self) -> &'static str {
+        "TT12"
     }
 }
 

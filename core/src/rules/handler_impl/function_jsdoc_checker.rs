@@ -200,8 +200,8 @@ impl Handler for FunctionJsDocChecker {
         rule_success_message!(&mut ioc.message_handler, "SCM04");
     }
 
-    fn title(&self, ioc: &mut crate::api::CommitCheckerIoC) {
-        info_message!(&mut ioc.message_handler, "TT04");
+    fn code(&self) -> &'static str {
+        "TT04"
     }
 }
 

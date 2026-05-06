@@ -5,12 +5,14 @@ use crate::{api::commit_checker_ioc::CommitCheckerIoC, rules::api::FileContext};
 
 pub struct CommitCheckerFacade<'a> {
     container: CommitCheckerIoC<'a>,
+    enabled_handlers: Option<Vec<String>>,
 }
 
 impl<'a> CommitCheckerFacade<'a> {
     pub fn build(out: &'a mut dyn MessageOutput) -> Self {
         CommitCheckerFacade {
             container: CommitCheckerIoC::new(out),
+            enabled_handlers: None,
         }
     }
 

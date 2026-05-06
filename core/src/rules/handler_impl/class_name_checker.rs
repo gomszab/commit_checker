@@ -69,8 +69,8 @@ impl Handler for ClassNameChecker {
         rule_success_message!(&mut ioc.message_handler, "SCM02");
     }
 
-    fn title(&self, ioc: &mut crate::api::CommitCheckerIoC) {
-        info_message!(&mut ioc.message_handler, "TT02");
+    fn code(&self) -> &'static str {
+        "TT02"
     }
 }
 

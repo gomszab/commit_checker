@@ -87,8 +87,8 @@ impl Handler for ClassChecker {
         rule_success_message!(&mut ioc.message_handler, "SCM01");
     }
 
-    fn title(&self, ioc: &mut CommitCheckerIoC) -> () {
-        info_message!(&mut ioc.message_handler, "TT01");
+    fn code(&self) -> &'static str {
+        "TT01"
     }
 }
 

@@ -51,8 +51,8 @@ impl Handler for CommentChecker {
         rule_success_message!(&mut ioc.message_handler, "SCM03");
     }
 
-    fn title(&self, ioc: &mut crate::api::CommitCheckerIoC) {
-        info_message!(&mut ioc.message_handler, "TT03");
+    fn code(&self) -> &'static str {
+        "TT03"
     }
 }
 

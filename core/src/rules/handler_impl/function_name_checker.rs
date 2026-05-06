@@ -55,8 +55,8 @@ impl Handler for FunctionNameChecker {
         rule_success_message!(&mut ioc.message_handler, "SCM05");
     }
 
-    fn title(&self, ioc: &mut crate::api::CommitCheckerIoC) {
-        info_message!(&mut ioc.message_handler, "TT05");
+    fn code(&self) -> &'static str {
+        "TT05"
     }
 }
 
