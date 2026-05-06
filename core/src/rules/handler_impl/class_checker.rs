@@ -1,6 +1,4 @@
-use commit_checker_message_handler::{
-    info_message, rule_success_message, software_error, validation_error,
-};
+use commit_checker_message_handler::{rule_success_message, software_error, validation_error};
 use oxc::ast::{
     AstKind,
     ast::{ClassElement, Expression, MethodDefinitionKind, Statement},

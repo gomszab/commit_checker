@@ -1,4 +1,4 @@
-use commit_checker_message_handler::{info_message, rule_success_message, validation_error};
+use commit_checker_message_handler::{rule_success_message, validation_error};
 use oxc::ast::{AstKind, ast::PropertyDefinition};
 use oxc_semantic::{AstNodes, JSDoc, JSDocFinder};
 

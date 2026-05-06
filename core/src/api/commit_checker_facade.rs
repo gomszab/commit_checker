@@ -16,11 +16,21 @@ impl<'a> CommitCheckerFacade<'a> {
         }
     }
 
-    pub fn analyze(&mut self, file_name: &str, file_content: &str) {
+    pub fn build_with_enabled(
+        out: &'a mut dyn MessageOutput,
+        enabled_handlers: Vec<String>,
+    ) -> Self {
+        CommitCheckerFacade {
+            container: CommitCheckerIoC::new(out),
+            enabled_handlers: Some(enabled_handlers),
+        }
+    }
+
+    pub fn analyze(&mut self, file_name: &str, file_contents: &str) {
         let allocator = Allocator::new();
         let file_context = FileContext::new(
             file_name.to_string(),
-            file_content,
+            file_contents,
             &allocator,
             &mut self.container.message_handler,
         );
@@ -28,6 +38,11 @@ impl<'a> CommitCheckerFacade<'a> {
             let handlers = &self.container.rule_handler.handlers.clone();
             for i in 0..handlers.len() {
                 let handler = handlers[i].clone();
+                if let Some(enabled) = &self.enabled_handlers
+                    && !enabled.contains(&handler.code().to_string())
+                {
+                    continue;
+                }
                 handler.title(&mut self.container);
                 if let crate::rules::api::HandlerResult::Ok =
                     handler.handle(file_context, &mut self.container)
