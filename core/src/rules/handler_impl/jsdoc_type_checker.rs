@@ -11,7 +11,6 @@ impl Handler for JsDocTypeChecker {
     fn handle<'a>(
         &self,
         context: &'a crate::rules::api::FileContext<'a>,
-        ioc: &mut crate::api::CommitCheckerIoC,
     ) -> HandlerResult {
         let mut result = HandlerResult::Ok;
         let semantic = context.semantic.get().unwrap();
@@ -28,9 +27,7 @@ impl Handler for JsDocTypeChecker {
                 };
 
                 validation_error!(
-                    &mut ioc.message_handler,
                     "D01",
-                    &context.file_name,
                     context.get_line(tag.span.start) as usize,
                     context.get_column(type_part.span.start) as usize,
                     context.get_column(type_part.span.end) - 1 as usize,
@@ -47,8 +44,8 @@ impl Handler for JsDocTypeChecker {
         result
     }
 
-    fn success_message(&self, ioc: &mut crate::api::CommitCheckerIoC) {
-        rule_success_message!(&mut ioc.message_handler, "SCM09");
+    fn success_message(&self) {
+        rule_success_message!("SCM09");
     }
 
     fn code(&self) -> &'static str {

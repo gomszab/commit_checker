@@ -12,8 +12,7 @@ pub struct FunctionJsDocChecker;
 impl Handler for FunctionJsDocChecker {
     fn handle<'a>(
         &self,
-        context: &'a crate::rules::api::FileContext<'a>,
-        ioc: &mut crate::api::CommitCheckerIoC,
+        context: &'a crate::rules::api::FileContext<'a>
     ) -> HandlerResult {
         let mut result = HandlerResult::Ok;
         let semantic = context.semantic.get().unwrap();
@@ -22,16 +21,14 @@ impl Handler for FunctionJsDocChecker {
         for (start, decl, jsdoc) in get_all_func_decl_jsdocs(nodes, semantic.jsdoc()) {
             let decl_start = start;
             let Some(body) = &decl.body else {
-                software_error!(&mut ioc.message_handler, "SW06", None); //FIXME: no testcase
+                software_error!("SW06"); //FIXME: no testcase
                 result = HandlerResult::Error;
                 continue;
             };
 
             let Some(jsdoc) = jsdoc else {
                 validation_error!(
-                    &mut ioc.message_handler,
                     "FD01",
-                    &context.file_name,
                     context.get_line(decl_start) as usize,
                     context.get_column(decl_start) - 1,
                     (body.span.start - 1 - decl_start) as usize,
@@ -43,9 +40,7 @@ impl Handler for FunctionJsDocChecker {
 
             if jsdoc.comment().parsed().len() == 0 {
                 validation_error!(
-                    &mut ioc.message_handler,
                     "FD02",
-                    &context.file_name,
                     context.get_line(decl_start) as usize,
                     context.get_column(decl_start) - 1,
                     (body.span.start - 1 - decl_start) as usize,
@@ -61,9 +56,7 @@ impl Handler for FunctionJsDocChecker {
                 .collect::<Vec<&JSDocTag>>();
             if param_tags.len() != decl.params.parameters_count() {
                 validation_error!(
-                    &mut ioc.message_handler,
                     "FD03",
-                    &context.file_name,
                     context.get_line(decl_start) as usize,
                     context.get_column(decl_start) - 1,
                     (body.span.start - 1 - decl_start) as usize,
@@ -81,9 +74,7 @@ impl Handler for FunctionJsDocChecker {
 
                 if let None = type_part {
                     validation_error!(
-                        &mut ioc.message_handler,
                         "FD04",
-                        &context.file_name,
                         context.get_line(tag.span.start),
                         0_usize,
                         context.get_line(tag.span.start)
@@ -101,9 +92,7 @@ impl Handler for FunctionJsDocChecker {
                     || (name_part.is_some() && name_part.unwrap().parsed() == "*")
                 {
                     validation_error!(
-                        &mut ioc.message_handler,
                         "FD05",
-                        &context.file_name,
                         context.get_line(tag.span.start),
                         0_usize,
                         context.get_line(tag.span.start)
@@ -120,9 +109,7 @@ impl Handler for FunctionJsDocChecker {
                     // We can unwrap because we already checked if it is none.
                     if !params.any(|param| param == name_part.unwrap().parsed()) {
                         validation_error!(
-                            &mut ioc.message_handler,
                             "FD06",
-                            &context.file_name,
                             context.get_line(tag.span.start),
                             0_usize,
                             context.get_line(tag.span.start)
@@ -138,9 +125,7 @@ impl Handler for FunctionJsDocChecker {
 
                 if comment_part.parsed().len() == 0 {
                     validation_error!(
-                        &mut ioc.message_handler,
                         "FD07",
-                        &context.file_name,
                         context.get_line(tag.span.start),
                         0_usize,
                         context.get_line(tag.span.start)
@@ -160,9 +145,7 @@ impl Handler for FunctionJsDocChecker {
                 .find(|tag| tag.kind.parsed() == "returns");
             let Some(returns_tag) = returns_tag else {
                 validation_error!(
-                    &mut ioc.message_handler,
                     "FD08",
-                    &context.file_name,
                     context.get_line(decl_start),
                     context.get_column(decl_start) - 1 as usize,
                     (body.span.start - 1 - decl_start) as usize,
@@ -175,9 +158,7 @@ impl Handler for FunctionJsDocChecker {
             let type_part = returns_tag.r#type();
             if let None = type_part {
                 validation_error!(
-                    &mut ioc.message_handler,
                     "FD09",
-                    &context.file_name,
                     context.get_line(returns_tag.span.start),
                     0_usize,
                     context.get_line(returns_tag.span.start)
@@ -194,8 +175,8 @@ impl Handler for FunctionJsDocChecker {
         result
     }
 
-    fn success_message(&self, ioc: &mut crate::api::CommitCheckerIoC) {
-        rule_success_message!(&mut ioc.message_handler, "SCM04");
+    fn success_message(&self) {
+        rule_success_message!("SCM04");
     }
 
     fn code(&self) -> &'static str {

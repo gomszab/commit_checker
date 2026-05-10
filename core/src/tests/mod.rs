@@ -1,3 +1,3 @@
 mod test_env;
 
-pub use test_env::TestEnv;
+pub use test_env::{TestEnv, TestOut};

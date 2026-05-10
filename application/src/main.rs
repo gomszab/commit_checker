@@ -1,4 +1,4 @@
-use commit_checker_core::{api::commit_checker_facade, message_handler::MessageOutput};
+use commit_checker_core::{MessageOutput, api::commit_checker_facade};
 
 fn main() {
     let file_name = "something.js";
@@ -54,21 +54,21 @@ fn main() {
 const appleb = "apple" // variable declaration marked line above: no description
 appleb.replace('a', ''); // replace
     "#;
-    let mut adapter = ConsoleAdapter::new();
-    let mut facade = commit_checker_facade::CommitCheckerFacade::build(&mut adapter);
+    // let mut adapter = ConsoleAdapter::new();
+    let mut facade = commit_checker_facade::CommitCheckerFacade::build();
     facade.analyze(file_name, file_contents);
 }
 
-struct ConsoleAdapter {}
+struct ConsoleAdapter;
 
-impl ConsoleAdapter {
-    fn new() -> Self {
-        Self {}
-    }
-}
+// impl ConsoleAdapter {
+//     fn new() -> Self {
+//         Self {}
+//     }
+// }
 
 impl MessageOutput for ConsoleAdapter {
-    fn push(&mut self, message: commit_checker_core::message_handler::LocalizedMessage) {
+    fn push(&self, _ctx: Option<&commit_checker_core::message_handler::MessageContext>, message: commit_checker_core::message_handler::LocalizedMessage) {
         let typ = message.typ;
         match typ {
             commit_checker_core::message_handler::MessageType::ValidationError => {

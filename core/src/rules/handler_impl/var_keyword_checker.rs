@@ -8,8 +8,7 @@ pub struct VarKeywordChecker;
 impl Handler for VarKeywordChecker {
     fn handle<'a>(
         &self,
-        context: &'a crate::rules::api::FileContext<'a>,
-        ioc: &mut crate::api::CommitCheckerIoC,
+        context: &'a crate::rules::api::FileContext<'a>
     ) -> HandlerResult {
         let mut result = HandlerResult::Ok;
         for declaration in context.program.body.iter() {
@@ -17,9 +16,7 @@ impl Handler for VarKeywordChecker {
                 && let VariableDeclarationKind::Var = decl.kind
             {
                 validation_error!(
-                    &mut ioc.message_handler,
                     "V02",
-                    &context.file_name,
                     context.get_line(decl.span.start) as usize,
                     0_usize,
                     1_usize as usize
@@ -31,8 +28,8 @@ impl Handler for VarKeywordChecker {
         result
     }
 
-    fn success_message(&self, ioc: &mut crate::api::CommitCheckerIoC) {
-        rule_success_message!(&mut ioc.message_handler, "SCM13");
+    fn success_message(&self) {
+        rule_success_message!("SCM13");
     }
 
     fn code(&self) -> &'static str {

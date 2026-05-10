@@ -12,17 +12,14 @@
 /// * `name = value` – optional parameters included in `params`
 #[macro_export]
 macro_rules! validation_error {
-    ($handler:expr, $code:expr, $file_name:expr, $row:expr, $column_start:expr, $column_end:expr, $($name:ident = $value:expr),+ $(,)? ) => {
-        use commit_checker_message_handler::{
-    MessageHandlerApi};
+    ($code:expr, $row:expr, $column_start:expr, $column_end:expr, $($name:ident = $value:expr),+ $(,)? ) => {
         let params = vec![
             $(
                 (stringify!($name).to_string(), ($value).to_string())
             ),+
         ];
-        $handler.handle(commit_checker_message_handler::IncommingMessage::ValidationError {
+        commit_checker_message_handler::handle_with_context(commit_checker_message_handler::IncommingMessage::ValidationError {
                 code: $code,
-                file_name: ($file_name).to_string(),
                 row: $row,
                 column_start: $column_start,
                 column_end: $column_end,
@@ -30,13 +27,11 @@ macro_rules! validation_error {
         })
     };
 
-    ($handler:expr, $code:expr, $file_name:expr, $row:expr, $column_start:expr, $column_end:expr $(,)?) => {
-        use commit_checker_message_handler::{
-    MessageHandlerApi};
+    ($code:expr, $row:expr, $column_start:expr, $column_end:expr $(,)?) => {
+
         let params: Vec<(String, String)> = Vec::new();
-        $handler.handle(commit_checker_message_handler::IncommingMessage::ValidationError {
+        commit_checker_message_handler::handle_with_context(commit_checker_message_handler::IncommingMessage::ValidationError {
             code: $code,
-            file_name: ($file_name).to_string(),
             row: $row,
             column_start: $column_start,
             column_end: $column_end,
@@ -47,28 +42,33 @@ macro_rules! validation_error {
 
 #[macro_export]
 macro_rules! software_error {
-    ($handler:expr, $code:expr, $file_name:expr) => {
-        use commit_checker_message_handler::MessageHandlerApi;
-        $handler.handle(commit_checker_message_handler::IncommingMessage::Error {
-            code: $code,
-            file_name: $file_name,
+    ($code:expr) => {
+        commit_checker_message_handler::handle_with_context(commit_checker_message_handler::IncommingMessage::Error {
+            code: $code
         })
     };
 }
 
 #[macro_export]
 macro_rules! info_message {
-    ($handler:expr, $code:expr) => {
-        use commit_checker_message_handler::MessageHandlerApi;
-        $handler.handle(commit_checker_message_handler::IncommingMessage::RuleStart { code: $code })
+    ($code:expr) => {
+        commit_checker_message_handler::handle_with_context(commit_checker_message_handler::IncommingMessage::RuleStart { code: $code })
     };
 }
 
 #[macro_export]
 macro_rules! rule_success_message {
-    ($handler:expr, $code:expr) => {
-        use commit_checker_message_handler::MessageHandlerApi;
-        $handler
-            .handle(commit_checker_message_handler::IncommingMessage::RuleSuccess { code: $code })
+    ($code:expr) => {
+        commit_checker_message_handler::handle_with_context(commit_checker_message_handler::IncommingMessage::RuleSuccess { code: $code })
+    };
+}
+
+#[macro_export]
+macro_rules! init_message_handler {
+    ($language:expr, $factory:expr) => {
+        commit_checker_message_handler::message_impl::init_message_api($factory, Some($language))
+    };
+    ($factory:expr) => {
+        commit_checker_message_handler::message_impl::init_message_api($factory, None)
     };
 }

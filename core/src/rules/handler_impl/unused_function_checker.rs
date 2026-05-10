@@ -11,7 +11,6 @@ impl Handler for UnusedFunctionChecker {
     fn handle<'a>(
         &self,
         context: &'a crate::rules::api::FileContext<'a>,
-        ioc: &mut crate::api::CommitCheckerIoC,
     ) -> HandlerResult {
         let semantic = context.semantic.get().unwrap();
         let scope = semantic.scoping();
@@ -22,9 +21,7 @@ impl Handler for UnusedFunctionChecker {
         for func_id in unused_functions {
             let span = scope.symbol_span(func_id);
             validation_error!(
-                &mut ioc.message_handler,
                 "F03",
-                &context.file_name,
                 context.get_line(span.start) as usize,
                 context.get_column(span.start) - 1,
                 span.end as usize,
@@ -35,8 +32,8 @@ impl Handler for UnusedFunctionChecker {
         HandlerResult::Ok
     }
 
-    fn success_message(&self, ioc: &mut crate::api::CommitCheckerIoC) {
-        rule_success_message!(&mut ioc.message_handler, "SCM11");
+    fn success_message(&self) {
+        rule_success_message!("SCM11");
     }
 
     fn code(&self) -> &'static str {

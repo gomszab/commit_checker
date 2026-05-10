@@ -7,8 +7,7 @@ pub struct CommentChecker;
 impl Handler for CommentChecker {
     fn handle(
         &self,
-        context: &crate::rules::api::FileContext,
-        ioc: &mut crate::api::CommitCheckerIoC,
+        context: &crate::rules::api::FileContext
     ) -> HandlerResult {
         let mut result = HandlerResult::Ok;
         let mut in_jsdoc = false;
@@ -32,9 +31,7 @@ impl Handler for CommentChecker {
 
             if trimmed.chars().any(|c| c.is_alphanumeric()) && !trimmed.contains("//") {
                 validation_error!(
-                    &mut ioc.message_handler,
                     "COM01",
-                    &context.file_name,
                     line_number + 1 as usize,
                     determine_start(line),
                     line.len(),
@@ -47,8 +44,8 @@ impl Handler for CommentChecker {
 
         result
     }
-    fn success_message(&self, ioc: &mut crate::api::CommitCheckerIoC) {
-        rule_success_message!(&mut ioc.message_handler, "SCM03");
+    fn success_message(&self) {
+        rule_success_message!("SCM03");
     }
 
     fn code(&self) -> &'static str {

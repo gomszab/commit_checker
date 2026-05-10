@@ -7,8 +7,7 @@ pub struct UnusedVariableChecker;
 impl Handler for UnusedVariableChecker {
     fn handle<'a>(
         &self,
-        context: &'a crate::rules::api::FileContext<'a>,
-        ioc: &mut crate::api::CommitCheckerIoC,
+        context: &'a crate::rules::api::FileContext<'a>
     ) -> HandlerResult {
         let mut result = HandlerResult::Ok;
         let semantic = context.semantic.get().unwrap();
@@ -20,9 +19,7 @@ impl Handler for UnusedVariableChecker {
         for var_id in unused_variables {
             let span = scope.symbol_span(var_id);
             validation_error!(
-                &mut ioc.message_handler,
                 "V01",
-                &context.file_name,
                 context.get_line(span.start) as usize,
                 context.get_column(span.start) - 1,
                 span.end as usize,
@@ -34,8 +31,8 @@ impl Handler for UnusedVariableChecker {
         result
     }
 
-    fn success_message(&self, ioc: &mut crate::api::CommitCheckerIoC) {
-        rule_success_message!(&mut ioc.message_handler, "SCM12");
+    fn success_message(&self) {
+        rule_success_message!("SCM12");
     }
 
     fn code(&self) -> &'static str {

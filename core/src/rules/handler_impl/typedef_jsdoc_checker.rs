@@ -7,8 +7,7 @@ pub struct TypedefJsDocChecker;
 impl Handler for TypedefJsDocChecker {
     fn handle<'a>(
         &self,
-        context: &'a crate::rules::api::FileContext<'a>,
-        ioc: &mut crate::api::CommitCheckerIoC,
+        context: &'a crate::rules::api::FileContext<'a>
     ) -> HandlerResult {
         let mut result = HandlerResult::Ok;
         let semantic = context.semantic.get().unwrap();
@@ -26,9 +25,7 @@ impl Handler for TypedefJsDocChecker {
                     && name_part.parsed().len() == 0
                 {
                     validation_error!(
-                        &mut ioc.message_handler,
                         "TD04",
-                        &context.file_name,
                         context.get_line(tag.span.start) as usize,
                         0_usize,
                         context.lines[context.get_line(tag.span.start) - 1].len() + 1 as usize,
@@ -41,9 +38,7 @@ impl Handler for TypedefJsDocChecker {
                     continue;
                 } else if name_part.parsed().len() == 0 {
                     validation_error!(
-                        &mut ioc.message_handler,
                         "TD05",
-                        &context.file_name,
                         context.get_line(tag.span.start) as usize,
                         0_usize,
                         context.lines[context.get_line(tag.span.start) - 1].len() + 1 as usize,
@@ -56,9 +51,7 @@ impl Handler for TypedefJsDocChecker {
                     continue;
                 } else if let None = type_part {
                     validation_error!(
-                        &mut ioc.message_handler,
                         "TD06",
-                        &context.file_name,
                         context.get_line(tag.span.start) as usize,
                         0_usize,
                         context.lines[context.get_line(tag.span.start) - 1].len() + 1 as usize,
@@ -76,8 +69,8 @@ impl Handler for TypedefJsDocChecker {
         result
     }
 
-    fn success_message(&self, ioc: &mut crate::api::CommitCheckerIoC) {
-        rule_success_message!(&mut ioc.message_handler, "SCM10");
+    fn success_message(&self) {
+        rule_success_message!("SCM10");
     }
 
     fn code(&self) -> &'static str {

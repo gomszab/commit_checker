@@ -11,8 +11,7 @@ pub struct PropertyNameChecker;
 impl Handler for PropertyNameChecker {
     fn handle<'a>(
         &self,
-        context: &'a crate::rules::api::FileContext<'a>,
-        ioc: &mut crate::api::CommitCheckerIoC,
+        context: &'a crate::rules::api::FileContext<'a>
     ) -> HandlerResult {
         let mut result = HandlerResult::Ok;
         let semantic = context.semantic.get().unwrap();
@@ -34,9 +33,7 @@ impl Handler for PropertyNameChecker {
 
             if name.len() < 5 {
                 validation_error!(
-                    &mut ioc.message_handler,
                     "P01",
-                    &context.file_name,
                     context.get_line(start) as usize,
                     context.get_column(start) - 1,
                     (context.get_column(start) + name.len()) as usize,
@@ -47,9 +44,7 @@ impl Handler for PropertyNameChecker {
 
             if contains_number_or_hungarian_letter(name) {
                 validation_error!(
-                    &mut ioc.message_handler,
                     "P02",
-                    &context.file_name,
                     context.get_line(start) as usize,
                     context.get_column(start) - 1,
                     (context.get_column(start) + name.len()) as usize,
@@ -62,8 +57,8 @@ impl Handler for PropertyNameChecker {
         result
     }
 
-    fn success_message(&self, ioc: &mut crate::api::CommitCheckerIoC) {
-        rule_success_message!(&mut ioc.message_handler, "SCM08");
+    fn success_message(&self) {
+        rule_success_message!("SCM08");
     }
 
     fn code(&self) -> &'static str {

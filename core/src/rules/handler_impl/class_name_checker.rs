@@ -11,8 +11,7 @@ pub struct ClassNameChecker;
 impl Handler for ClassNameChecker {
     fn handle(
         &self,
-        context: &crate::rules::api::FileContext,
-        ioc: &mut crate::api::CommitCheckerIoC,
+        context: &crate::rules::api::FileContext
     ) -> HandlerResult {
         let mut result = HandlerResult::Ok;
         let semantic = context.semantic.get().unwrap();
@@ -23,9 +22,7 @@ impl Handler for ClassNameChecker {
 
             let Some(binding_identifier) = &class.id else {
                 validation_error!(
-                    &mut ioc.message_handler,
                     "C01",
-                    &context.file_name,
                     context.get_line(class.span.start) as usize,
                     context.get_column(class.span.start) - 1,
                     context.get_column(class.span.end)
@@ -37,9 +34,7 @@ impl Handler for ClassNameChecker {
             let start = binding_identifier.span.start;
             if name.len() < 5 {
                 validation_error!(
-                    &mut ioc.message_handler,
                     "C02",
-                    &context.file_name,
                     context.get_line(class.span.start) as usize,
                     context.get_column(start) - 1,
                     context.get_column(start) + name.len(),
@@ -50,9 +45,7 @@ impl Handler for ClassNameChecker {
 
             if contains_number_or_hungarian_letter(name.as_str()) {
                 validation_error!(
-                    &mut ioc.message_handler,
                     "C03",
-                    &context.file_name,
                     context.get_line(class.span.start) as usize,
                     context.get_column(start) - 1,
                     context.get_column(start) - 1 + name.len(),
@@ -65,8 +58,8 @@ impl Handler for ClassNameChecker {
         result
     }
 
-    fn success_message(&self, ioc: &mut crate::api::CommitCheckerIoC) {
-        rule_success_message!(&mut ioc.message_handler, "SCM02");
+    fn success_message(&self) {
+        rule_success_message!("SCM02");
     }
 
     fn code(&self) -> &'static str {

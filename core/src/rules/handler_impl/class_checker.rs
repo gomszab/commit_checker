@@ -5,7 +5,6 @@ use oxc::ast::{
 };
 
 use crate::{
-    api::CommitCheckerIoC,
     rules::api::{Handler, HandlerResult},
 };
 
@@ -14,8 +13,7 @@ pub struct ClassChecker;
 impl Handler for ClassChecker {
     fn handle(
         &self,
-        context: &crate::rules::api::FileContext,
-        ioc: &mut CommitCheckerIoC,
+        context: &crate::rules::api::FileContext
     ) -> HandlerResult {
         let mut result = HandlerResult::Ok;
         let semantic = context.semantic.get().unwrap();
@@ -38,9 +36,7 @@ impl Handler for ClassChecker {
 
             let Some(ClassElement::MethodDefinition(constructor)) = constructor else {
                 validation_error!(
-                    &mut ioc.message_handler,
                     "C04",
-                    &context.file_name,
                     context.get_line(class.span.start) as usize,
                     context.get_column(id.span.start) - 1,
                     context.get_column(id.span.end) as usize,
@@ -62,9 +58,7 @@ impl Handler for ClassChecker {
                     && !super_exists(&body.statements)
                 {
                     validation_error!(
-                        &mut ioc.message_handler,
                         "C05",
-                        &context.file_name,
                         context.get_line(class.span.start) as usize,
                         context.get_column(id.span.start) - 1,
                         context.get_column(super_id.span.end) as usize,
@@ -72,7 +66,7 @@ impl Handler for ClassChecker {
                     );
                     result = HandlerResult::Error;
                 } else if body.is_none() {
-                    software_error!(&mut ioc.message_handler, "SW05", None); // never happened becuse of sw04 edit: only in commented codelines
+                    software_error!("SW05"); // never happened
                     result = HandlerResult::Error;
                 };
             }
@@ -81,8 +75,8 @@ impl Handler for ClassChecker {
         result
     }
 
-    fn success_message(&self, ioc: &mut CommitCheckerIoC) -> () {
-        rule_success_message!(&mut ioc.message_handler, "SCM01");
+    fn success_message(&self) -> () {
+        rule_success_message!("SCM01");
     }
 
     fn code(&self) -> &'static str {
@@ -104,6 +98,7 @@ fn super_exists(stmts: &oxc::allocator::Vec<Statement>) -> bool {
 }
 #[cfg(test)]
 mod tests {
+
 
     crate::declare_tests! {
        test_c04 => ("TT01/missing_constructor.js", ClassChecker, "C04", Error),

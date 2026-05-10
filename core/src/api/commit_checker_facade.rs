@@ -1,38 +1,39 @@
-use commit_checker_message_handler::message_handler::MessageOutput;
+use commit_checker_message_handler::{change_message_context, message_handler::MessageContext};
 use oxc::allocator::Allocator;
 
 use crate::{api::commit_checker_ioc::CommitCheckerIoC, rules::api::FileContext};
 
-pub struct CommitCheckerFacade<'a> {
-    container: CommitCheckerIoC<'a>,
+pub struct CommitCheckerFacade {
+    container: CommitCheckerIoC,
     enabled_handlers: Option<Vec<String>>,
 }
 
-impl<'a> CommitCheckerFacade<'a> {
-    pub fn build(out: &'a mut dyn MessageOutput) -> Self {
+impl CommitCheckerFacade {
+    pub fn build() -> Self {
         CommitCheckerFacade {
-            container: CommitCheckerIoC::new(out),
+            container: CommitCheckerIoC::new(),
             enabled_handlers: None,
         }
     }
 
     pub fn build_with_enabled(
-        out: &'a mut dyn MessageOutput,
         enabled_handlers: Vec<String>,
     ) -> Self {
         CommitCheckerFacade {
-            container: CommitCheckerIoC::new(out),
+            container: CommitCheckerIoC::new(),
             enabled_handlers: Some(enabled_handlers),
         }
     }
 
     pub fn analyze(&mut self, file_name: &str, file_contents: &str) {
+        change_message_context(MessageContext{
+            file_name: file_name.to_string()
+        });
         let allocator = Allocator::new();
         let file_context = FileContext::new(
             file_name.to_string(),
             file_contents,
             &allocator,
-            &mut self.container.message_handler,
         );
         if let Ok(file_context) = &file_context {
             let handlers = &self.container.rule_handler.handlers.clone();
@@ -43,11 +44,11 @@ impl<'a> CommitCheckerFacade<'a> {
                 {
                     continue;
                 }
-                handler.title(&mut self.container);
+                handler.title();
                 if let crate::rules::api::HandlerResult::Ok =
-                    handler.handle(file_context, &mut self.container)
+                    handler.handle(file_context)
                 {
-                    handler.success_message(&mut self.container);
+                    handler.success_message();
                 }
             }
         };

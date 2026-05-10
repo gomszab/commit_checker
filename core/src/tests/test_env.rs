@@ -1,4 +1,4 @@
-use std::{fs, path::PathBuf};
+use std::{fs, path::PathBuf, sync::{Arc, Mutex}};
 
 use oxc::allocator::Allocator;
 
@@ -6,24 +6,24 @@ pub struct TestEnv {
     pub source_path: String,
     pub file_contents: String,
     pub allocator: Allocator,
-    pub test_out: TestOut,
 }
 
 pub struct TestOut {
-    pub messages: Vec<String>,
+    pub messages: Arc<Mutex<Vec<String>>>,
 }
 
 impl TestOut {
-    fn new() -> Self {
+    pub fn new(messages: Arc<Mutex<Vec<String>>>) -> Self {
         Self {
-            messages: Vec::new(),
+            messages,
         }
     }
 }
 
-impl commit_checker_message_handler::message_handler::MessageOutput for TestOut {
-    fn push(&mut self, message: commit_checker_message_handler::message_handler::LocalizedMessage) {
-        self.messages.push(message.title)
+impl commit_checker_message_handler::MessageOutput for TestOut {
+    
+    fn push(&self, _ctx: Option<&commit_checker_message_handler::message_handler::MessageContext>, message: commit_checker_message_handler::message_handler::LocalizedMessage) {
+        self.messages.lock().unwrap().push(message.title)
     }
 }
 
@@ -33,7 +33,6 @@ impl TestEnv {
             source_path: source_path.to_string(),
             file_contents: read_file_from_test_folder(source_path),
             allocator: Allocator::new(),
-            test_out: TestOut::new(),
         }
     }
 
@@ -41,16 +40,15 @@ impl TestEnv {
         &'a mut self,
     ) -> (
         crate::rules::api::FileContext<'a>,
-        crate::api::CommitCheckerIoC<'a>,
+        crate::api::commit_checker_ioc::CommitCheckerIoC,
     ) {
-        let mut ioc = crate::api::CommitCheckerIoC::new(&mut self.test_out);
+        let mut ioc = crate::api::commit_checker_ioc::CommitCheckerIoC::new();
         ioc.rule_handler = crate::rules::api::RuleHandler::new_empty();
 
         let context = crate::rules::api::FileContext::new(
             self.source_path.clone(),
             &self.file_contents,
             &self.allocator,
-            &mut ioc.message_handler,
         )
         .unwrap_or_else(|err| panic!("Failed to create file context: {}", err));
 
@@ -109,24 +107,32 @@ macro_rules! declare_tests {
                 use super::*;
                 use HandlerResult::*;
 
+                let messages = std::sync::Arc::new(std::sync::Mutex::new(Vec::new()));
+                let _ = commit_checker_message_handler::init_message_handler!({
+                    let messages = std::sync::Arc::clone(&messages);    
+                    ||
+                    crate::tests::TestOut::new(messages)
+                });
                 let mut env = crate::tests::TestEnv::new($path);
-                let (context, mut ioc) = env.build();
+                let (context, mut _ioc) = env.build();
 
                 let checker = $checker;
-                let result = checker.handle(&context, &mut ioc);
-
+                let result = checker.handle(&context);
                 match $resulttype {
                     HandlerResult::Error => {
-                        assert_eq!(env.test_out.messages, vec![$code]);
+
+                        let test = &messages.lock().unwrap();
+                        assert_eq!(test.as_slice(), vec![$code]);
                         crate::assertHandlerResultError!(result);
                     },
                     HandlerResult::Ok => {
                         let vec: Vec<String> = Vec::new();
-                        assert_eq!(env.test_out.messages, vec);
+                        let test = messages.lock().unwrap();
+                        assert_eq!(test.as_slice(), vec);
                         crate::assertHandlerResultOk!(result);
                     }
                 }
-
+                commit_checker_message_handler::message_impl::clear_message_api()
             }
         )*
     };

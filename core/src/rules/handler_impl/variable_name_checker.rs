@@ -12,7 +12,6 @@ impl Handler for VariableNameChecker {
     fn handle<'a>(
         &self,
         context: &'a crate::rules::api::FileContext<'a>,
-        ioc: &mut crate::api::CommitCheckerIoC,
     ) -> HandlerResult {
         let mut result = HandlerResult::Ok;
         let semantic = context.semantic.get().unwrap();
@@ -26,9 +25,7 @@ impl Handler for VariableNameChecker {
 
                         if name.len() < 5 {
                             validation_error!(
-                                &mut ioc.message_handler,
                                 "V03",
-                                &context.file_name,
                                 context.get_line(start) as usize,
                                 context.get_column(start) - 1,
                                 context.get_column(start) + name.len() as usize,
@@ -39,9 +36,7 @@ impl Handler for VariableNameChecker {
 
                         if contains_number_or_hungarian_letter(name.as_str()) {
                             validation_error!(
-                                &mut ioc.message_handler,
                                 "V04",
-                                &context.file_name,
                                 context.get_line(start) as usize,
                                 context.get_column(start) - 1,
                                 context.get_column(start) + name.len() as usize,
@@ -57,8 +52,8 @@ impl Handler for VariableNameChecker {
         result
     }
 
-    fn success_message(&self, ioc: &mut crate::api::CommitCheckerIoC) {
-        rule_success_message!(&mut ioc.message_handler, "SCM15");
+    fn success_message(&self) {
+        rule_success_message!("SCM15");
     }
 
     fn code(&self) -> &'static str {

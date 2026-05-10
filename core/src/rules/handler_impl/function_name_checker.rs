@@ -15,17 +15,14 @@ pub struct FunctionNameChecker;
 impl Handler for FunctionNameChecker {
     fn handle<'a>(
         &self,
-        context: &'a crate::rules::api::FileContext<'a>,
-        ioc: &mut crate::api::CommitCheckerIoC,
+        context: &'a crate::rules::api::FileContext<'a>
     ) -> HandlerResult {
         let mut result = HandlerResult::Ok;
         let semantic = context.semantic.get().unwrap();
-        for (name, start) in get_all_func_names_and_spans(semantic.nodes(), ioc, &context) {
+        for (name, start) in get_all_func_names_and_spans(semantic.nodes()) {
             if name.len() < 5 {
                 validation_error!(
-                    &mut ioc.message_handler,
                     "F01",
-                    &context.file_name,
                     context.get_line(start) as usize,
                     (context.get_column(start) - 1) as usize,
                     (context.get_column(start) + name.len()) as usize,
@@ -36,9 +33,7 @@ impl Handler for FunctionNameChecker {
 
             if contains_number_or_hungarian_letter(&name) {
                 validation_error!(
-                    &mut ioc.message_handler,
                     "F02",
-                    &context.file_name,
                     context.get_line(start) as usize,
                     (context.get_column(start) - 1) as usize,
                     (context.get_column(start) + name.len()) as usize, //TODO Are the Hungarian letters skiped at the length determination?
@@ -51,8 +46,8 @@ impl Handler for FunctionNameChecker {
         result
     }
 
-    fn success_message(&self, ioc: &mut crate::api::CommitCheckerIoC) {
-        rule_success_message!(&mut ioc.message_handler, "SCM05");
+    fn success_message(&self) {
+        rule_success_message!("SCM05");
     }
 
     fn code(&self) -> &'static str {
@@ -63,8 +58,6 @@ impl Handler for FunctionNameChecker {
 /// Gets the names of all functions in the file and the starts of them.
 fn get_all_func_names_and_spans<'a>(
     nodes: &'a AstNodes,
-    ioc: &mut crate::api::CommitCheckerIoC,
-    context: &'a crate::rules::api::FileContext<'a>,
 ) -> Vec<(oxc::span::Atom<'a>, u32)> {
     let mut nodes = nodes.iter();
     let mut names = Vec::new();
@@ -92,9 +85,7 @@ fn get_all_func_names_and_spans<'a>(
                     names.push((*name, span.start));
                 } else {
                     validation_error!(
-                        &mut ioc.message_handler,
                         "F04",
-                        &context.file_name,
                         0_usize,
                         0_usize,
                         1_usize,

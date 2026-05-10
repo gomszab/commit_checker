@@ -9,8 +9,7 @@ pub struct PropertyJsDocChecker;
 impl Handler for PropertyJsDocChecker {
     fn handle<'a>(
         &self,
-        context: &'a crate::rules::api::FileContext<'a>,
-        ioc: &mut crate::api::CommitCheckerIoC,
+        context: &'a crate::rules::api::FileContext<'a>
     ) -> HandlerResult {
         let mut result = HandlerResult::Ok;
         let semantic = context.semantic.get().unwrap();
@@ -20,9 +19,7 @@ impl Handler for PropertyJsDocChecker {
             let decl_start = decl.span.start;
             let Some(jsdoc) = jsdoc else {
                 validation_error!(
-                    &mut ioc.message_handler,
                     "PD01",
-                    &context.file_name,
                     context.get_line(decl_start) as usize,
                     context.get_column(decl_start) - 1,
                     (decl.span.end) as usize,
@@ -35,9 +32,7 @@ impl Handler for PropertyJsDocChecker {
             let type_tag = jsdoc.tags().iter().find(|tag| tag.kind.parsed() == "type");
             if type_tag.is_none() {
                 validation_error!(
-                    &mut ioc.message_handler,
                     "PD02",
-                    &context.file_name,
                     context.get_line(decl_start) as usize,
                     context.get_column(decl_start) - 1,
                     decl.span.end as usize,
@@ -54,8 +49,8 @@ impl Handler for PropertyJsDocChecker {
         result
     }
 
-    fn success_message(&self, ioc: &mut crate::api::CommitCheckerIoC) {
-        rule_success_message!(&mut ioc.message_handler, "SCM07");
+    fn success_message(&self) {
+        rule_success_message!("SCM07");
     }
 
     fn code(&self) -> &'static str {
