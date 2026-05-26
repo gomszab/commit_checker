@@ -1,0 +1,65 @@
+use commit_checker_message_handler::{rule_success_message, validation_error};
+
+use crate::rules::api::{Handler, HandlerResult};
+
+pub struct JsDocTypeChecker;
+
+// TODO: maybe get it from a config file?
+const FORBIDDEN_TYPES: [&str; 3] = ["Object", "Array", "*"];
+
+impl Handler for JsDocTypeChecker {
+    fn handle<'a>(
+        &self,
+        context: &'a crate::rules::api::FileContext<'a>,
+    ) -> HandlerResult {
+        let mut result = HandlerResult::Ok;
+        let semantic = context.semantic.get().unwrap();
+
+        for jsdoc in semantic.jsdoc().iter_all() {
+            for tag in jsdoc.tags() {
+                let Some(type_part) = tag.r#type() else {
+                    continue;
+                };
+
+                let ty = type_part.parsed();
+                let Some(found_forbidden) = FORBIDDEN_TYPES.iter().find(|s| ty.contains(*s)) else {
+                    continue;
+                };
+
+                validation_error!(
+                    "D01",
+                    context.get_line(tag.span.start) as usize,
+                    context.get_column(type_part.span.start) as usize,
+                    context.get_column(type_part.span.end) - 1 as usize,
+                    jsdoc = context.lines[context.get_line(jsdoc.span.start) - 1
+                        ..=context.get_line(jsdoc.span.end) - 1]
+                        .to_vec()
+                        .join("\n"),
+                    forbidden_type = found_forbidden,
+                );
+                result = HandlerResult::Error
+            }
+        }
+
+        result
+    }
+
+    fn success_message(&self) {
+        rule_success_message!("SCM09");
+    }
+
+    fn code(&self) -> &'static str {
+        "TT09"
+    }
+}
+
+#[cfg(test)]
+mod tests {
+
+    crate::declare_tests! {
+       test_d01_obj => ("TT09/object_type.js", JsDocTypeChecker, "D01", Error),
+       test_d01_array => ("TT09/array_type.js", JsDocTypeChecker, "D01", Error),
+       test_d01_star => ("TT09/star_type.js", JsDocTypeChecker, "D01", Error),
+       test_valid => ("TT09/valid.js", JsDocTypeChecker, "", Ok),
+    }
+}

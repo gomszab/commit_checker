@@ -1,0 +1,7 @@
+class GoodClass {
+    
+    #htmldiv; 
+   
+    constructor() { 
+    }
+}

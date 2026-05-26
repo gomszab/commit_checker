@@ -1,0 +1,7 @@
+class ParentClass {
+    #divElement; 
+
+    constructor() { 
+         
+    }
+}

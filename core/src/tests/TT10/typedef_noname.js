@@ -1,0 +1,3 @@
+/**
+ * @typedef {{apple: string}}
+ */

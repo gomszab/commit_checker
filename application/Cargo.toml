@@ -1,0 +1,14 @@
+[package]
+name = "commit_checker_application"
+version = "0.1.0"
+authors = ["Kristof Rabel ", "Bence Marcell Egi-Matus", "Szabolcs Gombos"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+"commit_checker_message_handler" = { path = "../message_handler" }
+"commit_checker_core" = {path = "../core"}
+colored = "3.0.0"
+spinoff = "0.8.0"
+sys_language = "0.1.0"

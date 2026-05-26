@@ -1,0 +1,5 @@
+/**
+ * @returns {void}
+ */
+function smtgfunc() {
+}

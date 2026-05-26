@@ -1,0 +1,5 @@
+class RightClass {
+    constructor(){
+
+    }
+}

@@ -1,0 +1,3 @@
+// class NoConstructorBody {
+//     constructor() 
+// }
